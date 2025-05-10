@@ -28,8 +28,8 @@ This document outlines the tasks required to build a high-performance manga read
 - [x] Create reusable UI components:
   - [x] Comic Card component for displaying manga thumbnails
   - [x] Pagination component
-  - [ ] Filter and sorting components
-  - [ ] Search bar component
+  - [x] Filter and sorting components
+  - [x] Search bar component
   - [x] Dark mode toggle
 
 ### Main Pages
@@ -63,9 +63,7 @@ This document outlines the tasks required to build a high-performance manga read
 
 ## Phase 3: Backend Development (API Routes)
 - [ ] Design database schema
-  - [ ] Manga model (title, cover, author, description, genres, status)
-  - [ ] Chapter model (number, title, images, manga reference)
-  - [ ] User model (if implementing user features)
+  - [ ] Check [db.md](db.md)
 - [ ] Choose and set up database
   - [ ] Options: PostgreSQL, MySQL, MongoDB, or Firebase/Supabase
 - [ ] Create API routes in Next.js:

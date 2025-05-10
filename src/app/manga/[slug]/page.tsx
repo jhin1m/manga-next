@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Clock, Eye, BookOpen, Heart } from "lucide-react";
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
+import Description from "@/components/manga/Description";
 
 // Mock data for a single manga
 const getMangaBySlug = (slug: string) => {
@@ -108,7 +109,7 @@ const getRelatedManga = (mangaId: string) => {
     {
       id: "6",
       title: "Dragon Ball",
-      coverImage: "https://cdn.myanimelist.net/images/manga/2/54545.jpg",
+      coverImage: "https://cdn.myanimelist.net/images/manga/3/117681.jpg",
       slug: "dragon-ball",
       latestChapter: "Chapter 519",
       genres: ["Action", "Adventure", "Comedy"],
@@ -171,7 +172,7 @@ export default async function MangaDetailPage({
   return (
     <div className="space-y-8">
       {/* Manga Information Section */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-14">
         {/* Cover Image */}
         <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg">
           <Image
@@ -264,14 +265,13 @@ export default async function MangaDetailPage({
             </Button>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-2">Synopsis</h3>
-            <p className="text-sm text-muted-foreground whitespace-pre-line">
-              {manga.description}
-            </p>
-          </div>
+
         </div>
       </section>
+      
+      {/* Description here */}
+      <Description description={manga.description} />
+
 
       {/* Chapters and Related Manga Section - 2/3 and 1/3 layout for PC */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

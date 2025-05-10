@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,10 +24,23 @@ interface MangaChapterListProps {
 export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [isClient, setIsClient] = useState(false);
+
+  // Set isClient to true after hydration is complete
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Format date to relative time (e.g., "2 days ago")
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+
+    // If we're still server-side or during hydration, return a stable format
+    if (!isClient) {
+      return new Date(dateString).toLocaleDateString();
+    }
+
+    // Client-side only (after hydration)
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 

@@ -1,11 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { Menu, Search, User } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle
+} from '@/components/ui/sheet';
+import { SearchButton, DesktopSearchButton } from '@/components/feature/SearchBar';
 
 export default function Header() {
   return (
@@ -48,9 +54,7 @@ export default function Header() {
             >
               Genres
             </Link>
-            <Button variant="ghost" size="icon" className="text-foreground">
-              <Search className="h-5 w-5" />
-            </Button>
+            <DesktopSearchButton />
             <Button variant="ghost" size="icon" className="text-foreground">
               <User className="h-5 w-5" />
             </Button>
@@ -59,9 +63,7 @@ export default function Header() {
 
           {/* Mobile Navigation */}
           <div className='md:hidden flex items-center gap-2'>
-            <Button variant="ghost" size="icon" className="text-foreground">
-              <Search className="h-5 w-5" />
-            </Button>
+            <SearchButton />
             <ThemeToggle />
             <Sheet>
               <SheetTrigger asChild>
@@ -71,6 +73,9 @@ export default function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                </SheetHeader>
                 <nav className="flex flex-col gap-4 mt-8">
                   <Link
                     href='/'
