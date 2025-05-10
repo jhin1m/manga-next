@@ -17,7 +17,7 @@ Workflow này mô tả các bước kỹ thuật tổng quan để phát triển
     *   `latestChapter` (tùy chọn): Thông tin về chương mới nhất (ví dụ: số chương, tên chương).
     *   `updatedAt` (tùy chọn): Thời gian cập nhật mới nhất.
     *   `views` (tùy chọn): Lượt xem.
-    *   `status` (tùy chọn): Trạng thái truyện (ví dụ: "連載中" - Đang tiến hành, "完結" - Hoàn thành).
+    *   `status` (tùy chọn): Trạng thái truyện (ví dụ: "連載中" - Đang tiến hành, "Completed" - Hoàn thành).
     ```typescript
     // src/components/comics/ComicCard.tsx
     import Image from "next/image";

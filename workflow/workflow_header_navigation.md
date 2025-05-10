@@ -38,7 +38,7 @@ Workflow này mô tả các bước kỹ thuật tổng quan để phát triển
               <Link href="/newest" className="hover:text-gray-300">Mới Thêm</Link>
               <Link href="/trending" className="hover:text-gray-300">Thịnh Hành</Link>
               <Link href="/genres" className="hover:text-gray-300">Thể Loại</Link>
-              {/* Thêm các link khác như dokiraw: 最高評価, 連載中, 18禁, BL, GL, 完結 */}
+              {/* Thêm các link khác như dokiraw: 最高評価, 連載中, 18禁, BL, GL, Completed */}
               {/* <SearchBar /> */}
             </div>
             

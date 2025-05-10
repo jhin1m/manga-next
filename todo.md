@@ -21,16 +21,16 @@ This document outlines the tasks required to build a high-performance manga read
 
 ## Phase 2: Frontend Development
 ### Layout and Core Components
-- [ ] Design and implement main layouts
-  - [ ] Header with navigation and search bar
-  - [ ] Footer with site information and links
-  - [ ] Responsive sidebar (if needed)
-- [ ] Create reusable UI components:
-  - [ ] Comic Card component for displaying manga thumbnails
-  - [ ] Pagination component
+- [x] Design and implement main layouts
+  - [x] Header with navigation and search bar
+  - [x] Footer with site information and links
+  - [x] Responsive sidebar (if needed)
+- [x] Create reusable UI components:
+  - [x] Comic Card component for displaying manga thumbnails
+  - [x] Pagination component
   - [ ] Filter and sorting components
   - [ ] Search bar component
-  - [ ] Dark mode toggle
+  - [x] Dark mode toggle
 
 ### Main Pages
 - [ ] Develop Home Page
@@ -42,16 +42,16 @@ This document outlines the tasks required to build a high-performance manga read
   - [ ] Grid/list view of manga
   - [ ] Filtering and sorting functionality
   - [ ] Pagination
-- [ ] Create Manga Detail Page
-  - [ ] Manga information (title, cover, author, description, genres, status)
-  - [ ] Chapter list with search functionality
-  - [ ] Related/recommended manga
-- [ ] Build Manga Reader Page
-  - [ ] Image display with optimization
-  - [ ] Navigation between chapters
-  - [ ] Reading progress indicator
-  - [ ] Reading mode toggle (vertical scroll/page-by-page)
-  - [ ] Auxiliary buttons (report error, display settings)
+- [x] Create Manga Detail Page
+  - [x] Manga information (title, cover, author, description, genres, status)
+  - [x] Chapter list with search functionality
+  - [x] Related/recommended manga
+- [x] Build Manga Reader Page
+  - [x] Image display with optimization
+  - [x] Navigation between chapters
+  - [x] Reading progress indicator
+  - [x] Reading mode toggle (vertical scroll/page-by-page)
+  - [x] Auxiliary buttons (display settings, brightness control)
 - [ ] Implement Search Page
   - [ ] Search results display
   - [ ] Advanced filtering options
