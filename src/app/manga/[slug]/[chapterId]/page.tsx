@@ -2,54 +2,79 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MangaReader from "@/components/manga/MangaReader";
 
-// Mock function to get chapter data
-const getChapterData = (slug: string, chapterId: string) => {
-  // This would be replaced with an actual API call in a real application
-  const chapterNumber = parseInt(chapterId.replace("chapter-", ""));
-  
-  // Check if chapter exists (for demo purposes)
-  if (chapterNumber < 1 || chapterNumber > 1089) {
+// Function to get chapter data from API
+async function getChapterData(slug: string, chapterId: string) {
+  try {
+    // First, we need to get the chapter ID from the slug
+    const chaptersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${slug}/chapters`, {
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
+
+    if (!chaptersRes.ok) {
+      console.error('Failed to fetch chapters list');
+      return null;
+    }
+
+    const chaptersData = await chaptersRes.json();
+    const chapter = chaptersData.chapters.find((ch: any) => ch.slug === chapterId);
+
+    if (!chapter) {
+      console.error('Chapter not found in chapters list');
+      return null;
+    }
+
+    // Now fetch the chapter content with the chapter ID
+    const chapterRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/chapters/${chapter.id}`, {
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
+
+    if (!chapterRes.ok) {
+      console.error('Failed to fetch chapter content');
+      return null;
+    }
+
+    const chapterData = await chapterRes.json();
+
+    // Transform API data to match our component needs
+    return {
+      manga: {
+        id: chapterData.chapter.Comics.id.toString(),
+        title: chapterData.chapter.Comics.title,
+        slug: chapterData.chapter.Comics.slug,
+      },
+      chapter: {
+        id: chapterData.chapter.id.toString(),
+        number: parseFloat(chapterData.chapter.chapter_number),
+        title: chapterData.chapter.title || `Chapter ${chapterData.chapter.chapter_number}`,
+        images: chapterData.chapter.Pages.map((page: any) => page.image_url),
+      },
+      navigation: {
+        prevChapter: chapterData.prevChapter ? chapterData.prevChapter.id.toString() : null,
+        nextChapter: chapterData.nextChapter ? chapterData.nextChapter.id.toString() : null,
+        totalChapters: chaptersData.totalChapters,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching chapter data:', error);
     return null;
   }
-  
-  return {
-    manga: {
-      id: "1",
-      title: "One Piece",
-      slug: "one-piece",
-    },
-    chapter: {
-      id: `1-chapter-${chapterNumber}`,
-      number: chapterNumber,
-      title: `Chapter ${chapterNumber}`,
-      images: Array.from({ length: 15 }, (_, i) => 
-        // Using placeholder images for demo
-        `https://placehold.co/800x1200/png?text=Chapter+${chapterNumber}+Page+${i+1}`
-      ),
-    },
-    navigation: {
-      prevChapter: chapterNumber > 1 ? `chapter-${chapterNumber - 1}` : null,
-      nextChapter: chapterNumber < 1089 ? `chapter-${chapterNumber + 1}` : null,
-      totalChapters: 1089,
-    },
-  };
-};
+}
 
 // Generate metadata for the page
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string; chapterId: string }>;
+  params: { slug: string; chapterId: string };
 }): Promise<Metadata> {
-  const { slug, chapterId } = await params;
-  const chapterData = getChapterData(slug, chapterId);
-  
+  const { slug, chapterId } = params;
+  const chapterData = await getChapterData(slug, chapterId);
+
   if (!chapterData) {
     return {
       title: "Chapter Not Found",
     };
   }
-  
+
   return {
     title: `${chapterData.chapter.title} - ${chapterData.manga.title}`,
     description: `Read ${chapterData.manga.title} ${chapterData.chapter.title} online for free.`,
@@ -59,14 +84,14 @@ export async function generateMetadata({
 export default async function ChapterPage({
   params,
 }: {
-  params: Promise<{ slug: string; chapterId: string }>;
+  params: { slug: string; chapterId: string };
 }) {
-  const { slug, chapterId } = await params;
-  const chapterData = getChapterData(slug, chapterId);
-  
+  const { slug, chapterId } = params;
+  const chapterData = await getChapterData(slug, chapterId);
+
   if (!chapterData) {
     notFound();
   }
-  
+
   return <MangaReader chapterData={chapterData} />;
 }

@@ -27,7 +27,7 @@ export default function Description({ description }: DescriptionProps) {
         <CardTitle className="text-xl">Synopsis</CardTitle>
       </CardHeader>
       <CardContent className="pt-2">
-        <div className="text-sm text-muted-foreground whitespace-pre-line pb-4">
+        <div className="text-sm text-muted-foreground whitespace-pre-line pb-2">
           {isTruncated && !isExpanded ? (
             <span>{description.slice(0, 300)}...</span>
           ) : ( 

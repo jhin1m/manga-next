@@ -33,15 +33,15 @@ This document outlines the tasks required to build a high-performance manga read
   - [x] Dark mode toggle
 
 ### Main Pages
-- [ ] Develop Home Page
-  - [ ] Featured manga section
-  - [ ] Latest updates section
-  - [ ] Popular manga section
+- [x] Develop Home Page
+  - [x] Featured manga section
+  - [x] Latest updates section
+  - [x] Popular manga section
   - [ ] Genre-based sections
-- [ ] Implement Manga List Page
-  - [ ] Grid/list view of manga
-  - [ ] Filtering and sorting functionality
-  - [ ] Pagination
+- [x] Implement Manga List Page
+  - [x] Grid/list view of manga
+  - [x] Filtering and sorting functionality
+  - [x] Pagination
 - [x] Create Manga Detail Page
   - [x] Manga information (title, cover, author, description, genres, status)
   - [x] Chapter list with search functionality
@@ -62,17 +62,21 @@ This document outlines the tasks required to build a high-performance manga read
 - [ ] Test on various device sizes and orientations
 
 ## Phase 3: Backend Development (API Routes)
-- [ ] Design database schema
-  - [ ] Check [db.md](db.md)
-- [ ] Choose and set up database
-  - [ ] Options: PostgreSQL, MySQL, MongoDB, or Firebase/Supabase
-- [ ] Create API routes in Next.js:
-  - [ ] `/api/manga` - Get manga list with filtering and pagination
-  - [ ] `/api/manga/[slug]` - Get manga details
-  - [ ] `/api/manga/[slug]/chapters` - Get chapter list for a manga
-  - [ ] `/api/chapters/[id]` - Get chapter content (image paths)
-  - [ ] `/api/search` - Handle search queries
+- [x] Design database schema
+  - [ ] Please check [db.md](db.md)
+- [x] Choose and set up database
+  - [x] Options: PostgreSQL, MySQL, MongoDB, or Firebase/Supabase -> Use PostgreSQL. the database is 'manga-next', no pass.
+- [x] Create API routes in Next.js:
+  - [x] `/api/manga` - Get manga list with filtering and pagination
+  - [x] `/api/manga/[slug]` - Get manga details
+  - [x] `/api/manga/[slug]/chapters` - Get chapter list for a manga
+  - [x] `/api/chapters/[id]` - Get chapter content (image paths)
+  - [x] `/api/search` - Handle search queries
   - [ ] (Optional) User management, comments, bookmarks
+
+For detailed backend implementation tasks and guides, refer to:
+- [todo_backend.md](todo_backend.md) - Comprehensive backend task list
+- [guide_backend.md](guide_backend.md) - Step-by-step implementation guide
 
 ## Phase 4: Performance and SEO Optimization
 ### Performance

@@ -8,128 +8,163 @@ import { Star, Clock, Eye, BookOpen, Heart } from "lucide-react";
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
 import Description from "@/components/manga/Description";
+import { notFound } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock data for a single manga
-const getMangaBySlug = (slug: string) => {
-  // This would be replaced with an actual API call in a real application
-  return {
-    id: "1",
-    title: "One Piece",
-    alternativeTitles: ["ワンピース", "Wan Pīsu"],
-    coverImage: "https://cdn.myanimelist.net/images/manga/2/253146.jpg",
-    slug: "one-piece",
-    author: "Oda Eiichiro",
-    artist: "Oda Eiichiro",
-    description:
-      "Gol D. Roger, a man referred to as the \"Pirate King,\" is set to be executed by the World Government. But just before his death, he confirms the existence of a great treasure, One Piece, located somewhere within the vast ocean known as the Grand Line. Announcing that One Piece can be claimed by anyone worthy enough to reach it, the Pirate King is executed and the Great Age of Pirates begins.\n\nTwenty-two years later, a young man by the name of Monkey D. Luffy is ready to embark on his own adventure, searching for One Piece and striving to become the new Pirate King. Armed with just a straw hat, a small boat, and an elastic body, he sets out on a fantastic journey to gather a crew and a ship worthy of taking on the Grand Line and finding the greatest treasure in the world.",
-    genres: ["Action", "Adventure", "Fantasy", "Shounen"],
-    status: "Ongoing",
-    rating: 9.2,
-    views: 1250000,
-    favorites: 450000,
-    chapterCount: 1089,
-    updatedAt: "19 hours ago",
-    publishedYear: 1997,
-    serialization: "Weekly Shounen Jump",
-  };
-};
+// Helper function to format date
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-// Mock data for chapters
-const getChapters = (mangaId: string) => {
-  // This would be replaced with an actual API call in a real application
-  return Array.from({ length: 30 }, (_, i) => {
-    const chapterNumber = 1089 - i;
+  if (diffDays === 0) {
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    if (diffHours === 0) {
+      const diffMinutes = Math.floor(diffTime / (1000 * 60));
+      return `${diffMinutes} minutes ago`;
+    }
+    return `${diffHours} hours ago`;
+  } else if (diffDays === 1) {
+    return 'Yesterday';
+  } else if (diffDays < 7) {
+    return `${diffDays} days ago`;
+  } else if (diffDays < 30) {
+    const diffWeeks = Math.floor(diffDays / 7);
+    return `${diffWeeks} ${diffWeeks === 1 ? 'week' : 'weeks'} ago`;
+  } else {
+    return date.toLocaleDateString();
+  }
+}
+
+// Fetch manga data from API
+async function getMangaBySlug(slug: string) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${slug}`, {
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
+
+    if (!res.ok) {
+      if (res.status === 404) {
+        return null;
+      }
+      throw new Error('Failed to fetch manga data');
+    }
+
+    const data = await res.json();
+
+    // Transform API data to match our component needs
     return {
-      id: `${mangaId}-chapter-${chapterNumber}`,
-      number: chapterNumber,
-      title: `Chapter ${chapterNumber}`,
-      slug: `chapter-${chapterNumber}`,
-      releaseDate: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-      views: Math.floor(Math.random() * 100000) + 50000,
+      id: data.manga.id.toString(),
+      title: data.manga.title,
+      alternativeTitles: data.manga.alternative_titles ?
+        Object.values(data.manga.alternative_titles as Record<string, string>) : [],
+      coverImage: data.manga.cover_image_url || 'https://placehold.co/300x450/png',
+      slug: data.manga.slug,
+      author: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', ') || 'Unknown',
+      artist: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', ') || 'Unknown',
+      description: data.manga.description || 'No description available.',
+      genres: data.manga.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
+      status: data.manga.status || 'Unknown',
+      rating: 8.5, // Placeholder as it's not in the API
+      views: data.manga.total_views || 0,
+      favorites: data.manga.total_favorites || 0,
+      chapterCount: 0, // Will be updated when we fetch chapters
+      updatedAt: data.manga.last_chapter_uploaded_at ?
+        formatDate(data.manga.last_chapter_uploaded_at) : 'Unknown',
+      publishedYear: data.manga.release_date ?
+        new Date(data.manga.release_date).getFullYear() : 'Unknown',
+      serialization: data.manga.Comic_Publishers?.map((cp: any) => cp.Publishers.name).join(', ') || 'Unknown',
     };
-  });
-};
+  } catch (error) {
+    console.error('Error fetching manga:', error);
+    return null;
+  }
+}
 
-// Mock data for related manga
-const getRelatedManga = (mangaId: string) => {
-  // This would be replaced with an actual API call in a real application
-  return [
-    {
-      id: "2",
-      title: "Jujutsu Kaisen",
-      coverImage: "https://cdn.myanimelist.net/images/manga/3/216464.jpg",
-      slug: "jujutsu-kaisen",
-      latestChapter: "Chapter 253",
-      genres: ["Action", "Supernatural", "Horror"],
-      rating: 8.7,
-      views: 980000,
-      chapterCount: 253,
-      updatedAt: "2 days ago",
-      status: "Ongoing",
-    },
-    {
-      id: "3",
-      title: "Demon Slayer",
-      coverImage: "https://cdn.myanimelist.net/images/manga/3/179023.jpg",
-      slug: "demon-slayer",
-      latestChapter: "Chapter 205",
-      genres: ["Action", "Supernatural"],
-      rating: 8.5,
-      views: 920000,
-      chapterCount: 205,
-      updatedAt: "Completed",
-      status: "Completed",
-    },
-    {
-      id: "4",
-      title: "My Hero Academia",
-      coverImage: "https://cdn.myanimelist.net/images/manga/1/209370.jpg",
-      slug: "my-hero-academia",
-      latestChapter: "Chapter 420",
-      genres: ["Action", "Superhero"],
-      rating: 8.3,
-      views: 850000,
-      chapterCount: 420,
-      updatedAt: "1 day ago",
-      status: "Ongoing",
-    },
-    {
-      id: "5",
-      title: "Naruto",
-      coverImage: "https://cdn.myanimelist.net/images/manga/3/117681.jpg",
-      slug: "naruto",
-      latestChapter: "Chapter 700",
-      genres: ["Action", "Adventure", "Fantasy"],
-      rating: 8.1,
-      views: 1100000,
-      chapterCount: 700,
-      updatedAt: "Completed",
-      status: "Completed",
-    },
-    {
-      id: "6",
-      title: "Dragon Ball",
-      coverImage: "https://cdn.myanimelist.net/images/manga/3/117681.jpg",
-      slug: "dragon-ball",
-      latestChapter: "Chapter 519",
-      genres: ["Action", "Adventure", "Comedy"],
-      rating: 8.4,
-      views: 980000,
-      chapterCount: 519,
-      updatedAt: "Completed",
-      status: "Completed",
-    },
-  ];
-};
+// Fetch chapters from API
+async function getChapters(slug: string) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${slug}/chapters`, {
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch chapters');
+    }
+
+    const data = await res.json();
+
+    // Transform API data to match our component needs
+    return data.chapters.map((chapter: any) => ({
+      id: chapter.id.toString(),
+      number: parseFloat(chapter.chapter_number),
+      title: chapter.title || `Chapter ${chapter.chapter_number}`,
+      slug: chapter.slug,
+      releaseDate: chapter.release_date,
+      views: chapter.view_count || 0,
+    }));
+  } catch (error) {
+    console.error('Error fetching chapters:', error);
+    return [];
+  }
+}
+
+// Fetch related manga from API
+async function getRelatedManga(slug: string, genres: string[]) {
+  try {
+    // Use the first genre to find related manga
+    const genre = genres.length > 0 ? genres[0].toLowerCase() : '';
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?genre=${genre}&limit=5`, {
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch related manga');
+    }
+
+    const data = await res.json();
+
+    // Filter out the current manga and transform data
+    return data.comics
+      .filter((comic: any) => comic.slug !== slug)
+      .slice(0, 5)
+      .map((comic: any) => ({
+        id: comic.id.toString(),
+        title: comic.title,
+        coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
+        slug: comic.slug,
+        latestChapter: `Chapter ${comic.Chapters?.[0]?.chapter_number || '?'}`,
+        genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
+        rating: 8.5, // Placeholder
+        views: comic.total_views || 0,
+        chapterCount: comic.Chapters?.length || 0,
+        updatedAt: comic.last_chapter_uploaded_at ?
+          formatDate(comic.last_chapter_uploaded_at) : 'Recently',
+        status: comic.status || 'Ongoing',
+      }));
+  } catch (error) {
+    console.error('Error fetching related manga:', error);
+    return [];
+  }
+}
 
 // Generate metadata for the page
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const manga = getMangaBySlug(slug);
+  const { slug } = params;
+  const manga = await getMangaBySlug(slug);
+
+  if (!manga) {
+    return {
+      title: 'Manga Not Found',
+      description: 'The requested manga could not be found.'
+    };
+  }
 
   return {
     title: `${manga.title} - Read Manga Online`,
@@ -152,12 +187,21 @@ export async function generateMetadata({
 export default async function MangaDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
-  const manga = getMangaBySlug(slug);
-  const chapters = getChapters(manga.id);
-  const relatedManga = getRelatedManga(manga.id);
+  const { slug } = params;
+  const manga = await getMangaBySlug(slug);
+
+  if (!manga) {
+    notFound();
+  }
+
+  // Fetch chapters and update manga's chapterCount
+  const chapters = await getChapters(slug);
+  manga.chapterCount = chapters.length;
+
+  // Fetch related manga based on the first genre
+  const relatedManga = await getRelatedManga(slug, manga.genres);
 
   // Format view count (e.g., 1200000 -> 1.2M)
   const formatViews = (count: number) => {
@@ -268,7 +312,7 @@ export default async function MangaDetailPage({
 
         </div>
       </section>
-      
+
       {/* Description here */}
       <Description description={manga.description} />
 
