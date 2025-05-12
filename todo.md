@@ -37,7 +37,7 @@ This document outlines the tasks required to build a high-performance manga read
   - [x] Featured manga section
   - [x] Latest updates section
   - [x] Popular manga section
-  - [ ] Genre-based sections
+  - [x] Genre in navbar
 - [x] Implement Manga List Page
   - [x] Grid/list view of manga
   - [x] Filtering and sorting functionality
@@ -55,6 +55,10 @@ This document outlines the tasks required to build a high-performance manga read
 - [ ] Implement Search Page
   - [ ] Search results display
   - [ ] Advanced filtering options
+- [x] Implement Genre Page
+  - [x] Display manga of a specific genre
+  - [x] Pagination
+  - [x] Sorting options
 
 ### Responsive Design
 - [ ] Implement mobile-first approach
@@ -63,7 +67,7 @@ This document outlines the tasks required to build a high-performance manga read
 
 ## Phase 3: Backend Development (API Routes)
 - [x] Design database schema
-  - [ ] Please check [db.md](db.md)
+  - [x] Please check [db.md](db.md)
 - [x] Choose and set up database
   - [x] Options: PostgreSQL, MySQL, MongoDB, or Firebase/Supabase -> Use PostgreSQL. the database is 'manga-next', no pass.
 - [x] Create API routes in Next.js:

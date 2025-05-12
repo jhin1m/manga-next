@@ -112,12 +112,22 @@ export default async function MangaPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  // Extract search parameters
-  const sort = typeof searchParams.sort === 'string' ? searchParams.sort : 'latest';
-  const status = typeof searchParams.status === 'string' ? searchParams.status : undefined;
-  const genre = typeof searchParams.genre === 'string' ? searchParams.genre : undefined;
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page, 10) : 1;
-  const limit = 20; // Number of manga per page
+  // Extract search parameters safely - await them in Next.js 15
+  const params = await searchParams;
+  
+  const sortParam = params['sort'];
+  const sort = typeof sortParam === 'string' ? sortParam : 'latest';
+
+  const statusParam = params['status'];
+  const status = typeof statusParam === 'string' ? statusParam : undefined;
+
+  const genreParam = params['genre'];
+  const genre = typeof genreParam === 'string' ? genreParam : undefined;
+
+  const pageParam = params['page'];
+  const page = typeof pageParam === 'string' ? parseInt(pageParam, 10) : 1;
+
+  const limit = 10; // Number of manga per page
 
   // Fetch manga with filters
   const results = await fetchManga({ sort, status, genre, page, limit });
@@ -131,15 +141,40 @@ export default async function MangaPage({
   if (status === 'completed') pageTitle = 'Completed Manga';
   if (genre) pageTitle = `${genre.charAt(0).toUpperCase() + genre.slice(1)} Manga`;
 
-  // Build the base URL for pagination
-  const buildPageUrl = (pageNum: number) => {
-    const url = new URLSearchParams();
-    if (sort && sort !== 'latest') url.append('sort', sort);
-    if (status) url.append('status', status);
-    if (genre) url.append('genre', genre);
-    url.append('page', pageNum.toString());
-    return `/manga?${url.toString()}`;
-  };
+  // Define manga item type
+  interface MangaItem {
+    id: string;
+    title: string;
+    coverImage: string;
+    slug: string;
+    latestChapter?: string;
+    genres?: string[];
+    rating?: number;
+    views?: number;
+    chapterCount?: number;
+    updatedAt?: string;
+    status?: string;
+  }
+
+  // Helper function to build query string
+  function buildQueryString(sort: string, status?: string, genre?: string): string {
+    const params = new URLSearchParams();
+
+    if (sort && sort !== 'latest') {
+      params.append('sort', sort);
+    }
+
+    if (status) {
+      params.append('status', status);
+    }
+
+    if (genre) {
+      params.append('genre', genre);
+    }
+
+    const queryString = params.toString();
+    return queryString ? `?${queryString}` : '';
+  }
 
   return (
     <div className="container mx-auto py-8">
@@ -152,23 +187,17 @@ export default async function MangaPage({
       {manga.length > 0 ? (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
-            {manga.map((item) => (
+            {manga.map((item: MangaItem) => (
               <MangaCard key={item.id} {...item} />
             ))}
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <PaginationWrapper
-              currentPage={currentPage}
-              totalPages={totalPages}
-              baseUrl={`/manga?${new URLSearchParams({
-                ...(sort && sort !== 'latest' ? { sort } : {}),
-                ...(status ? { status } : {}),
-                ...(genre ? { genre } : {})
-              }).toString()}`}
-            />
-          )}
+          <PaginationWrapper
+            currentPage={currentPage}
+            totalPages={totalPages}
+            baseUrl={`/manga${buildQueryString(sort, status, genre)}`}
+          />
         </>
       ) : (
         <div className="text-center py-12">
