@@ -38,7 +38,7 @@ async function getChapterData(slug: string, chapterId: string) {
 
     const chapterData = await chapterRes.json();
 
-    // Transform API data to match our component needs
+    // Chuyển đổi dữ liệu API để phù hợp với các component
     return {
       manga: {
         id: chapterData.chapter.Comics.id.toString(),
@@ -56,6 +56,12 @@ async function getChapterData(slug: string, chapterId: string) {
         nextChapter: chapterData.nextChapter ? chapterData.nextChapter.id.toString() : null,
         totalChapters: chaptersData.totalChapters,
       },
+      // Thêm danh sách các chương để hiển thị trong dropdown
+      chapters: chaptersData.chapters.map((ch: any) => ({
+        id: ch.id.toString(),
+        number: parseFloat(ch.chapter_number),
+        title: ch.title || `Chapter ${ch.chapter_number}`,
+      })),
     };
   } catch (error) {
     console.error('Error fetching chapter data:', error);
