@@ -5,6 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import Script from "next/script";
+import { generateHomeJsonLd } from "@/lib/seo/jsonld";
+import { constructMetadata } from "@/lib/seo/metadata";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,10 +19,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Dokinaw - 無料漫画サイト",
-  description: "無料で漫画が読めるサイト。人気漫画から名作漫画まで幅広く揃えています。",
-};
+export const metadata: Metadata = constructMetadata();
 
 export default function RootLayout({
   children,
@@ -43,6 +43,11 @@ export default function RootLayout({
           </main>
           <Footer />
           <Toaster />
+          <Script
+            id="schema-org"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: generateHomeJsonLd() }}
+          />
         </ThemeProvider>
       </body>
     </html>

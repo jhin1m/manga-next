@@ -2,32 +2,12 @@ import { Metadata } from 'next';
 import FilterSortBar from '@/components/feature/FilterSortBar';
 import MangaCard from '@/components/feature/MangaCard';
 import PaginationWrapper from '@/components/feature/PaginationWrapper';
+import { constructMetadata } from '@/lib/seo/metadata';
+import JsonLdScript from '@/components/seo/JsonLdScript';
+import { generateMangaListJsonLd } from '@/lib/seo/jsonld';
+import { formatDate } from '@/lib/utils/format';
 
-// Helper function to format date
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    if (diffHours === 0) {
-      const diffMinutes = Math.floor(diffTime / (1000 * 60));
-      return `${diffMinutes} minutes ago`;
-    }
-    return `${diffHours} hours ago`;
-  } else if (diffDays === 1) {
-    return 'Yesterday';
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const diffWeeks = Math.floor(diffDays / 7);
-    return `${diffWeeks} ${diffWeeks === 1 ? 'week' : 'weeks'} ago`;
-  } else {
-    return date.toLocaleDateString();
-  }
-}
+// Sử dụng hàm formatDate từ thư viện utils
 
 // Fetch manga from API
 async function fetchManga(params: {
@@ -83,7 +63,10 @@ async function fetchManga(params: {
         slug: comic.slug,
         latestChapter: comic.Chapters && comic.Chapters.length > 0
           ? `Chapter ${comic.Chapters[0].chapter_number}`
-          : 'No chapters yet',
+          : 'Updating',
+        latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
+          ? comic.Chapters[0].slug
+          : '',
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
         rating: 8.5, // Placeholder as it's not in the API
         views: comic.total_views || 0,
@@ -102,10 +85,11 @@ async function fetchManga(params: {
   }
 }
 
-export const metadata: Metadata = {
+export const metadata: Metadata = constructMetadata({
   title: 'Latest Manga - Dokinaw',
-  description: 'Browse the latest manga updates on Dokinaw.',
-};
+  description: 'Browse the latest manga updates on Dokinaw. Find your favorite manga series and read them online for free.',
+  keywords: ['manga list', 'latest manga', 'read manga online', 'free manga', 'manga updates', 'dokinaw'],
+});
 
 export default async function MangaPage({
   searchParams,
@@ -176,8 +160,12 @@ export default async function MangaPage({
     return queryString ? `?${queryString}` : '';
   }
 
+  // Tạo JSON-LD cho trang danh sách manga
+  const jsonLd = generateMangaListJsonLd();
+
   return (
     <div className="container mx-auto py-8">
+      <JsonLdScript id="manga-list-jsonld" jsonLd={jsonLd} />
       <h1 className="text-2xl font-bold mb-6">{pageTitle}</h1>
 
       <div className="mb-6">
@@ -188,7 +176,7 @@ export default async function MangaPage({
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
             {manga.map((item: MangaItem) => (
-              <MangaCard key={item.id} {...item} />
+              <MangaCard key={item.id} {...item as any} />
             ))}
           </div>
 

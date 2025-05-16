@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import MangaCard from "@/components/feature/MangaCard";
 import FilterSortBar from "@/components/feature/FilterSortBar";
 import PaginationWrapper from "@/components/feature/PaginationWrapper";
+import { constructMetadata } from "@/lib/seo/metadata";
+import JsonLdScript from "@/components/seo/JsonLdScript";
+import { generateGenreJsonLd } from "@/lib/seo/jsonld";
 
 type Props = {
   params: { slug: string };
@@ -27,22 +30,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const genre = data.genres.find((g: any) => g.slug === slug);
 
     if (!genre) {
-      return {
+      return constructMetadata({
         title: 'Genre Not Found',
-        description: 'The requested genre could not be found.'
-      };
+        description: 'The requested genre could not be found.',
+        noIndex: true
+      });
     }
 
-    return {
-      title: `${genre.name} Manga | Manga Reader`,
-      description: genre.description || `Browse ${genre.name} manga - Find the best ${genre.name} manga series.`
-    };
+    return constructMetadata({
+      title: `${genre.name} Manga | Dokinaw`,
+      description: genre.description || `Browse ${genre.name} manga - Find the best ${genre.name} manga series on Dokinaw. Read ${genre.name} manga online for free.`,
+      keywords: [
+        `${genre.name} manga`, 
+        `read ${genre.name} manga`, 
+        `${genre.name} comics`, 
+        'free manga', 
+        'online manga', 
+        'dokinaw'
+      ],
+    });
   } catch (error) {
     console.error('Error generating metadata:', error);
-    return {
-      title: 'Manga by Genre | Manga Reader',
-      description: 'Browse manga by genre.'
-    };
+    return constructMetadata({
+      title: 'Manga by Genre | Dokinaw',
+      description: 'Browse manga by genre on Dokinaw. Find and read your favorite manga series by genre.',
+      keywords: ['manga genres', 'manga categories', 'manga by genre', 'read manga online', 'dokinaw']
+    });
   }
 }
 
@@ -158,8 +171,12 @@ export default async function GenrePage({ params, searchParams }: Props) {
   const totalPages = results.totalPages;
   const currentPage = results.currentPage;
 
+  // Tạo JSON-LD cho trang thể loại
+  const jsonLd = generateGenreJsonLd(genre.name);
+
   return (
     <div className="container mx-auto py-8">
+      <JsonLdScript id="genre-jsonld" jsonLd={jsonLd} />
       <h1 className="text-2xl font-bold mb-2">{genre.name} Manga</h1>
       {genre.description && (
         <p className="text-muted-foreground mb-6">{genre.description}</p>

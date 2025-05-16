@@ -10,6 +10,9 @@ import RelatedManga from "@/components/manga/RelatedManga";
 import Description from "@/components/manga/Description";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { constructMangaMetadata } from "@/lib/seo/metadata";
+import JsonLdScript from "@/components/seo/JsonLdScript";
+import { generateMangaJsonLd } from "@/lib/seo/jsonld";
 
 // Helper function to format date
 function formatDate(dateString: string) {
@@ -162,26 +165,25 @@ export async function generateMetadata({
   if (!manga) {
     return {
       title: 'Manga Not Found',
-      description: 'The requested manga could not be found.'
+      description: 'The requested manga could not be found.',
+      robots: { index: false, follow: false }
     };
   }
 
-  return {
-    title: `${manga.title} - Read Manga Online`,
-    description: manga.description.substring(0, 160) + "...",
-    openGraph: {
-      title: manga.title,
-      description: manga.description.substring(0, 160) + "...",
-      images: [
-        {
-          url: manga.coverImage,
-          width: 800,
-          height: 1200,
-          alt: manga.title,
-        },
-      ],
-    },
-  };
+  // Sử dụng utility function để tạo metadata chuẩn SEO
+  return constructMangaMetadata({
+    title: manga.title,
+    description: manga.description,
+    image: manga.coverImage,
+    keywords: [
+      manga.title,
+      ...manga.alternativeTitles || [],
+      ...manga.genres,
+      manga.author,
+      'manga', 'read online', 'free manga'
+    ],
+    type: 'article'
+  });
 }
 
 export default async function MangaDetailPage({
@@ -213,8 +215,21 @@ export default async function MangaDetailPage({
     return count.toString();
   };
 
+  // Tạo JSON-LD cho trang manga
+  const jsonLd = generateMangaJsonLd({
+    title: manga.title,
+    description: manga.description,
+    coverImage: manga.coverImage,
+    author: manga.author,
+    slug: manga.slug,
+    genres: manga.genres,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+
   return (
     <div className="space-y-8">
+      <JsonLdScript id="manga-jsonld" jsonLd={jsonLd} />
       {/* Manga Information Section */}
       <section className="grid grid-cols-1 md:grid-cols-4 gap-14">
         {/* Cover Image */}
@@ -240,7 +255,7 @@ export default async function MangaDetailPage({
           )}
 
           <div className="flex flex-wrap gap-2">
-            {manga.genres.map((genre) => (
+            {manga.genres.map((genre: string) => (
               <Badge key={genre} variant="secondary">
                 {genre}
               </Badge>

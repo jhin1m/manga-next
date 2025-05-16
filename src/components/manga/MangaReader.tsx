@@ -168,7 +168,7 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
           // Vertical scrolling mode
           <div className="flex flex-col items-center gap-1">
             {chapterData.chapter.images.map((image, index) => (
-              <div key={index} className="w-full max-w-3xl mx-auto">
+              <div key={index} className="w-full max-w-5xl mx-auto">
                 <Image
                   src={image}
                   alt={`Page ${index + 1}`}

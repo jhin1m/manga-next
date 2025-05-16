@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MangaReader from "@/components/manga/MangaReader";
+import { constructChapterMetadata } from "@/lib/seo/metadata";
+import JsonLdScript from "@/components/seo/JsonLdScript";
+import { generateChapterJsonLd } from "@/lib/seo/jsonld";
 
 // Function to get chapter data from API
 async function getChapterData(slug: string, chapterId: string) {
@@ -72,13 +75,24 @@ export async function generateMetadata({
   if (!chapterData) {
     return {
       title: "Chapter Not Found",
+      robots: { index: false, follow: false }
     };
   }
 
-  return {
-    title: `${chapterData.chapter.title} - ${chapterData.manga.title}`,
-    description: `Read ${chapterData.manga.title} ${chapterData.chapter.title} online for free.`,
-  };
+  // Sử dụng utility function để tạo metadata chuẩn SEO
+  return constructChapterMetadata(
+    {
+      title: chapterData.manga.title,
+      description: `Read ${chapterData.manga.title} manga online for free on Dokinaw.`,
+      coverImage: chapterData.chapter.images[0] || '',
+      genres: [],
+    },
+    {
+      number: chapterData.chapter.number,
+      title: chapterData.chapter.title,
+      coverImage: chapterData.chapter.images[0] || '',
+    }
+  );
 }
 
 export default async function ChapterPage({
@@ -93,5 +107,27 @@ export default async function ChapterPage({
     notFound();
   }
 
-  return <MangaReader chapterData={chapterData} />;
+  // Tạo JSON-LD cho trang chapter
+  const jsonLd = generateChapterJsonLd(
+    {
+      title: chapterData.manga.title,
+      slug: chapterData.manga.slug,
+      coverImage: chapterData.chapter.images[0] || '',
+    },
+    {
+      number: chapterData.chapter.number,
+      title: chapterData.chapter.title,
+      coverImage: chapterData.chapter.images[0] || '',
+      pageCount: chapterData.chapter.images.length,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+  );
+
+  return (
+    <>
+      <JsonLdScript id="chapter-jsonld" jsonLd={jsonLd} />
+      <MangaReader chapterData={chapterData} />
+    </>
+  );
 }

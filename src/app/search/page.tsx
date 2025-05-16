@@ -55,7 +55,10 @@ async function fetchSearchResults(query: string, page: number = 1, limit: number
         slug: comic.slug,
         latestChapter: comic.Chapters && comic.Chapters.length > 0
           ? `Chapter ${comic.Chapters[0].chapter_number}`
-          : 'No chapters yet',
+          : 'Updating',
+        latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
+          ? comic.Chapters[0].slug
+          : '',
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
         rating: 8.5, // Placeholder as it's not in the API
         views: comic.total_views || 0,

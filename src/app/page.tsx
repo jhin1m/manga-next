@@ -1,15 +1,19 @@
+import { Metadata } from "next";
+import { constructMetadata } from "@/lib/seo/metadata";
+import JsonLdScript from "@/components/seo/JsonLdScript";
+import { generateHomeJsonLd } from "@/lib/seo/jsonld";
+import HotMangaSlider from "@/components/feature/HotMangaSlider";
+import LatestUpdateMangaList from "@/components/feature/LatestUpdateMangaList";
+import Sidebar from "@/components/feature/Sidebar";
 import Link from "next/link";
-import MangaCard from "@/components/feature/MangaCard";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Fetch manga data from API
-async function fetchMangaData(sort: string = 'latest', limit: number = 12) {
+async function fetchMangaData(sort: string = 'latest', limit: number = 12, page: number = 1) {
   try {
     const sortParam = sort === 'latest' ? 'latest' :
                       sort === 'popular' ? 'popular' : 'alphabetical';
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=${sortParam}&limit=${limit}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=${sortParam}&limit=${limit}&page=${page}`, {
       next: { revalidate: 3600 } // Revalidate every hour
     });
 
@@ -18,24 +22,31 @@ async function fetchMangaData(sort: string = 'latest', limit: number = 12) {
     }
 
     const data = await res.json();
-    return data.comics.map((comic: any) => ({
-      id: comic.id.toString(),
-      title: comic.title,
-      coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
-      slug: comic.slug,
-      latestChapter: comic.Chapters && comic.Chapters.length > 0
-        ? `Chapter ${comic.Chapters[0].chapter_number}`
-        : 'No chapters yet',
-      genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
-      rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
-      views: comic.total_views || 0,
-      chapterCount: comic._chapterCount || 0,
-      updatedAt: comic.last_chapter_uploaded_at ? formatDate(comic.last_chapter_uploaded_at) : 'Recently',
-      status: comic.status || 'Ongoing',
-    }));
+    return {
+      manga: data.comics.map((comic: any) => ({
+        id: comic.id.toString(),
+        title: comic.title,
+        coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
+        slug: comic.slug,
+        latestChapter: comic.Chapters && comic.Chapters.length > 0
+          ? `Chapter ${comic.Chapters[0].chapter_number}`
+          : 'Updating',
+        latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
+          ? comic.Chapters[0].slug
+          : '',
+        genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
+        rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
+        views: comic.total_views || 0,
+        chapterCount: comic._chapterCount || 0,
+        updatedAt: comic.last_chapter_uploaded_at ? formatDate(comic.last_chapter_uploaded_at) : 'Recently',
+        status: comic.status || 'Ongoing',
+      })),
+      totalPages: Math.ceil(data.total / limit) || 1,
+      currentPage: page,
+    };
   } catch (error) {
     console.error('Error fetching manga data:', error);
-    return [];
+    return { manga: [], totalPages: 1, currentPage: 1 };
   }
 }
 
@@ -66,102 +77,55 @@ function formatDate(dateString: string) {
 }
 
 
-// MangaGrid component for displaying manga with loading state
-function MangaGrid({ manga }: { manga: any[] }) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-      {manga.length > 0 ? (
-        manga.map((item) => (
-          <MangaCard key={item.id} {...item} />
-        ))
-      ) : (
-        // Loading state
-        Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className="flex flex-col gap-2">
-            <div className="animate-pulse bg-muted aspect-[2/3] w-full h-auto rounded-md" />
-            <div className="animate-pulse bg-muted h-4 w-full rounded-md" />
-            <div className="animate-pulse bg-muted h-3 w-2/3 rounded-md" />
-          </div>
-        ))
-      )}
-    </div>
-  );
-}
+// Tạo metadata cho trang chủ
+export const metadata: Metadata = constructMetadata({
+  title: 'Dokinaw - 無料漫画サイト',
+  description: '無料で漫画が読めるサイト。人気漫画から名作漫画まで幅広く揃えています。最新の漫画を無料で読むことができます。',
+  keywords: ['manga', 'read manga online', 'free manga', 'latest manga', 'popular manga', 'completed manga', 'dokinaw'],
+});
 
-export default async function Home() {
-  // Fetch manga data for different tabs
-  const latestManga = await fetchMangaData('latest', 12);
-  const popularManga = await fetchMangaData('popular', 12);
+export default async function Home({ 
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
+  // Get the current page from the URL query parameters
+  const params = await searchParams;
+  const currentPage = Number(params.page) || 1;
+  
+  // Tạo JSON-LD cho trang chủ
+  const jsonLd = generateHomeJsonLd();
 
-  // Filter completed manga
-  const completedManga = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?status=completed&limit=12`, {
-    next: { revalidate: 3600 }
-  })
-    .then(res => res.ok ? res.json() : { comics: [] })
-    .then(data => data.comics?.map((comic: any) => ({
-      id: comic.id.toString(),
-      title: comic.title,
-      coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
-      slug: comic.slug,
-      latestChapter: comic.Chapters && comic.Chapters.length > 0
-        ? `Chapter ${comic.Chapters[0].chapter_number}`
-        : 'No chapters yet',
-      genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
-      rating: comic.rating || Math.floor(Math.random() * 2) + 8,
-      views: comic.total_views || 0,
-      chapterCount: comic._chapterCount || 0,
-      updatedAt: comic.last_chapter_uploaded_at ? formatDate(comic.last_chapter_uploaded_at) : 'Completed',
-      status: comic.status || 'Completed',
-    })))
-    .catch(error => {
-      console.error('Error fetching completed manga:', error);
-      return [];
-    });
+  // Fetch data for the latest manga with pagination
+  const { manga, totalPages } = await fetchMangaData('latest', 12, currentPage);
 
   return (
-    <div className="space-y-8">
-      {/* Main Grid Layout */}
-      <section>
-        <Tabs defaultValue="latest" className="w-full">
-          <div className="flex justify-between items-center mb-4">
-            <TabsList className="bg-background border border-border/40">
-              <TabsTrigger value="latest">Latest</TabsTrigger>
-              <TabsTrigger value="popular">Popular</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-            </TabsList>
-            <Button variant="outline" size="sm" asChild className="text-xs">
-              <Link href="/manga">View More</Link>
-            </Button>
+    <div className="container mx-auto py-8 space-y-8">
+      <JsonLdScript id="home-jsonld" jsonLd={jsonLd} />
+      
+      {/* Hot Manga Slider */}
+      <HotMangaSlider />
+      
+      {/* Main Content + Sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mt-8">
+        {/* Main Content */}
+        <section className="space-y-6">
+          {/* Latest Update Manga List */}
+          <LatestUpdateMangaList page={currentPage} limit={12} />
+          
+          {/* View More Button */}
+          <div className="flex justify-center mt-8">
+            <Link href="/manga?page=2" className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-md text-center transition-colors duration-200">
+              View more manga
+            </Link>
           </div>
-
-          <TabsContent value="latest" className="mt-0">
-            <MangaGrid manga={latestManga} />
-            <div className="mt-6">
-              <Link href="/manga?sort=latest" className="text-sm text-primary hover:underline">
-                View All Latest Manga →
-              </Link>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="popular" className="mt-0">
-            <MangaGrid manga={popularManga} />
-            <div className="mt-6">
-              <Link href="/manga?sort=popular" className="text-sm text-primary hover:underline">
-                View All Popular Manga →
-              </Link>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="completed" className="mt-0">
-            <MangaGrid manga={completedManga} />
-            <div className="mt-6">
-              <Link href="/manga?status=completed" className="text-sm text-primary hover:underline">
-                View All Completed Manga →
-              </Link>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </section>
+        </section>
+        
+        {/* Sidebar */}
+        <aside className="space-y-6 hidden lg:block">
+          <Sidebar />
+        </aside>
+      </div>
     </div>
   );
 }
