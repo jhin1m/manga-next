@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import MangaCard from './MangaCard';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type HotManga = {
   id: string;
@@ -116,8 +117,50 @@ function ClientSlider() {
 
   if (loading) {
     return (
-      <div className="w-full h-[300px] bg-muted rounded-lg animate-pulse flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="w-full">
+        <div 
+          className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {Array.from({ length: 10 }).map((_, index) => (
+            <div 
+              key={index} 
+              className="snap-start flex-shrink-0 w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] lg:w-[calc(20%-16px)]"
+            >
+              <div className="flex flex-col h-full rounded-lg overflow-hidden border bg-card shadow-sm">
+                {/* Cover image skeleton with status position */}
+                <div className="relative">
+                  <Skeleton className="w-full h-[280px]" />
+                  {/* Status position */}
+                  <div className="absolute top-2 left-2">
+                    <Skeleton className="w-16 h-5 rounded-full" />
+                  </div>
+                  {/* Chapter count position */}
+                  <div className="absolute bottom-2 right-2">
+                    <Skeleton className="w-12 h-5 rounded-full" />
+                  </div>
+                </div>
+                
+                {/* Content area */}
+                <div className="p-3 flex flex-col gap-2">
+                  {/* Title skeleton */}
+                  <Skeleton className="w-full h-5" />
+                  
+                  {/* Rating and views skeleton */}
+                  <div className="flex justify-between mt-1">
+                    <Skeleton className="w-16 h-4" />
+                    <Skeleton className="w-16 h-4" />
+                  </div>
+                  
+                  {/* Chapter skeleton */}
+                  <div className="mt-auto pt-2">
+                    <Skeleton className="w-24 h-5" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

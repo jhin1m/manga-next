@@ -310,12 +310,12 @@ export default async function MangaDetailPage({
 
           <div className="flex flex-wrap gap-3">
             <Button asChild>
-              <Link href={`/manga/${manga.slug}/chapter-1`}>
+              <Link href={`/manga/${manga.slug}/${chapters.length > 0 ? chapters[chapters.length - 1].slug : '#'}`}>
                 Read First Chapter
               </Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link href={`/manga/${manga.slug}/chapter-${manga.chapterCount}`}>
+              <Link href={`/manga/${manga.slug}/${chapters.length > 0 ? chapters[0].slug : '#'}`}>
                 Read Latest Chapter
               </Link>
             </Button>
