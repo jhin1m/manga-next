@@ -80,8 +80,15 @@ function ClientSlider() {
     const fetchHotManga = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=popular&limit=10`, {
-          cache: 'force-cache' // Use cache to prevent multiple fetches
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+        if (!apiUrl) {
+          throw new Error('API URL is not configured');
+        }
+        
+        const timestamp = new Date().getTime();
+        const res = await fetch(`${apiUrl}/api/manga?sort=popular&limit=10&_t=${timestamp}`, {
+          cache: 'default', // Allow caching
+          next: { revalidate: 24 * 60 * 60 } // Ensure fresh data for 24 hours
         });
 
         if (!res.ok) {
