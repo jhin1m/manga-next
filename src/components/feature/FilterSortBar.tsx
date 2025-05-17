@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
@@ -62,7 +61,6 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
   // Get current filter values from URL
   const currentSort = searchParams.get('sort') || 'latest';
   const currentStatus = searchParams.get('status') || 'all';
-  const currentGenre = searchParams.get('genre') || '';
   const currentGenres = searchParams.get('genres')?.split(',').filter(Boolean) || [];
 
   // Local state for filter values

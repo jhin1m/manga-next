@@ -1,4 +1,4 @@
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import MangaCard from '@/components/feature/MangaCard';
 import SearchBar from '@/components/feature/SearchBar';
 import PaginationWrapper from '@/components/feature/PaginationWrapper';
@@ -82,8 +82,7 @@ type Props = {
 }
 
 export async function generateMetadata(
-  { searchParams }: Props,
-  parent: ResolvingMetadata
+  { searchParams }: Props
 ): Promise<Metadata> {
   const query = typeof searchParams.q === 'string' ? searchParams.q : '';
 
@@ -143,7 +142,7 @@ export default async function SearchPage({ searchParams }: Props) {
         <div className="text-center py-12">
           {query ? (
             <p className="text-muted-foreground">
-              No results found for "{query}". Try a different search term.
+              No results found for &quot;{query}&quot;. Try a different search term.
             </p>
           ) : (
             <p className="text-muted-foreground">

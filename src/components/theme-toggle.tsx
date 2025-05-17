@@ -14,7 +14,7 @@ import {
 
 export function ThemeToggle() {
   const [mounted, setMounted] = React.useState(false)
-  const { theme, setTheme } = useTheme()
+  const { setTheme } = useTheme()
 
   // After mounting, we have access to the theme
   React.useEffect(() => {

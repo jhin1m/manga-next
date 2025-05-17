@@ -97,7 +97,7 @@ export default async function Home({
   const jsonLd = generateHomeJsonLd();
 
   // Fetch data for the latest manga with pagination
-  const { manga, totalPages } = await fetchMangaData('latest', 12, currentPage);
+  await fetchMangaData('latest', 12, currentPage);
 
   return (
     <div className="container mx-auto py-8 space-y-8">

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import MangaCard from './MangaCard';
 import { Skeleton } from '@/components/ui/skeleton';
 

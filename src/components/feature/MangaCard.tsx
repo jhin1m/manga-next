@@ -2,8 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Star, Eye } from 'lucide-react';
 import { formatViews } from '@/lib/utils/format';
 
@@ -23,13 +22,11 @@ interface MangaCardProps {
 }
 
 export default function MangaCard({
-  id,
   title,
   coverImage,
   slug,
   latestChapter,
   latestChapterSlug,
-  genres = [],
   rating = 0,
   views = 0,
   chapterCount = 0,

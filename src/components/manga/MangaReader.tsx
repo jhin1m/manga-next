@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
@@ -10,7 +10,6 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import ReaderNavigation from './ReaderNavigation';
-import { cn } from '@/lib/utils';
 
 interface MangaReaderProps {
   chapterData: {
@@ -42,7 +41,7 @@ interface MangaReaderProps {
 
 export default function MangaReader({ chapterData }: MangaReaderProps) {
   // State for reader settings
-  const [brightness, setBrightness] = useLocalStorage('manga-brightness', 100);
+  const [brightness] = useLocalStorage('manga-brightness', 100);
   const [isFollowing, setIsFollowing] = useState(false);
   
   // Xử lý theo dõi truyện

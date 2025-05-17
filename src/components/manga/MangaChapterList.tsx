@@ -148,7 +148,7 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
             ))
           ) : (
             <div className="col-span-2 md:col-span-4 text-center py-4 text-muted-foreground">
-              No chapters found matching "{searchTerm}"
+              No chapters found matching &quot;{searchTerm}&quot;
             </div>
           )}
         </div>

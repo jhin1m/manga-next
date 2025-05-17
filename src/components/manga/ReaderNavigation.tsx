@@ -28,7 +28,6 @@ interface ReaderNavigationProps {
 }
 
 export default function ReaderNavigation({
-  mangaTitle,
   mangaSlug,
   currentChapterId,
   prevChapter,

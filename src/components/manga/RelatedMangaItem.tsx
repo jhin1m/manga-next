@@ -14,7 +14,6 @@ interface RelatedMangaItemProps {
 }
 
 export default function RelatedMangaItem({
-  id,
   title,
   coverImage,
   slug,

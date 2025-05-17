@@ -1,6 +1,8 @@
 import MangaCard from '@/components/feature/MangaCard';
 import { formatDate } from '@/lib/utils/format';
 
+// Define manga type for this component
+
 type Manga = {
   id: string;
   title: string;
@@ -76,7 +78,7 @@ export default async function LatestUpdateMangaList({
 
       {manga.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {manga.map((item) => (
+          {manga.map((item: Manga) => (
             <MangaCard key={item.id} {...item} />
           ))}
         </div>
