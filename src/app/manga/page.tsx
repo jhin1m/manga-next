@@ -43,8 +43,7 @@ async function fetchManga(params: {
 
     // Fetch data from API
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?${queryParams.toString()}`,
-      { next: { revalidate: 60 } } // Cache results for 1 minute
+      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?${queryParams.toString()}`
     );
 
     if (!res.ok) {

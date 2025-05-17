@@ -85,10 +85,7 @@ function ClientSlider() {
         }
         
         const timestamp = new Date().getTime();
-        const res = await fetch(`${apiUrl}/api/manga?sort=popular&limit=10&_t=${timestamp}`, {
-          cache: 'default', // Allow caching
-          next: { revalidate: 24 * 60 * 60 } // Ensure fresh data for 24 hours
-        });
+        const res = await fetch(`${apiUrl}/api/manga?sort=popular&limit=10&_t=${timestamp}`);
 
         if (!res.ok) {
           throw new Error('Failed to fetch hot manga data');

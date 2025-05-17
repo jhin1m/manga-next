@@ -35,9 +35,7 @@ export default function RecommendedManga() {
     const fetchRecommendedManga = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=popular&limit=5`, {
-          cache: 'force-cache' // Use cache to prevent multiple fetches
-        });
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=popular&limit=5`);
 
         if (!res.ok) {
           throw new Error('Failed to fetch recommended manga data');

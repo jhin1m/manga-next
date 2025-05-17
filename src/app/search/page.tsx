@@ -35,8 +35,7 @@ async function fetchSearchResults(query: string, page: number = 1, limit: number
     if (!query) return { data: [], totalPages: 0, currentPage: 1, totalResults: 0 };
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
-      { next: { revalidate: 60 } } // Cache results for 1 minute
+      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`
     );
 
     if (!res.ok) {
