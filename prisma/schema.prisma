@@ -34,7 +34,7 @@ model Chapter_Views {
 model Chapters {
   id               Int                @id @default(autoincrement())
   comic_id         Int
-  chapter_number   String             @db.VarChar(50)
+  chapter_number   Float
   title            String?            @db.VarChar(255)
   slug             String             @db.VarChar(255)
   release_date     DateTime?          @default(now()) @db.Timestamptz(6)

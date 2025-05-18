@@ -50,10 +50,13 @@ export class ChapterProcessor {
    */
   async process(chapter: StandardChapter, comicId: number, options: ProcessorOptions = {}): Promise<number> {
     try {
+      // Chuyển đổi chapter.number từ string sang float
+      const chapterNumber = parseFloat(chapter.number);
+      
       // Chuẩn bị dữ liệu chapter
       const chapterData = {
         comic_id: comicId,
-        chapter_number: chapter.number,
+        chapter_number: chapterNumber,
         title: chapter.title,
         slug: chapter.slug,
         release_date: chapter.releasedAt,
@@ -66,7 +69,7 @@ export class ChapterProcessor {
         where: { 
           comic_id_chapter_number: {
             comic_id: comicId,
-            chapter_number: chapter.number
+            chapter_number: chapterNumber
           }
         },
         update: chapterData,

@@ -6,7 +6,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(params.id)
+    const paramData = await params;
+    const id = parseInt(paramData.id)
 
     // Get chapter with pages
     const chapter = await prisma.chapters.findUnique({
@@ -42,7 +43,7 @@ export async function GET(
           }
         },
         orderBy: { chapter_number: 'desc' },
-        select: { id: true, chapter_number: true }
+        select: { id: true, chapter_number: true, slug: true }
       }),
       prisma.chapters.findFirst({
         where: {
@@ -52,7 +53,7 @@ export async function GET(
           }
         },
         orderBy: { chapter_number: 'asc' },
-        select: { id: true, chapter_number: true }
+        select: { id: true, chapter_number: true, slug: true }
       })
     ])
 

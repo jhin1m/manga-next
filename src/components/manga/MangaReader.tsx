@@ -22,6 +22,7 @@ interface MangaReaderProps {
       id: string;
       number: number;
       title: string;
+      slug?: string;
       images: string[];
     };
     navigation: {
@@ -33,6 +34,7 @@ interface MangaReaderProps {
       id: string;
       number: number;
       title?: string;
+      slug?: string;
     }>;
   };
 }
@@ -55,7 +57,8 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
     {
       id: chapterData.chapter.id,
       number: chapterData.chapter.number,
-      title: chapterData.chapter.title
+      title: chapterData.chapter.title,
+      slug: chapterData.chapter.slug
     }
   ];
 

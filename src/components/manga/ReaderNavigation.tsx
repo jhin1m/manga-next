@@ -22,6 +22,7 @@ interface ReaderNavigationProps {
     id: string;
     number: number;
     title?: string;
+    slug?: string; // Thêm slug cho chapter
   }>;
   isFollowing?: boolean;
   onToggleFollow?: () => void;
@@ -53,6 +54,9 @@ export default function ReaderNavigation({
   const handleChapterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     router.push(`/manga/${mangaSlug}/${e.target.value}`);
   };
+  
+  // Tìm slug của chapter hiện tại
+  const currentChapter = chapters.find(ch => ch.id === currentChapterId);
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-200 ${
@@ -100,12 +104,12 @@ export default function ReaderNavigation({
       {/* Dropdown chọn chương */}
       <select 
         className="flex-1 h-9 px-2 rounded bg-background border border-input text-sm max-w-[150px] md:max-w-[250px] truncate"
-        value={currentChapterId}
+        value={currentChapter?.slug || currentChapterId}
         onChange={handleChapterChange}
       >
         {chapters.map(chapter => (
-          <option key={chapter.id} value={chapter.id}>
-            Chapter {chapter.number}{chapter.title ? `: ${chapter.title}` : ''}
+          <option key={chapter.id} value={chapter.slug || chapter.id}>
+            {chapter.title || `Chapter ${chapter.number}`}
           </option>
         ))}
       </select>

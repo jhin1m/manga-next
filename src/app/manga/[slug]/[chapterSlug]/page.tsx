@@ -6,10 +6,10 @@ import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateChapterJsonLd } from "@/lib/seo/jsonld";
 
 // Function to get chapter data from API
-async function getChapterData(slug: string, chapterId: string) {
+async function getChapterData(mangaSlug: string, chapterSlug: string) {
   try {
     // First, we need to get the chapter ID from the slug
-    const chaptersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${slug}/chapters`, {
+    const chaptersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${mangaSlug}/chapters`, {
       next: { revalidate: 3600 } // Revalidate every hour
     });
 
@@ -19,7 +19,7 @@ async function getChapterData(slug: string, chapterId: string) {
     }
 
     const chaptersData = await chaptersRes.json();
-    const chapter = chaptersData.chapters.find((ch: any) => ch.slug === chapterId);
+    const chapter = chaptersData.chapters.find((ch: any) => ch.slug === chapterSlug);
 
     if (!chapter) {
       console.error('Chapter not found in chapters list');
@@ -49,11 +49,13 @@ async function getChapterData(slug: string, chapterId: string) {
         id: chapterData.chapter.id.toString(),
         number: parseFloat(chapterData.chapter.chapter_number),
         title: chapterData.chapter.title || `Chapter ${chapterData.chapter.chapter_number}`,
+        slug: chapterData.chapter.slug,
         images: chapterData.chapter.Pages.map((page: any) => page.image_url),
       },
       navigation: {
-        prevChapter: chapterData.prevChapter ? chapterData.prevChapter.id.toString() : null,
-        nextChapter: chapterData.nextChapter ? chapterData.nextChapter.id.toString() : null,
+        // Sử dụng trực tiếp slug từ API
+        prevChapter: chapterData.prevChapter ? chapterData.prevChapter.slug : null,
+        nextChapter: chapterData.nextChapter ? chapterData.nextChapter.slug : null,
         totalChapters: chaptersData.totalChapters,
       },
       // Thêm danh sách các chương để hiển thị trong dropdown
@@ -61,6 +63,7 @@ async function getChapterData(slug: string, chapterId: string) {
         id: ch.id.toString(),
         number: parseFloat(ch.chapter_number),
         title: ch.title || `Chapter ${ch.chapter_number}`,
+        slug: ch.slug,
       })),
     };
   } catch (error) {
@@ -73,10 +76,11 @@ async function getChapterData(slug: string, chapterId: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string; chapterId: string };
+  params: { slug: string; chapterSlug: string };
 }): Promise<Metadata> {
-  const { slug, chapterId } = params;
-  const chapterData = await getChapterData(slug, chapterId);
+  const paramData = await params;
+  const { slug, chapterSlug } = paramData;
+  const chapterData = await getChapterData(slug, chapterSlug);
 
   if (!chapterData) {
     return {
@@ -104,10 +108,11 @@ export async function generateMetadata({
 export default async function ChapterPage({
   params,
 }: {
-  params: { slug: string; chapterId: string };
+  params: { slug: string; chapterSlug: string };
 }) {
-  const { slug, chapterId } = params;
-  const chapterData = await getChapterData(slug, chapterId);
+  const paramData = await params;
+  const { slug, chapterSlug } = paramData;
+  const chapterData = await getChapterData(slug, chapterSlug);
 
   if (!chapterData) {
     notFound();
