@@ -43,20 +43,28 @@ export class MangaProcessor {
         updated_at: new Date()
       };
       
-      // Upsert manga để tránh lỗi duplicate
-      const comic = await prisma.comics.upsert({
-        where: { slug: manga.slug },
-        update: comicData,
-        create: {
-          ...comicData,
-          created_at: manga.createdAt
+      // Sử dụng transaction với timeout tăng lên 30 giây
+      const comic = await prisma.$transaction(async (tx) => {
+        // Upsert manga
+        const comic = await tx.comics.upsert({
+          where: { slug: manga.slug },
+          update: comicData,
+          create: {
+            ...comicData,
+            created_at: manga.createdAt
+          }
+        });
+        
+        // Xử lý genres nếu có
+        if (manga.genres && manga.genres.length > 0) {
+          await this.processGenres(comic.id, manga.genres);
         }
+        
+        return comic;
+      }, {
+        maxWait: 30000, // Tăng thời gian chờ tối đa lên 30 giây
+        timeout: 30000  // Tăng thời gian timeout lên 30 giây
       });
-      
-      // Xử lý genres
-      await this.processGenres(comic.id, manga.genres);
-      
-      console.log(`Processed manga: ${manga.title} (ID: ${comic.id})`);
       
       return comic.id;
     } catch (error) {

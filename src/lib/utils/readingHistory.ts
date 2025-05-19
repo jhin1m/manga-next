@@ -19,7 +19,7 @@ export type ReadingHistory = {
 };
 
 const STORAGE_KEY = 'manga-reading-history';
-const MAX_HISTORY_ITEMS = 10;
+const MAX_HISTORY_ITEMS = 20;
 
 /**
  * Get reading history from localStorage

@@ -125,7 +125,8 @@ export class MangaRawSource extends BaseSource {
     const response = await axios.get<MangaRawResponse<MangaRawManga[]>>(`${this.config.baseUrl}/mangas`, {
       params: { 
         page, 
-        per_page: this.config.perPage 
+        per_page: this.config.perPage,
+        include: 'genres'
       },
       headers: this.getHeaders()
     });
@@ -180,8 +181,8 @@ export class MangaRawSource extends BaseSource {
     // Chuyển đổi status code sang chuỗi
     const statusMap: Record<number, string> = {
       0: 'draft',
-      1: 'ongoing',
-      2: 'completed',
+      2: 'ongoing',
+      1: 'completed',
       3: 'cancelled',
       4: 'hiatus'
     };
@@ -192,12 +193,18 @@ export class MangaRawSource extends BaseSource {
       alternativeTitles.en = data.name_alt;
     }
     
-    // Chuyển đổi genres
-    const genres: StandardGenre[] = data.genres?.map(genre => ({
-      sourceId: genre.id,
-      name: genre.name,
-      slug: genre.slug
-    })) || [];
+    // Chuyển đổi genres - đảm bảo xử lý cả trường hợp data.genres là undefined
+    const genres: StandardGenre[] = [];
+    
+    if (Array.isArray(data.genres) && data.genres.length > 0) {
+      data.genres.forEach(genre => {
+        genres.push({
+          sourceId: genre.id,
+          name: genre.name,
+          slug: genre.slug || genre.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '')
+        });
+      });
+    }
     
     return {
       sourceId: data.id,
