@@ -157,4 +157,13 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Đánh dấu các chapter đã đọc bằng a:visited */
+  .chapter-link:visited:not(.read-chapter) .font-medium {
+    @apply text-primary/70;
+  }
+  
+  .chapter-link:visited:not(.read-chapter) {
+    @apply opacity-80;
+  }
 }

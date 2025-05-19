@@ -11,32 +11,7 @@ import { notFound } from "next/navigation";
 import { constructMangaMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateMangaJsonLd } from "@/lib/seo/jsonld";
-
-// Helper function to format date
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    if (diffHours === 0) {
-      const diffMinutes = Math.floor(diffTime / (1000 * 60));
-      return `${diffMinutes} minutes ago`;
-    }
-    return `${diffHours} hours ago`;
-  } else if (diffDays === 1) {
-    return 'Yesterday';
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const diffWeeks = Math.floor(diffDays / 7);
-    return `${diffWeeks} ${diffWeeks === 1 ? 'week' : 'weeks'} ago`;
-  } else {
-    return date.toLocaleDateString();
-  }
-}
+import { formatDate, formatViews } from "@/lib/utils/format";
 
 // Fetch manga data from API
 async function getMangaBySlug(slug: string) {
@@ -155,9 +130,9 @@ async function getRelatedManga(slug: string, genres: string[]) {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const manga = await getMangaBySlug(slug);
 
   if (!manga) {
@@ -187,31 +162,22 @@ export async function generateMetadata({
 export default async function MangaDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   const manga = await getMangaBySlug(slug);
 
   if (!manga) {
     notFound();
   }
 
-  // Fetch chapters and update manga's chapterCount
-  const chapters = await getChapters(slug);
+  // Fetch chapters and related manga in parallel
+  const [chapters, relatedManga] = await Promise.all([
+    getChapters(slug),
+    getRelatedManga(slug, manga.genres),
+  ]);
+
   manga.chapterCount = chapters.length;
-
-  // Fetch related manga based on the first genre
-  const relatedManga = await getRelatedManga(slug, manga.genres);
-
-  // Format view count (e.g., 1200000 -> 1.2M)
-  const formatViews = (count: number) => {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + "M";
-    } else if (count >= 1000) {
-      return (count / 1000).toFixed(1) + "K";
-    }
-    return count.toString();
-  };
 
   // Tạo JSON-LD cho trang manga
   const jsonLd = generateMangaJsonLd({

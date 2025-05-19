@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Eye } from 'lucide-react';
+import { formatViews } from '@/lib/utils/format';
 
 interface RelatedMangaItemProps {
   id: string;
@@ -20,15 +21,7 @@ export default function RelatedMangaItem({
   latestChapter,
   views = 0,
 }: RelatedMangaItemProps) {
-  // Format view count (e.g., 1200 -> 1.2K)
-  const formatViews = (count: number) => {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + 'M';
-    } else if (count >= 1000) {
-      return (count / 1000).toFixed(1) + 'K';
-    }
-    return count.toString();
-  };
+
 
   return (
     <Link href={`/manga/${slug}`} className="block group">

@@ -7,8 +7,10 @@ import LatestUpdateMangaList from "@/components/feature/LatestUpdateMangaList";
 import Sidebar from "@/components/feature/Sidebar";
 import Link from "next/link";
 
+import { formatDate } from '@/lib/utils/format';
+
 // Fetch manga data from API
-async function fetchMangaData(sort: string = 'latest', limit: number = 12, page: number = 1) {
+async function fetchMangaData(sort: string = 'latest', limit: number = 16, page: number = 1) {
   try {
     const sortParam = sort === 'latest' ? 'latest' :
                       sort === 'popular' ? 'popular' : 'alphabetical';
@@ -50,32 +52,6 @@ async function fetchMangaData(sort: string = 'latest', limit: number = 12, page:
   }
 }
 
-// Helper function to format date
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    if (diffHours === 0) {
-      const diffMinutes = Math.floor(diffTime / (1000 * 60));
-      return `${diffMinutes} minutes ago`;
-    }
-    return `${diffHours} hours ago`;
-  } else if (diffDays === 1) {
-    return 'Yesterday';
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const diffWeeks = Math.floor(diffDays / 7);
-    return `${diffWeeks} ${diffWeeks === 1 ? 'week' : 'weeks'} ago`;
-  } else {
-    return date.toLocaleDateString();
-  }
-}
-
 
 // Tạo metadata cho trang chủ
 export const metadata: Metadata = constructMetadata({
@@ -97,7 +73,7 @@ export default async function Home({
   const jsonLd = generateHomeJsonLd();
 
   // Fetch data for the latest manga with pagination
-  await fetchMangaData('latest', 12, currentPage);
+  await fetchMangaData('latest', 16, currentPage);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
@@ -111,7 +87,7 @@ export default async function Home({
         {/* Main Content */}
         <section className="space-y-6">
           {/* Latest Update Manga List */}
-          <LatestUpdateMangaList page={currentPage} limit={12} />
+          <LatestUpdateMangaList page={currentPage} limit={16} />
           
           {/* View More Button */}
           <div className="flex justify-center mt-8">
@@ -122,7 +98,7 @@ export default async function Home({
         </section>
         
         {/* Sidebar */}
-        <aside className="space-y-6 hidden lg:block">
+        <aside className="space-y-6 lg:block">
           <Sidebar />
         </aside>
       </div>

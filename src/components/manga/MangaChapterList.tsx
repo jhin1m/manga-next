@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Clock, ArrowUpDown } from 'lucide-react';
+import { Eye, Clock, ArrowUpDown, CheckCircle2 } from 'lucide-react';
+import { formatDate, formatViews } from '@/lib/utils/format';
+import { getReadingHistory } from '@/lib/utils/readingHistory';
+import { cn } from '@/lib/utils';
 
 interface Chapter {
   id: string;
@@ -25,62 +28,25 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isClient, setIsClient] = useState(false);
+  const [readChapters, setReadChapters] = useState<Record<string, boolean>>({});
 
-  // Set isClient to true after hydration is complete
+  // Set isClient to true after hydration is complete and load reading history
   useEffect(() => {
     setIsClient(true);
-  }, []);
-
-  // Format date to relative time (e.g., "2 days ago")
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-
-    // If we're still server-side or during hydration, return a stable format
-    if (!isClient) {
-      return new Date(dateString).toLocaleDateString();
-    }
-
-    // Client-side only (after hydration)
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) {
-      return `${diffInSeconds} seconds ago`;
-    }
-
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) {
-      return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
-    }
-
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) {
-      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
-    }
-
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 30) {
-      return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
-    }
-
-    const diffInMonths = Math.floor(diffInDays / 30);
-    if (diffInMonths < 12) {
-      return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
-    }
-
-    const diffInYears = Math.floor(diffInMonths / 12);
-    return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
-  };
-
-  // Format view count (e.g., 1200 -> 1.2K)
-  const formatViews = (count: number) => {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + 'M';
-    } else if (count >= 1000) {
-      return (count / 1000).toFixed(1) + 'K';
-    }
-    return count.toString();
-  };
+    
+    // Lấy lịch sử đọc từ localStorage
+    const history = getReadingHistory();
+    
+    // Tạo map các chapter đã đọc của manga hiện tại
+    const readMap: Record<string, boolean> = {};
+    history.forEach(item => {
+      if (item.manga.slug === mangaSlug && item.chapter) {
+        readMap[item.chapter.slug] = true;
+      }
+    });
+    
+    setReadChapters(readMap);
+  }, [mangaSlug]);
 
   // Filter chapters based on search term
   const filteredChapters = chapters.filter(chapter =>
@@ -123,16 +89,33 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
           />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 pb-5">
+        <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="grid grid-cols-2 gap-3 pb-5 pr-2">
           {sortedChapters.length > 0 ? (
             sortedChapters.map((chapter) => (
               <Link
                 key={chapter.id}
                 href={`/manga/${mangaSlug}/${chapter.slug}`}
-                className="block"
+                className={cn(
+                  "block",
+                  "chapter-link", // Class chung cho tất cả chapter link
+                  readChapters[chapter.slug] && "read-chapter" // Class cho chapter đã đọc
+                )}
               >
-                <div className="flex flex-col h-full p-3 rounded-md hover:bg-accent transition-colors border border-border/40">
-                  <div className="font-medium mb-2">{chapter.title}</div>
+                <div className={cn(
+                  "flex flex-col h-full p-3 rounded-md transition-colors border",
+                  readChapters[chapter.slug] 
+                    ? "border-primary/30 bg-primary/5 hover:bg-primary/10" 
+                    : "border-border/40 hover:bg-accent"
+                )}>
+                  <div className="font-medium mb-2 flex items-center gap-1">
+                    {readChapters[chapter.slug] && (
+                      <CheckCircle2 className="h-3 w-3 text-primary" />
+                    )}
+                    <span className={readChapters[chapter.slug] ? "text-primary/80" : ""}>
+                      {chapter.title}
+                    </span>
+                  </div>
                   <div className="mt-auto flex flex-col gap-1 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Eye className="h-3 w-3" />
@@ -151,6 +134,7 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
               No chapters found matching &quot;{searchTerm}&quot;
             </div>
           )}
+          </div>
         </div>
       </CardContent>
     </Card>

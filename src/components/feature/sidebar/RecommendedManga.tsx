@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Star, Eye, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { formatViews, formatDate } from "@/lib/utils";
+import { formatViews, formatDate } from "@/lib/utils/format";
 
 type RecommendedMangaType = {
   id: string;

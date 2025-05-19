@@ -1,15 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { Button } from '@/components/ui/button';
-import {
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
-import ReaderNavigation from './ReaderNavigation';
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import ReaderNavigation from "./ReaderNavigation";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useReadingHistory } from "@/hooks/useReadingHistory";
 
 interface MangaReaderProps {
   chapterData: {
@@ -45,6 +43,17 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
   // State for reader settings
   const [brightness] = useLocalStorage('manga-brightness', 100);
   const [isFollowing, setIsFollowing] = useState(false);
+  
+  // Sử dụng hook để tự động lưu lịch sử đọc truyện
+  useReadingHistory({
+    mangaId: chapterData.manga.id,
+    mangaTitle: chapterData.manga.title,
+    mangaSlug: chapterData.manga.slug,
+    coverImage: chapterData.chapter.images[0] || '',
+    chapterId: chapterData.chapter.id,
+    chapterNumber: chapterData.chapter.number,
+    chapterSlug: chapterData.chapter.slug,
+  });
   
   // Xử lý theo dõi truyện
   const handleToggleFollow = () => {

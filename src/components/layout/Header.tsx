@@ -12,6 +12,7 @@ import {
   SheetTitle
 } from '@/components/ui/sheet';
 import { SearchButton, DesktopSearchButton } from '@/components/feature/SearchBar';
+import { Home, Clock, LayoutGrid } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -36,18 +37,7 @@ export default function Header() {
             >
               Latest
             </Link>
-            <Link
-              href='/popular'
-              className='text-sm font-medium transition-colors hover:text-primary'
-            >
-              Popular
-            </Link>
-            <Link
-              href='/completed'
-              className='text-sm font-medium transition-colors hover:text-primary'
-            >
-              Completed
-            </Link>
+
             <Link
               href='/genres'
               className='text-sm font-medium transition-colors hover:text-primary'
@@ -76,41 +66,33 @@ export default function Header() {
                 <SheetHeader>
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 </SheetHeader>
-                <nav className="flex flex-col gap-4 mt-8">
+                <nav className="flex flex-col divide-y divide-border/40 mt-6 mx-2">
                   <Link
                     href='/'
-                    className='text-sm font-medium transition-colors hover:text-primary'
+                    className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                   >
+                    <Home className="mr-3 h-5 w-5" />
                     Home
                   </Link>
                   <Link
                     href='/manga'
-                    className='text-sm font-medium transition-colors hover:text-primary'
+                    className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                   >
+                    <Clock className="mr-3 h-5 w-5" />
                     Latest
                   </Link>
                   <Link
-                    href='/popular'
-                    className='text-sm font-medium transition-colors hover:text-primary'
-                  >
-                    Popular
-                  </Link>
-                  <Link
-                    href='/completed'
-                    className='text-sm font-medium transition-colors hover:text-primary'
-                  >
-                    Completed
-                  </Link>
-                  <Link
                     href='/genres'
-                    className='text-sm font-medium transition-colors hover:text-primary'
+                    className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                   >
+                    <LayoutGrid className="mr-3 h-5 w-5" />
                     Genres
                   </Link>
                   <Link
                     href='/account'
-                    className='text-sm font-medium transition-colors hover:text-primary'
+                    className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                   >
+                    <User className="mr-3 h-5 w-5" />
                     Account
                   </Link>
                 </nav>

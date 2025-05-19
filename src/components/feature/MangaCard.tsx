@@ -82,37 +82,40 @@ export default function MangaCard({
             </div>
           </div>
 
-          {/* Chapter và thời gian ở dưới cùng - đặt trong cùng 1 viên thuốc */}
+          {/* Chapter và thời gian ở dưới cùng */}
           <div className='flex flex-col space-y-1 text-xs text-muted-foreground pt-1'>
-            <div className='inline-flex px-2 py-1 bg-secondary rounded-full'>
+            <div className='flex items-center justify-between'>
               {latestChapter ? (
-                <>
+                <div className='px-2 py-1 bg-secondary rounded-full whitespace-nowrap'>
                   {latestChapterSlug ? (
                     <Link 
                       href={`/manga/${slug}/${latestChapterSlug}`}
-                      className='font-medium hover:text-primary transition-colors'
+                      className='font-medium hover:text-primary transition-colors block truncate'
                       aria-label={`Xem ${latestChapter} của ${title}`}
+                      title={latestChapter}
                     >
                       {latestChapter}
                     </Link>
                   ) : (
                     <Link 
                       href={`/manga/${slug}#latest-chapter`}
-                      className='font-medium hover:text-primary transition-colors'
+                      className='font-medium hover:text-primary transition-colors block truncate'
                       aria-label={`Xem ${latestChapter} của ${title}`}
+                      title={latestChapter}
                     >
                       {latestChapter}
                     </Link>
                   )}
-                  {updatedAt && (
-                    <>
-                      <span className='mx-1'>•</span>
-                      <span>{updatedAt}</span>
-                    </>
-                  )}
-                </>
+                </div>
               ) : (
-                <span className='font-medium'>Updating</span>
+                <div className='px-2 py-1 bg-secondary rounded-full'>
+                  <span className='font-medium'>Updating</span>
+                </div>
+              )}
+              {updatedAt && (
+                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis' title={updatedAt}>
+                  {updatedAt}
+                </span>
               )}
             </div>
           </div>

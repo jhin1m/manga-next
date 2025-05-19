@@ -5,103 +5,53 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/format";
 import { Skeleton } from "@/components/ui/skeleton";
-
-type ReadingHistory = {
-  id: string;
-  manga: {
-    id: string;
-    title: string;
-    slug: string;
-    coverImage: string;
-  };
-  chapter?: {
-    id: string;
-    number: number;
-    slug: string;
-  };
-  readAt: string;
-};
+import { Button } from "@/components/ui/button";
+import { Trash2, X } from "lucide-react";
+import { ReadingHistory, getReadingHistory, clearReadingHistory, removeFromReadingHistory } from "@/lib/utils/readingHistory";
 
 export default function HistoryReading() {
   const [history, setHistory] = useState<ReadingHistory[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Load reading history from localStorage
+  const loadHistory = () => {
+    try {
+      const historyData = getReadingHistory();
+      setHistory(historyData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to load reading history:", error);
+      setLoading(false);
+    }
+  };
+
+  // Handle clearing all history
+  const handleClearHistory = () => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa tất cả lịch sử đọc truyện?')) {
+      clearReadingHistory();
+      setHistory([]);
+    }
+  };
+
+  // Handle removing a single item
+  const handleRemoveItem = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent bubbling to parent links
+    removeFromReadingHistory(id);
+    setHistory(prev => prev.filter(item => item.id !== id));
+  };
+
   useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        // In a real app, we would fetch from an API or localStorage
-        // For now, we'll use mock data
-        
-        // Check localStorage for reading history
-        const storedHistory = localStorage.getItem('readingHistory');
-        
-        if (storedHistory) {
-          setHistory(JSON.parse(storedHistory));
-          setLoading(false);
-          return;
-        }
-        
-        // Mock data if no history exists
-        const mockHistory: ReadingHistory[] = [
-          {
-            id: "1",
-            manga: {
-              id: "manga1",
-              title: "One Piece",
-              slug: "one-piece",
-              coverImage: "https://placehold.co/100x150/png",
-            },
-            chapter: {
-              id: "chapter1",
-              number: 1084,
-              slug: "one-piece-chapter-1084",
-            },
-            readAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
-          },
-          {
-            id: "2",
-            manga: {
-              id: "manga2",
-              title: "Demon Slayer",
-              slug: "demon-slayer",
-              coverImage: "https://placehold.co/100x150/png",
-            },
-            chapter: {
-              id: "chapter2",
-              number: 205,
-              slug: "demon-slayer-chapter-205",
-            },
-            readAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), // 3 hours ago
-          },
-          {
-            id: "3",
-            manga: {
-              id: "manga3",
-              title: "Jujutsu Kaisen",
-              slug: "jujutsu-kaisen",
-              coverImage: "https://placehold.co/100x150/png",
-            },
-            chapter: {
-              id: "chapter3",
-              number: 223,
-              slug: "jujutsu-kaisen-chapter-223",
-            },
-            readAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-          },
-        ];
-        
-        // Store mock data in localStorage for future use
-        localStorage.setItem('readingHistory', JSON.stringify(mockHistory));
-        
-        setHistory(mockHistory);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch reading history:", error);
-        setLoading(false);
+    loadHistory();
+    
+    // Add event listener to update history if it changes in another tab
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'manga-reading-history') {
+        loadHistory();
       }
     };
-
-    fetchHistory();
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   if (loading) {
@@ -123,38 +73,58 @@ export default function HistoryReading() {
   return (
     <div className="space-y-4">
       {history.length > 0 ? (
-        history.map((item) => (
-          <div key={item.id} className="flex gap-3">
-            <div className="relative h-16 w-12 rounded-md overflow-hidden shrink-0">
-              <Image
-                src={item.manga.coverImage}
-                alt={item.manga.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="space-y-1 flex-1">
-              <h4 className="font-medium text-sm line-clamp-1">
-                <Link href={`/manga/${item.manga.slug}`} className="hover:text-primary">
-                  {item.manga.title}
-                </Link>
-              </h4>
-              {item.chapter && (
-                <p className="text-xs text-muted-foreground">
-                  <Link href={`/manga/${item.manga.slug}/${item.chapter.slug}`} className="hover:text-primary">
-                    Chapter {item.chapter.number}
-                  </Link>
-                </p>
-              )}
-              <p className="text-xs text-muted-foreground">{formatDate(item.readAt)}</p>
-            </div>
+        <>
+          <div className="flex justify-end">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-xs text-muted-foreground hover:text-destructive"
+              onClick={handleClearHistory}
+            >
+              <Trash2 className="h-3 w-3 mr-1" />
+              Xóa lịch sử
+            </Button>
           </div>
-        ))
+          {history.map((item) => (
+            <div key={item.id} className="flex gap-3 group relative">
+              <div className="relative h-16 w-12 rounded-md overflow-hidden shrink-0">
+                <Image
+                  src={item.manga.coverImage}
+                  alt={item.manga.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="space-y-1 flex-1">
+                <h4 className="font-medium text-sm line-clamp-1">
+                  <Link href={`/manga/${item.manga.slug}`} className="hover:text-primary">
+                    {item.manga.title}
+                  </Link>
+                </h4>
+                {item.chapter && (
+                  <p className="text-xs text-muted-foreground">
+                    <Link href={`/manga/${item.manga.slug}/chapter/${item.chapter.slug}`} className="hover:text-primary">
+                      Chapter {item.chapter.number}
+                    </Link>
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">{formatDate(item.readAt)}</p>
+              </div>
+              <button 
+                onClick={(e) => handleRemoveItem(item.id, e)}
+                className="absolute top-0 right-0 p-1 rounded-full bg-background/80 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Xóa khỏi lịch sử"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+        </>
       ) : (
         <div className="text-center py-2">
-          <p className="text-sm text-muted-foreground">No reading history yet.</p>
+          <p className="text-sm text-muted-foreground">Chưa có lịch sử đọc truyện.</p>
           <Link href="/manga" className="text-xs text-primary hover:underline">
-            Discover manga to read
+            Khám phá truyện để đọc
           </Link>
         </div>
       )}
