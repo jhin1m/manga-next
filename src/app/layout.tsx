@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import Script from "next/script";
 import { generateHomeJsonLd } from "@/lib/seo/jsonld";
 import { constructMetadata } from "@/lib/seo/metadata";
+import { AuthProvider } from "@/components/providers/auth-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,17 +38,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          <main className="flex-grow container mx-auto px-4 py-6 sm:px-28">
-            {children}
-          </main>
-          <Footer />
-          <Toaster />
-          <Script
-            id="schema-org"
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: generateHomeJsonLd() }}
-          />
+          <AuthProvider>
+            <Header />
+            <main className="flex-grow container mx-auto px-4 py-6 sm:px-28">
+              {children}
+            </main>
+            <Footer />
+            <Toaster />
+            <Script
+              id="schema-org"
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: generateHomeJsonLd() }}
+            />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

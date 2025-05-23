@@ -13,8 +13,12 @@ import {
 } from '@/components/ui/sheet';
 import { SearchButton, DesktopSearchButton } from '@/components/feature/SearchBar';
 import { Home, Clock, LayoutGrid } from 'lucide-react';
+import { UserMenu } from '@/components/layout/user-menu';
+import { useSession } from 'next-auth/react';
 
 export default function Header() {
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === 'authenticated';
   return (
     <header className='border-b border-border/40 bg-background/95 backdrop-blur-sm top-0 z-50'>
       <div className='container mx-auto px-4 py-3'>
@@ -45,9 +49,15 @@ export default function Header() {
               Genres
             </Link>
             <DesktopSearchButton />
-            <Button variant="ghost" size="icon" className="text-foreground">
-              <User className="h-5 w-5" />
-            </Button>
+            {isAuthenticated && session?.user ? (
+              <UserMenu user={session.user} />
+            ) : (
+              <Button variant="ghost" size="icon" className="text-foreground" asChild>
+                <Link href="/auth/login">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+            )}
             <ThemeToggle />
           </nav>
 
@@ -88,13 +98,23 @@ export default function Header() {
                     <LayoutGrid className="mr-3 h-5 w-5" />
                     Genres
                   </Link>
-                  <Link
-                    href='/account'
-                    className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                  >
-                    <User className="mr-3 h-5 w-5" />
-                    Account
-                  </Link>
+                  {isAuthenticated && session?.user ? (
+                    <Link
+                      href='/profile'
+                      className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                    >
+                      <User className="mr-3 h-5 w-5" />
+                      Profile
+                    </Link>
+                  ) : (
+                    <Link
+                      href='/auth/login'
+                      className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                    >
+                      <User className="mr-3 h-5 w-5" />
+                      Login
+                    </Link>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>

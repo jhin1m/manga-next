@@ -1,0 +1,186 @@
+import { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/db'
+import Image from 'next/image'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+
+export const metadata: Metadata = {
+  title: 'Profile',
+  description: 'Manage your account',
+}
+
+export default async function ProfilePage() {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user) {
+    redirect('/auth/login?callbackUrl=/profile')
+  }
+
+  const user = await prisma.users.findUnique({
+    where: { id: parseInt(session.user.id) },
+    include: {
+      Favorites: {
+        include: {
+          Comics: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              cover_image_url: true,
+            }
+          }
+        }
+      },
+      Reading_Progress: {
+        include: {
+          Comics: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              cover_image_url: true,
+            }
+          },
+          Chapters: {
+            select: {
+              id: true,
+              title: true,
+              chapter_number: true,
+            }
+          }
+        },
+        orderBy: {
+          updated_at: 'desc'
+        },
+        take: 10
+      }
+    }
+  })
+
+  if (!user) {
+    redirect('/auth/login')
+  }
+
+  return (
+    <div className="container py-10">
+      <div className="flex flex-col gap-8">
+        <div className="flex items-center gap-4">
+          {user.avatar_url ? (
+            <Image
+              src={user.avatar_url}
+              alt={user.username}
+              width={100}
+              height={100}
+              className="rounded-full"
+            />
+          ) : (
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-muted">
+              <span className="text-2xl font-bold">{user.username.charAt(0).toUpperCase()}</span>
+            </div>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold">{user.username}</h1>
+            <p className="text-muted-foreground">{user.email}</p>
+            <p className="text-sm text-muted-foreground">
+              Member since {new Date(user.created_at!).toLocaleDateString()}
+            </p>
+            <div className="mt-2">
+              <Button asChild variant="outline" size="sm">
+                <Link href="/profile/settings">Edit Profile</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <Tabs defaultValue="favorites" className="w-full">
+          <TabsList>
+            <TabsTrigger value="favorites">Favorites</TabsTrigger>
+            <TabsTrigger value="history">Reading History</TabsTrigger>
+          </TabsList>
+          <TabsContent value="favorites" className="mt-4">
+            {user.Favorites.length === 0 ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>No favorites yet</CardTitle>
+                  <CardDescription>
+                    You haven't added any manga to your favorites yet.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                {user.Favorites.map((favorite) => (
+                  <Link
+                    key={favorite.comic_id}
+                    href={`/manga/${favorite.Comics.slug}`}
+                    className="group overflow-hidden rounded-lg border bg-card transition-colors hover:border-primary"
+                  >
+                    <div className="aspect-[2/3] relative overflow-hidden">
+                      <Image
+                        src={favorite.Comics.cover_image_url || '/placeholder.png'}
+                        alt={favorite.Comics.title}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-2">
+                      <h3 className="line-clamp-1 font-medium">{favorite.Comics.title}</h3>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+          <TabsContent value="history" className="mt-4">
+            {user.Reading_Progress.length === 0 ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>No reading history</CardTitle>
+                  <CardDescription>
+                    You haven't read any manga yet.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {user.Reading_Progress.map((progress) => (
+                  <Card key={`${progress.user_id}-${progress.comic_id}`}>
+                    <CardContent className="flex items-center gap-4 p-4">
+                      <div className="aspect-[2/3] relative h-20 w-14 overflow-hidden rounded">
+                        <Image
+                          src={progress.Comics.cover_image_url || '/placeholder.png'}
+                          alt={progress.Comics.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium">{progress.Comics.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Chapter {progress.Chapters?.chapter_number}: {progress.Chapters?.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Last read: {new Date(progress.updated_at!).toLocaleString()}
+                        </p>
+                      </div>
+                      <Button asChild size="sm">
+                        <Link href={`/manga/${progress.Comics.slug}/chapter/${progress.Chapters?.chapter_number}`}>
+                          Continue
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  )
+}
