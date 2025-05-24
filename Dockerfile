@@ -29,13 +29,14 @@ COPY . .
 ENV DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy"
 ENV NEXTAUTH_SECRET="dummy-secret-for-build"
 ENV NEXTAUTH_URL="http://localhost:3000"
+ENV NODE_ENV="production"
 
 # Add comment for clarity
 # Note: These dummy values are only used during build
 # Railway platform variables will override these at runtime
 
-# Build the application
-RUN pnpm build
+# Build the application with error handling
+RUN pnpm build || (echo "Build failed, checking logs..." && exit 1)
 
 # Expose port
 EXPOSE 3000

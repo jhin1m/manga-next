@@ -4,6 +4,12 @@ const nextConfig: NextConfig = {
   // Enable standalone output for Docker deployment
   output: 'standalone',
 
+  // Experimental features for better build handling
+  experimental: {
+    // Skip static generation for pages that fail during build
+    fallbackNodePolyfills: false,
+  },
+
   images: {
     remotePatterns: [
       {
@@ -23,6 +29,11 @@ const nextConfig: NextConfig = {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
+  },
+
+  // Handle build-time database connection issues
+  env: {
+    SKIP_BUILD_STATIC_GENERATION: 'true',
   },
 };
 

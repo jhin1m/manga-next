@@ -1,29 +1,34 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
-import { prisma } from "@/lib/db";
+import { safePrisma } from "@/lib/db-safe";
 
 export const metadata: Metadata = {
   title: "Manga Genres | Manga Reader",
   description: "Browse manga by genre - action, adventure, comedy, drama, fantasy, and more.",
 };
 
-// Fetch all genres directly from database
+// Fetch all genres directly from database (safe for build time)
 async function fetchGenres() {
   try {
-    // Get all genres
-    const genres = await prisma.genres.findMany({
+    // Get all genres using safe database access
+    const genres = await safePrisma.genres.findMany({
       orderBy: {
         name: 'asc'
       }
     });
 
-    // For each genre, get the count of manga
+    // For each genre, get the count of manga (with safe access)
     const genresWithCount = await Promise.all(
       genres.map(async (genre) => {
-        const count = await prisma.comic_Genres.count({
+        // Use safePrisma for count as well
+        const count = await safePrisma.comics.count({
           where: {
-            genre_id: genre.id
+            Comic_Genres: {
+              some: {
+                genre_id: genre.id
+              }
+            }
           }
         });
 

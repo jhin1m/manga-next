@@ -6,7 +6,7 @@ import PaginationWrapper from "@/components/feature/PaginationWrapper";
 import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateGenreJsonLd } from "@/lib/seo/jsonld";
-import { prisma } from "@/lib/db";
+import { safePrisma } from "@/lib/db-safe";
 
 type Props = {
   params: { slug: string };
@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = params;
 
   try {
-    // Fetch genre info directly from database
-    const genre = await prisma.genres.findUnique({
+    // Fetch genre info directly from database (safe for build time)
+    const genre = await safePrisma.genres.findUnique({
       where: { slug }
     });
 
