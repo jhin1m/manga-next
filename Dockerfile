@@ -45,5 +45,5 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Start the application
-CMD ["pnpm", "start"]
+# Start the application using standalone server (Railway env vars will be available here)
+CMD ["node", ".next/standalone/server.js"]
