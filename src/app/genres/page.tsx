@@ -1,25 +1,40 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "Manga Genres | Manga Reader",
   description: "Browse manga by genre - action, adventure, comedy, drama, fantasy, and more.",
 };
 
-// Fetch all genres from API
+// Fetch all genres directly from database
 async function fetchGenres() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/genres`, {
-      next: { revalidate: 3600 } // Revalidate every hour
+    // Get all genres
+    const genres = await prisma.genres.findMany({
+      orderBy: {
+        name: 'asc'
+      }
     });
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch genres');
-    }
+    // For each genre, get the count of manga
+    const genresWithCount = await Promise.all(
+      genres.map(async (genre) => {
+        const count = await prisma.comic_Genres.count({
+          where: {
+            genre_id: genre.id
+          }
+        });
 
-    const data = await res.json();
-    return data.genres;
+        return {
+          ...genre,
+          mangaCount: count
+        };
+      })
+    );
+
+    return genresWithCount;
   } catch (error) {
     console.error('Error fetching genres:', error);
     return [];
@@ -32,7 +47,7 @@ export default async function GenresPage() {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-8">Manga Genres</h1>
-      
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {genres.map((genre: any) => (
           <Link key={genre.id} href={`/genres/${genre.slug}`}>

@@ -25,6 +25,11 @@ RUN pnpm prisma generate
 # Copy rest of source code
 COPY . .
 
+# Set build-time environment variables
+ENV DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy"
+ENV NEXTAUTH_SECRET="dummy-secret-for-build"
+ENV NEXTAUTH_URL="http://localhost:3000"
+
 # Build the application
 RUN pnpm build
 
