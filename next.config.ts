@@ -4,12 +4,6 @@ const nextConfig: NextConfig = {
   // Enable standalone output for Docker deployment
   output: 'standalone',
 
-  // Experimental features for better build handling
-  experimental: {
-    // Skip static generation for pages that fail during build
-    fallbackNodePolyfills: false,
-  },
-
   images: {
     remotePatterns: [
       {
