@@ -105,14 +105,14 @@ async function fetchSearchResults(
 }
 
 type Props = {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
   { searchParams }: Props
 ): Promise<Metadata> {
   // In NextJS 15, we need to await searchParams
-  const params = await Promise.resolve(searchParams);
+  const params = await searchParams;
   const query = typeof params.q === 'string' ? params.q : '';
 
   return {
@@ -296,7 +296,7 @@ function SearchFilters({
 
 export default async function SearchPage({ searchParams }: Props) {
   // In NextJS 15, we need to await searchParams
-  const params = await Promise.resolve(searchParams);
+  const params = await searchParams;
   const query = typeof params.q === 'string' ? params.q : '';
   const currentPage = typeof params.page === 'string'
     ? parseInt(params.page, 10)

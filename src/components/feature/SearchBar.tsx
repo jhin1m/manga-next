@@ -172,7 +172,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
 
     // For Japanese characters, we need to be more lenient with the minimum length
     // Check if the query contains non-Latin characters
-    const hasNonLatinChars = /[^\u0000-\u007F]/.test(trimmedQuery);
+    const hasNonLatinChars = /[^\u0020-\u007F]/.test(trimmedQuery);
 
     // For non-Latin characters like Japanese, even a single character can be meaningful
     const minQueryLength = hasNonLatinChars ? 1 : 2;

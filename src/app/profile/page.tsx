@@ -17,14 +17,15 @@ export const metadata: Metadata = {
 }
 
 interface ProfilePageProps {
-  searchParams: {
+  searchParams: Promise<{
     tab?: string
-  }
+  }>
 }
 
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
-  const session = await getServerSession(authOptions as any)
-  const activeTab = searchParams.tab || 'favorites'
+  const session = await getServerSession(authOptions)
+  const searchParamsData = await searchParams
+  const activeTab = searchParamsData.tab || 'favorites'
 
   if (!session || !session.user || !session.user.id) {
     redirect('/auth/login?callbackUrl=/profile')

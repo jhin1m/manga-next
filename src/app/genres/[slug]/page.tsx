@@ -7,14 +7,13 @@ import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateGenreJsonLd } from "@/lib/seo/jsonld";
 
-type Props = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
 // Generate metadata for the page
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = params;
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params;
 
   try {
     // Fetch genre info
@@ -41,11 +40,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${genre.name} Manga | Dokinaw`,
       description: genre.description || `Browse ${genre.name} manga - Find the best ${genre.name} manga series on Dokinaw. Read ${genre.name} manga online for free.`,
       keywords: [
-        `${genre.name} manga`, 
-        `read ${genre.name} manga`, 
-        `${genre.name} comics`, 
-        'free manga', 
-        'online manga', 
+        `${genre.name} manga`,
+        `read ${genre.name} manga`,
+        `${genre.name} comics`,
+        'free manga',
+        'online manga',
         'dokinaw'
       ],
     });
@@ -146,14 +145,21 @@ async function fetchGenreInfo(slug: string) {
   }
 }
 
-export default async function GenrePage({ params, searchParams }: Props) {
-  const { slug } = params;
+export default async function GenrePage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const { slug } = await params;
+  const searchParamsData = await searchParams;
 
   // Extract search parameters safely
-  const sortParam = searchParams['sort'];
+  const sortParam = searchParamsData['sort'];
   const sort = typeof sortParam === 'string' ? sortParam : 'latest';
 
-  const pageParam = searchParams['page'];
+  const pageParam = searchParamsData['page'];
   const page = typeof pageParam === 'string' ? parseInt(pageParam, 10) : 1;
 
   const limit = 20; // Number of manga per page

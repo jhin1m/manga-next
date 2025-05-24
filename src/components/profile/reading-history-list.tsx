@@ -13,7 +13,7 @@ interface ReadingProgress {
   user_id: number;
   comic_id: number;
   last_read_chapter_id: number | null;
-  updated_at: Date;
+  updated_at: Date | null;
   Comics: {
     id: number;
     title: string;
@@ -87,7 +87,7 @@ export default function ReadingHistoryList({ initialProgress }: ReadingHistoryLi
                 </p>
               )}
               <p className="text-xs text-muted-foreground">
-                Last read: {new Date(item.updated_at).toLocaleString()}
+                Last read: {item.updated_at ? new Date(item.updated_at).toLocaleString() : 'Unknown'}
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">

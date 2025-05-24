@@ -3,12 +3,12 @@
  */
 
 import axios from 'axios';
-import { 
-  StandardManga, 
-  StandardChapter, 
-  StandardGenre, 
-  MangaListResult, 
-  ChapterListResult 
+import {
+  StandardManga,
+  StandardChapter,
+  StandardGenre,
+  MangaListResult,
+  ChapterListResult
 } from '../types';
 import { BaseSource } from './base';
 
@@ -101,7 +101,7 @@ export class MangaRawSource extends BaseSource {
       authToken: process.env.MANGARAW_API_TOKEN || ''
     });
   }
-  
+
   /**
    * Tạo headers cho request với Bearer token nếu có
    */
@@ -110,11 +110,11 @@ export class MangaRawSource extends BaseSource {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     };
-    
+
     if (this.config.authToken) {
       headers['Authorization'] = `Bearer ${this.config.authToken}`;
     }
-    
+
     return headers;
   }
 
@@ -123,8 +123,8 @@ export class MangaRawSource extends BaseSource {
    */
   async fetchMangaList(page: number): Promise<MangaListResult> {
     const response = await axios.get<MangaRawResponse<MangaRawManga[]>>(`${this.config.baseUrl}/mangas`, {
-      params: { 
-        page, 
+      params: {
+        page,
         per_page: this.config.perPage,
         include: 'genres'
       },
@@ -132,7 +132,7 @@ export class MangaRawSource extends BaseSource {
     });
 
     const mangas = response.data.data.map(manga => this.mapMangaToStandardFormat(manga));
-    
+
     return {
       mangas,
       hasNextPage: !!response.data.pagination?.links.next,
@@ -149,7 +149,7 @@ export class MangaRawSource extends BaseSource {
       params: { include: 'group,user,genres,artist,doujinshi' },
       headers: this.getHeaders()
     });
-    
+
     return this.mapMangaToStandardFormat(response.data.data);
   }
 
@@ -161,11 +161,11 @@ export class MangaRawSource extends BaseSource {
       params: { 'filter[manga_id]': mangaId, per_page: 999999 },
       headers: this.getHeaders()
     });
-    
-    const chapters = response.data.data.map(chapter => 
+
+    const chapters = response.data.data.map(chapter =>
       this.mapChapterToStandardFormat(chapter, mangaId)
     );
-    
+
     return {
       chapters,
       hasNextPage: !!response.data.pagination?.links.next,
@@ -186,26 +186,26 @@ export class MangaRawSource extends BaseSource {
       3: 'cancelled',
       4: 'hiatus'
     };
-    
+
     // Tạo alternative titles
     const alternativeTitles: Record<string, string> = {};
     if (data.name_alt) {
       alternativeTitles.en = data.name_alt;
     }
-    
+
     // Chuyển đổi genres - đảm bảo xử lý cả trường hợp data.genres là undefined
     const genres: StandardGenre[] = [];
-    
+
     if (Array.isArray(data.genres) && data.genres.length > 0) {
       data.genres.forEach(genre => {
         genres.push({
           sourceId: genre.id,
           name: genre.name,
-          slug: genre.slug || genre.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '')
+          slug: genre.slug || genre.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
         });
       });
     }
-    
+
     return {
       sourceId: data.id,
       sourceName: this.getName(),

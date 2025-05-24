@@ -9,7 +9,7 @@ import { prisma } from '@/lib/db'
  */
 export async function DELETE(
   request: Request,
-  { params }: { params: { comicId: string } }
+  { params }: { params: Promise<{ comicId: string }> }
 ) {
   const session = await getServerSession(authOptions)
 
@@ -77,7 +77,7 @@ export async function DELETE(
  */
 export async function GET(
   request: Request,
-  { params }: { params: { comicId: string } }
+  { params }: { params: Promise<{ comicId: string }> }
 ) {
   const session = await getServerSession(authOptions)
 

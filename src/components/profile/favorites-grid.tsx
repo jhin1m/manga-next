@@ -15,7 +15,7 @@ interface Chapter {
   chapter_number: number
   title: string | null
   slug: string
-  release_date: string | null
+  release_date: Date | null
 }
 
 interface Comic {
@@ -30,7 +30,7 @@ interface Comic {
 interface Favorite {
   user_id: number
   comic_id: number
-  created_at: string | Date
+  created_at: string | Date | null
   Comics: Comic
 }
 
@@ -144,8 +144,8 @@ export default function FavoritesGrid({ favorites }: FavoritesGridProps) {
                         </Link>
                       </div>
                       {latestChapter.release_date && (
-                        <span className="text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis" title={typeof latestChapter.release_date === 'string' ? formatDate(latestChapter.release_date) : latestChapter.release_date.toLocaleDateString()}>
-                          {typeof latestChapter.release_date === 'string' ? formatDate(latestChapter.release_date) : latestChapter.release_date.toLocaleDateString()}
+                        <span className="text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis" title={latestChapter.release_date.toLocaleDateString()}>
+                          {latestChapter.release_date.toLocaleDateString()}
                         </span>
                       )}
                     </div>

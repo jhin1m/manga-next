@@ -93,7 +93,7 @@ export const metadata: Metadata = constructMetadata({
 export default async function MangaPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // Extract search parameters safely - await them in Next.js 15
   const params = await searchParams;

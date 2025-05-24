@@ -94,7 +94,8 @@ export async function POST(request: Request) {
 
         // Only update if the localStorage item is newer or doesn't exist in DB
         const itemDate = new Date(item.updated_at)
-        const shouldUpdate = !existingProgress || 
+        const shouldUpdate = !existingProgress ||
+          !existingProgress.updated_at ||
           itemDate > new Date(existingProgress.updated_at)
 
         if (!shouldUpdate) {

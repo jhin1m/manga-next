@@ -1,10 +1,10 @@
 #!/usr/bin/env ts-node
 /**
  * CLI tool để chạy manga crawler
- * 
+ *
  * Cách sử dụng:
  * npx ts-node scripts/crawl.ts [source] [startPage] [endPage] [options]
- * 
+ *
  * Ví dụ:
  * npx ts-node scripts/crawl.ts mangaraw 1 5 --use-original-images
  * npx ts-node scripts/crawl.ts mangaraw --manga-id=20463a51-7faf-4a3f-9e67-5c624f80d487
@@ -20,7 +20,16 @@ dotenv.config();
 // Parse arguments
 function parseArgs() {
   const args = process.argv.slice(2);
-  const options = {
+  const options: {
+    source: string;
+    startPage: number;
+    endPage?: number;
+    help: boolean;
+    useOriginalImages?: boolean;
+    mangaId?: string;
+    concurrency?: number;
+    authToken?: string;
+  } = {
     source: 'mangaraw',
     startPage: 1,
     help: false
@@ -102,13 +111,13 @@ async function main() {
   console.log('Manga Crawler CLI');
   console.log('=================');
   console.log(`Source: ${options.source}`);
-  
+
   if (options.mangaId) {
     console.log(`Manga ID: ${options.mangaId}`);
   } else {
     console.log(`Trang: ${options.startPage}${options.endPage ? ` đến ${options.endPage}` : ''}`);
   }
-  
+
   console.log(`Sử dụng ảnh gốc: ${options.useOriginalImages ? 'Có' : 'Không'}`);
   console.log(`Concurrency: ${options.concurrency || 3}`);
   console.log(`Auth token: ${options.authToken ? 'Được cung cấp' : (process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có')}`);

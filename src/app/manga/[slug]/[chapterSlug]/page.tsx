@@ -77,7 +77,7 @@ async function getChapterData(mangaSlug: string, chapterSlug: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string; chapterSlug: string };
+  params: Promise<{ slug: string; chapterSlug: string }>;
 }): Promise<Metadata> {
   const paramData = await params;
   const { slug, chapterSlug } = paramData;
@@ -109,7 +109,7 @@ export async function generateMetadata({
 export default async function ChapterPage({
   params,
 }: {
-  params: { slug: string; chapterSlug: string };
+  params: Promise<{ slug: string; chapterSlug: string }>;
 }) {
   const paramData = await params;
   const { slug, chapterSlug } = paramData;

@@ -60,15 +60,15 @@ export const metadata: Metadata = constructMetadata({
   keywords: ['manga', 'read manga online', 'free manga', 'latest manga', 'popular manga', 'completed manga', 'dokinaw'],
 });
 
-export default async function Home({ 
+export default async function Home({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ page?: string }>;
 }) {
   // Get the current page from the URL query parameters
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
-  
+
   // Tạo JSON-LD cho trang chủ
   const jsonLd = generateHomeJsonLd();
 
@@ -78,17 +78,17 @@ export default async function Home({
   return (
     <div className="container mx-auto py-8 space-y-8">
       <JsonLdScript id="home-jsonld" jsonLd={jsonLd} />
-      
+
       {/* Hot Manga Slider */}
       <HotMangaSlider />
-      
+
       {/* Main Content + Sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mt-8">
         {/* Main Content */}
         <section className="space-y-6">
           {/* Latest Update Manga List */}
           <LatestUpdateMangaList page={currentPage} limit={16} />
-          
+
           {/* View More Button */}
           <div className="flex justify-center mt-8">
             <Link href="/manga?page=2" className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-md text-center transition-colors duration-200">
@@ -96,7 +96,7 @@ export default async function Home({
             </Link>
           </div>
         </section>
-        
+
         {/* Sidebar */}
         <aside className="space-y-6 lg:block">
           <Sidebar />

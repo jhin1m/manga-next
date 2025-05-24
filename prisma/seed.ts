@@ -263,7 +263,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[0].id,
-        chapter_number: '1',
+        chapter_number: 1,
         title: 'Romance Dawn',
         slug: 'chapter-1',
         release_date: new Date('2023-01-01'),
@@ -273,7 +273,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[0].id,
-        chapter_number: '2',
+        chapter_number: 2,
         title: 'They Call Him "Straw Hat Luffy"',
         slug: 'chapter-2',
         release_date: new Date('2023-01-08'),
@@ -283,7 +283,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[0].id,
-        chapter_number: '3',
+        chapter_number: 3,
         title: 'Morgan versus Luffy',
         slug: 'chapter-3',
         release_date: new Date('2023-01-15'),
@@ -317,7 +317,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[1].id,
-        chapter_number: '1',
+        chapter_number: 1,
         title: 'Uzumaki Naruto',
         slug: 'chapter-1',
         release_date: new Date('2023-01-02'),
@@ -327,7 +327,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[1].id,
-        chapter_number: '2',
+        chapter_number: 2,
         title: 'Konohamaru!',
         slug: 'chapter-2',
         release_date: new Date('2023-01-09'),
@@ -337,7 +337,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[1].id,
-        chapter_number: '3',
+        chapter_number: 3,
         title: 'Sasuke Uchiha',
         slug: 'chapter-3',
         release_date: new Date('2023-01-16'),
@@ -371,7 +371,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[3].id,
-        chapter_number: '1',
+        chapter_number: 1,
         title: 'To You, 2000 Years From Now',
         slug: 'chapter-1',
         release_date: new Date('2023-01-03'),
@@ -381,7 +381,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[3].id,
-        chapter_number: '2',
+        chapter_number: 2,
         title: 'That Day',
         slug: 'chapter-2',
         release_date: new Date('2023-01-10'),
@@ -391,7 +391,7 @@ async function main() {
     prisma.chapters.create({
       data: {
         comic_id: comics[3].id,
-        chapter_number: '3',
+        chapter_number: 3,
         title: 'A Dim Light Amid Despair',
         slug: 'chapter-3',
         release_date: new Date('2023-01-17'),
