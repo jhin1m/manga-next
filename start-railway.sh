@@ -3,19 +3,15 @@
 # Exit on any error
 set -e
 
-echo "Starting Railway deployment..."
-
-# Check if DATABASE_URL is set
-if [ -z "$DATABASE_URL" ]; then
-    echo "Warning: DATABASE_URL is not set"
-fi
+echo "Railway deployment: Running Prisma migrations..."
 
 # Run Prisma migrations if DATABASE_URL is available
 if [ ! -z "$DATABASE_URL" ]; then
-    echo "Running Prisma migrations..."
+    echo "DATABASE_URL found, running migrations..."
     npx prisma migrate deploy
+    echo "Migrations completed successfully"
+else
+    echo "Warning: DATABASE_URL not set, skipping migrations"
 fi
 
-# Start the application
-echo "Starting Next.js application..."
-exec "$@"
+echo "Railway deployment setup complete"

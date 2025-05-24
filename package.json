@@ -5,12 +5,14 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "prisma generate && next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
+    "start:dev": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
     "seed": "npx ts-node prisma/seed.ts",
     "railway:build": "prisma generate && next build",
-    "railway:start": "next start"
+    "railway:start": "node .next/standalone/server.js",
+    "railway:migrate": "./start-railway.sh"
   },
   "engines": {
     "node": ">=18.0.0",
