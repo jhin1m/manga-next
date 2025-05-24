@@ -120,7 +120,7 @@ For detailed backend implementation tasks and guides, refer to:
 - [ ] Write deployment and maintenance instructions
 
 ## Additional Features (Optional)
-- [ ] User authentication and profiles
+- [x] User authentication and profiles
 - [ ] Bookmark/favorite functionality
 - [ ] Reading history
 - [ ] Comments and ratings

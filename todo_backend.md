@@ -49,8 +49,8 @@
 
 ### Optional API Routes (if time permits)
 - [ ] User Management
-  - [ ] Authentication routes (login, register, profile)
-  - [ ] User preferences and settings
+  - [x] Authentication routes (login, register, profile)
+  - [x] User preferences and settings
 
 - [ ] Bookmarks/Favorites
   - [ ] Save/remove manga from favorites
