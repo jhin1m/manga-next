@@ -97,7 +97,7 @@ export default async function MangaPage({
 }) {
   // Extract search parameters safely - await them in Next.js 15
   const params = await searchParams;
-  
+
   const sortParam = params['sort'];
   const sort = typeof sortParam === 'string' ? sortParam : 'latest';
 
@@ -175,7 +175,11 @@ export default async function MangaPage({
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
             {manga.map((item: MangaItem) => (
-              <MangaCard key={item.id} {...item as any} />
+              <MangaCard
+                key={item.id}
+                {...item as any}
+                showFavoriteButton={true}
+              />
             ))}
           </div>
 

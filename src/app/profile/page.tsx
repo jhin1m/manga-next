@@ -8,21 +8,29 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import FavoritesGrid from '@/components/profile/favorites-grid'
 
 export const metadata: Metadata = {
   title: 'Profile',
   description: 'Manage your account',
 }
 
-export default async function ProfilePage() {
-  const session = await getServerSession(authOptions)
+interface ProfilePageProps {
+  searchParams: {
+    tab?: string
+  }
+}
 
-  if (!session?.user) {
+export default async function ProfilePage({ searchParams }: ProfilePageProps) {
+  const session = await getServerSession(authOptions as any)
+  const activeTab = searchParams.tab || 'favorites'
+
+  if (!session || !session.user || !session.user.id) {
     redirect('/auth/login?callbackUrl=/profile')
   }
 
   const user = await prisma.users.findUnique({
-    where: { id: parseInt(session.user.id) },
+    where: { id: parseInt(session.user.id as string) },
     include: {
       Favorites: {
         include: {
@@ -32,8 +40,25 @@ export default async function ProfilePage() {
               title: true,
               slug: true,
               cover_image_url: true,
+              status: true,
+              Chapters: {
+                orderBy: {
+                  chapter_number: 'desc',
+                },
+                take: 1,
+                select: {
+                  id: true,
+                  chapter_number: true,
+                  title: true,
+                  slug: true,
+                  release_date: true,
+                },
+              },
             }
           }
+        },
+        orderBy: {
+          created_at: 'desc',
         }
       },
       Reading_Progress: {
@@ -97,7 +122,7 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        <Tabs defaultValue="favorites" className="w-full">
+        <Tabs defaultValue={activeTab} className="w-full">
           <TabsList>
             <TabsTrigger value="favorites">Favorites</TabsTrigger>
             <TabsTrigger value="history">Reading History</TabsTrigger>
@@ -113,27 +138,7 @@ export default async function ProfilePage() {
                 </CardHeader>
               </Card>
             ) : (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {user.Favorites.map((favorite) => (
-                  <Link
-                    key={favorite.comic_id}
-                    href={`/manga/${favorite.Comics.slug}`}
-                    className="group overflow-hidden rounded-lg border bg-card transition-colors hover:border-primary"
-                  >
-                    <div className="aspect-[2/3] relative overflow-hidden">
-                      <Image
-                        src={favorite.Comics.cover_image_url || '/placeholder.png'}
-                        alt={favorite.Comics.title}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-2">
-                      <h3 className="line-clamp-1 font-medium">{favorite.Comics.title}</h3>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <FavoritesGrid favorites={user.Favorites} />
             )}
           </TabsContent>
           <TabsContent value="history" className="mt-4">

@@ -7,6 +7,7 @@ import { Star, Eye, BookOpen, Heart } from "lucide-react";
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
 import Description from "@/components/manga/Description";
+import { FavoriteButton } from "@/components/manga/FavoriteButton";
 import { notFound } from "next/navigation";
 import { constructMangaMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
@@ -283,9 +284,12 @@ export default async function MangaDetailPage({
                 Read Latest Chapter
               </Link>
             </Button>
-            <Button variant="outline">
-              <Heart className="mr-2 h-4 w-4" /> Add to Favorites
-            </Button>
+            <FavoriteButton
+              comicId={parseInt(manga.id)}
+              variant="outline"
+              size="default"
+              showText={true}
+            />
           </div>
 
 

@@ -14,6 +14,8 @@ type HotManga = {
   views: number;
   status?: string;
   chapterCount?: number;
+  latestChapter?: string;
+  latestChapterSlug?: string;
 };
 
 // Chuyển hàm fetch vào component chính để tránh gọi nhiều lần
@@ -103,6 +105,12 @@ function ClientSlider() {
           views: comic.total_views || 0,
           status: comic.status || 'Ongoing',
           chapterCount: comic.chapters?.length || Math.floor(Math.random() * 100) + 10,
+          latestChapter: comic.Chapters && comic.Chapters.length > 0
+            ? comic.Chapters[0].title
+            : undefined,
+          latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
+            ? comic.Chapters[0].slug
+            : undefined,
         }));
         
         setManga(hotManga);
@@ -200,6 +208,8 @@ function ClientSlider() {
               views={item.views}
               status={item.status}
               chapterCount={item.chapterCount}
+              latestChapter={item.latestChapter}
+              latestChapterSlug={item.latestChapterSlug}
             />
           </div>
         ))}

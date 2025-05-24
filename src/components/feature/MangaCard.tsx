@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Eye } from 'lucide-react';
 import { formatViews } from '@/lib/utils/format';
+import { FavoriteButton } from '@/components/manga/FavoriteButton';
 
 interface MangaCardProps {
   id: string;
@@ -19,9 +20,12 @@ interface MangaCardProps {
   chapterCount?: number;
   updatedAt?: string;
   status?: string;
+  showFavoriteButton?: boolean;
+  initialIsFavorite?: boolean;
 }
 
 export default function MangaCard({
+  id,
   title,
   coverImage,
   slug,
@@ -32,6 +36,8 @@ export default function MangaCard({
   chapterCount = 0,
   updatedAt,
   status,
+  showFavoriteButton = false,
+  initialIsFavorite = false,
 }: MangaCardProps) {
   // Sử dụng hàm formatViews từ thư viện utils
 
@@ -54,7 +60,19 @@ export default function MangaCard({
                 {status}
               </div>
             )}
-            
+
+            {/* Favorite button ở góc phải trên */}
+            {showFavoriteButton && (
+              <div className='absolute top-2 right-2 z-10' onClick={(e) => e.stopPropagation()}>
+                <FavoriteButton
+                  comicId={parseInt(id)}
+                  initialIsFavorite={initialIsFavorite}
+                  variant="secondary"
+                  className="bg-black/50 hover:bg-black/70"
+                />
+              </div>
+            )}
+
             {/* Số chapter ở góc phải dưới ảnh bìa */}
             {chapterCount > 0 && (
               <div className='absolute bottom-0 right-0 bg-black/70 text-white text-xs py-1 px-2 rounded-tl'>
@@ -63,7 +81,7 @@ export default function MangaCard({
             )}
           </div>
         </Link>
-        
+
         <CardContent className='p-3 space-y-2'>
           {/* Tiêu đề manga với font chữ đậm và kích thước lớn */}
           <Link href={`/manga/${slug}`} className='block'>
@@ -88,7 +106,7 @@ export default function MangaCard({
               {latestChapter ? (
                 <div className='px-2 py-1 bg-secondary rounded-full whitespace-nowrap'>
                   {latestChapterSlug ? (
-                    <Link 
+                    <Link
                       href={`/manga/${slug}/${latestChapterSlug}`}
                       className='font-medium hover:text-primary transition-colors block truncate'
                       aria-label={`Xem ${latestChapter} của ${title}`}
@@ -97,7 +115,7 @@ export default function MangaCard({
                       {latestChapter}
                     </Link>
                   ) : (
-                    <Link 
+                    <Link
                       href={`/manga/${slug}#latest-chapter`}
                       className='font-medium hover:text-primary transition-colors block truncate'
                       aria-label={`Xem ${latestChapter} của ${title}`}

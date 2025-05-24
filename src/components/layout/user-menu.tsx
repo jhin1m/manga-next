@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { User } from 'next-auth'
-import { LogOut, Settings, User as UserIcon } from 'lucide-react'
+import { LogOut, Settings, User as UserIcon, Heart } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -69,6 +69,12 @@ export function UserMenu({ user }: UserMenuProps) {
           <Link href="/profile" className="cursor-pointer">
             <UserIcon className="mr-2 h-4 w-4" />
             <span>Profile</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/profile?tab=favorites" className="cursor-pointer">
+            <Heart className="mr-2 h-4 w-4" />
+            <span>My Favorites</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

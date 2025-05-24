@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, User } from 'lucide-react';
+import { Menu, User, Heart } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import {
@@ -99,13 +99,22 @@ export default function Header() {
                     Genres
                   </Link>
                   {isAuthenticated && session?.user ? (
-                    <Link
-                      href='/profile'
-                      className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                    >
-                      <User className="mr-3 h-5 w-5" />
-                      Profile
-                    </Link>
+                    <>
+                      <Link
+                        href='/profile'
+                        className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                      >
+                        <User className="mr-3 h-5 w-5" />
+                        Profile
+                      </Link>
+                      <Link
+                        href='/profile?tab=favorites'
+                        className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                      >
+                        <Heart className="mr-3 h-5 w-5" />
+                        My Favorites
+                      </Link>
+                    </>
                   ) : (
                     <Link
                       href='/auth/login'
