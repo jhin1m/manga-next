@@ -1,0 +1,41 @@
+# Railway-optimized Dockerfile
+FROM node:20-alpine
+
+# Install system dependencies
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# Enable corepack and install pnpm
+RUN corepack enable && corepack prepare pnpm@10.7.0 --activate
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Copy Prisma schema before installing dependencies
+COPY prisma ./prisma
+
+# Install dependencies
+RUN pnpm install --no-frozen-lockfile
+
+# Generate Prisma client with build-time dummy URL
+RUN DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy" pnpm prisma generate
+
+# Copy rest of source code
+COPY . .
+
+# Build with dummy environment variables
+RUN DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy" \
+    NEXTAUTH_SECRET="dummy-secret-for-build" \
+    NEXTAUTH_URL="http://localhost:3000" \
+    pnpm build
+
+# Expose port
+EXPOSE 3000
+
+# Set production environment
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Start the application (Railway env vars will be available here)
+CMD ["pnpm", "start"]

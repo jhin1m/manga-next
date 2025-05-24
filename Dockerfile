@@ -25,10 +25,14 @@ RUN pnpm prisma generate
 # Copy rest of source code
 COPY . .
 
-# Set build-time environment variables
+# Set build-time environment variables (Railway will override these at runtime)
 ENV DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy"
 ENV NEXTAUTH_SECRET="dummy-secret-for-build"
 ENV NEXTAUTH_URL="http://localhost:3000"
+
+# Add comment for clarity
+# Note: These dummy values are only used during build
+# Railway platform variables will override these at runtime
 
 # Build the application
 RUN pnpm build

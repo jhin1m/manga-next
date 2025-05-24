@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "seed": "npx ts-node prisma/seed.ts"
+    "seed": "npx ts-node prisma/seed.ts",
+    "railway:build": "prisma generate && next build",
+    "railway:start": "next start"
   },
   "engines": {
     "node": ">=18.0.0",
