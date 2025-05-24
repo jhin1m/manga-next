@@ -6,7 +6,6 @@ import PaginationWrapper from "@/components/feature/PaginationWrapper";
 import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateGenreJsonLd } from "@/lib/seo/jsonld";
-import { safePrisma } from "@/lib/db-safe";
 
 type Props = {
   params: { slug: string };
@@ -18,10 +17,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = params;
 
   try {
-    // Fetch genre info directly from database (safe for build time)
-    const genre = await safePrisma.genres.findUnique({
-      where: { slug }
+    // Fetch genre info
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/genres`, {
+      next: { revalidate: 3600 }
     });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch genre data');
+    }
+
+    const data = await res.json();
+    const genre = data.genres.find((g: any) => g.slug === slug);
 
     if (!genre) {
       return constructMetadata({
@@ -35,11 +41,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${genre.name} Manga | Dokinaw`,
       description: genre.description || `Browse ${genre.name} manga - Find the best ${genre.name} manga series on Dokinaw. Read ${genre.name} manga online for free.`,
       keywords: [
-        `${genre.name} manga`,
-        `read ${genre.name} manga`,
-        `${genre.name} comics`,
-        'free manga',
-        'online manga',
+        `${genre.name} manga`, 
+        `read ${genre.name} manga`, 
+        `${genre.name} comics`, 
+        'free manga', 
+        'online manga', 
         'dokinaw'
       ],
     });
@@ -53,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// Fetch manga by genre directly from database
+// Fetch manga by genre
 async function fetchMangaByGenre({
   genre,
   page = 1,
@@ -66,64 +72,16 @@ async function fetchMangaByGenre({
   sort?: string;
 }) {
   try {
-    // Build the query
-    const where = {
-      Comic_Genres: {
-        some: {
-          Genres: {
-            slug: genre
-          }
-        }
-      }
-    };
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?genre=${genre}&page=${page}&limit=${limit}&sort=${sort}`,
+      { next: { revalidate: 3600 } }
+    );
 
-    // Determine sort order
-    const orderBy = sort === 'latest'
-      ? { last_chapter_uploaded_at: 'desc' as const }
-      : sort === 'popular'
-        ? { total_views: 'desc' as const }
-        : { title: 'asc' as const };
+    if (!res.ok) {
+      throw new Error('Failed to fetch manga by genre');
+    }
 
-    // Get total count for pagination
-    const totalComics = await prisma.comics.count({ where });
-
-    // Get comics with pagination
-    const comics = await prisma.comics.findMany({
-      where,
-      include: {
-        Comic_Genres: {
-          include: {
-            Genres: true
-          }
-        },
-        Chapters: {
-          orderBy: { chapter_number: 'desc' },
-          take: 1,
-          select: {
-            id: true,
-            chapter_number: true,
-            title: true,
-            slug: true,
-            release_date: true
-          }
-        },
-        _count: {
-          select: {
-            Chapters: true
-          }
-        }
-      },
-      orderBy,
-      skip: (page - 1) * limit,
-      take: limit
-    });
-
-    const data = {
-      comics,
-      totalPages: Math.ceil(totalComics / limit),
-      currentPage: page,
-      totalComics
-    };
+    const data = await res.json();
 
     // Transform API data to match our component needs
     const manga = data.comics.map((comic: any) => {
@@ -169,13 +127,19 @@ async function fetchMangaByGenre({
   }
 }
 
-// Fetch genre info directly from database
+// Fetch genre info
 async function fetchGenreInfo(slug: string) {
   try {
-    const genre = await prisma.genres.findUnique({
-      where: { slug }
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/genres`, {
+      next: { revalidate: 3600 }
     });
-    return genre;
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch genre data');
+    }
+
+    const data = await res.json();
+    return data.genres.find((g: any) => g.slug === slug);
   } catch (error) {
     console.error('Error fetching genre info:', error);
     return null;
