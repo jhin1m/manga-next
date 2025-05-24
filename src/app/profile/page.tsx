@@ -7,8 +7,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import FavoritesGrid from '@/components/profile/favorites-grid'
+import ReadingHistoryList from '@/components/profile/reading-history-list'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -76,6 +77,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               id: true,
               title: true,
               chapter_number: true,
+              slug: true,
             }
           }
         },
@@ -142,47 +144,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             )}
           </TabsContent>
           <TabsContent value="history" className="mt-4">
-            {user.Reading_Progress.length === 0 ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>No reading history</CardTitle>
-                  <CardDescription>
-                    You haven't read any manga yet.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            ) : (
-              <div className="space-y-4">
-                {user.Reading_Progress.map((progress) => (
-                  <Card key={`${progress.user_id}-${progress.comic_id}`}>
-                    <CardContent className="flex items-center gap-4 p-4">
-                      <div className="aspect-[2/3] relative h-20 w-14 overflow-hidden rounded">
-                        <Image
-                          src={progress.Comics.cover_image_url || '/placeholder.png'}
-                          alt={progress.Comics.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-medium">{progress.Comics.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Chapter {progress.Chapters?.chapter_number}: {progress.Chapters?.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Last read: {new Date(progress.updated_at!).toLocaleString()}
-                        </p>
-                      </div>
-                      <Button asChild size="sm">
-                        <Link href={`/manga/${progress.Comics.slug}/chapter/${progress.Chapters?.chapter_number}`}>
-                          Continue
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            <ReadingHistoryList initialProgress={user.Reading_Progress} />
           </TabsContent>
         </Tabs>
       </div>

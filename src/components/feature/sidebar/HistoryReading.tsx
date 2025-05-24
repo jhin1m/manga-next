@@ -5,53 +5,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/format";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Trash2, X } from "lucide-react";
-import { ReadingHistory, getReadingHistory, clearReadingHistory, removeFromReadingHistory } from "@/lib/utils/readingHistory";
+import { X } from "lucide-react";
+import { removeFromReadingHistoryComplete } from "@/lib/utils/readingHistory";
+import { useSession } from "next-auth/react";
+import { useReadingHistorySync } from "@/hooks/useReadingHistorySync";
 
 export default function HistoryReading() {
-  const [history, setHistory] = useState<ReadingHistory[]>([]);
   const [loading, setLoading] = useState(true);
+  const { status } = useSession();
 
-  // Load reading history from localStorage
-  const loadHistory = () => {
-    try {
-      const historyData = getReadingHistory();
-      setHistory(historyData);
-      setLoading(false);
-    } catch (error) {
-      console.error("Failed to load reading history:", error);
-      setLoading(false);
-    }
-  };
-
-  // Handle clearing all history
-  const handleClearHistory = () => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa tất cả lịch sử đọc truyện?')) {
-      clearReadingHistory();
-      setHistory([]);
-    }
-  };
+  // Use the sync hook for enhanced functionality
+  const {
+    history,
+    refreshHistory,
+  } = useReadingHistorySync();
 
   // Handle removing a single item
-  const handleRemoveItem = (id: string, e: React.MouseEvent) => {
+  const handleRemoveItem = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent bubbling to parent links
-    removeFromReadingHistory(id);
-    setHistory(prev => prev.filter(item => item.id !== id));
+    await removeFromReadingHistoryComplete(id, status === 'authenticated');
+    refreshHistory();
   };
 
   useEffect(() => {
-    loadHistory();
-    
-    // Add event listener to update history if it changes in another tab
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'manga-reading-history') {
-        loadHistory();
-      }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -74,17 +51,6 @@ export default function HistoryReading() {
     <div className="space-y-4">
       {history.length > 0 ? (
         <>
-          <div className="flex justify-end">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-xs text-muted-foreground hover:text-destructive"
-              onClick={handleClearHistory}
-            >
-              <Trash2 className="h-3 w-3 mr-1" />
-              Xóa lịch sử
-            </Button>
-          </div>
           {history.map((item) => (
             <div key={item.id} className="flex gap-3 group relative">
               <div className="relative h-16 w-12 rounded-md overflow-hidden shrink-0">
@@ -110,12 +76,16 @@ export default function HistoryReading() {
                 )}
                 <p className="text-xs text-muted-foreground">{formatDate(item.readAt)}</p>
               </div>
-              <button 
+              {/* Delete button - Always visible on mobile, hover on desktop */}
+              <button
                 onClick={(e) => handleRemoveItem(item.id, e)}
-                className="absolute top-0 right-0 p-1 rounded-full bg-background/80 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-0 right-0 p-2 rounded-full bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-destructive
+                          opacity-100 md:opacity-0 md:group-hover:opacity-100
+                          transition-opacity min-h-[32px] min-w-[32px] flex items-center justify-center
+                          touch-manipulation"
                 aria-label="Xóa khỏi lịch sử"
               >
-                <X className="h-3 w-3" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           ))}

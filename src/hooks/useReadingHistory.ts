@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { addToReadingHistory } from "@/lib/utils/readingHistory";
 
 type UseReadingHistoryProps = {
@@ -16,6 +17,7 @@ type UseReadingHistoryProps = {
 /**
  * Hook to automatically track reading history
  * Use this in manga chapter pages to automatically add to reading history
+ * Supports both localStorage and database sync for authenticated users
  */
 export function useReadingHistory({
   mangaId,
@@ -26,10 +28,12 @@ export function useReadingHistory({
   chapterNumber,
   chapterSlug,
 }: UseReadingHistoryProps) {
+  const { data: session, status } = useSession();
+
   useEffect(() => {
     // Generate a unique ID for this history item
     const id = `${mangaId}${chapterId ? `-${chapterId}` : ''}-${Date.now()}`;
-    
+
     // Create history item
     const historyItem = {
       id,
@@ -49,8 +53,35 @@ export function useReadingHistory({
           }
         : {}),
     };
-    
+
     // Add to reading history
     addToReadingHistory(historyItem);
-  }, [mangaId, mangaTitle, mangaSlug, coverImage, chapterId, chapterNumber, chapterSlug]);
+
+    // If user is authenticated, also sync to database
+    if (status === 'authenticated' && session?.user) {
+      syncToDatabase(mangaId, chapterId);
+    }
+  }, [mangaId, mangaTitle, mangaSlug, coverImage, chapterId, chapterNumber, chapterSlug, session, status]);
+
+  // Function to sync reading progress to database
+  const syncToDatabase = async (comicId: string, chapterId?: string) => {
+    try {
+      const response = await fetch('/api/reading-progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          comicId: parseInt(comicId),
+          chapterId: chapterId ? parseInt(chapterId) : undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to sync reading progress to database');
+      }
+    } catch (error) {
+      console.error('Error syncing reading progress:', error);
+    }
+  };
 }
