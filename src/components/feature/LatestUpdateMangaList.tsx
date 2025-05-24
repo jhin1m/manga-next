@@ -1,8 +1,8 @@
 import MangaCard from '@/components/feature/MangaCard';
 import { formatDate } from '@/lib/utils/format';
+import { safePrisma } from '@/lib/db-safe';
 
 // Define manga type for this component
-
 type Manga = {
   id: string;
   title: string;
@@ -19,26 +19,45 @@ type Manga = {
 
 async function fetchLatestManga(page: number = 1, limit: number = 12) {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=latest&page=${page}&limit=${limit}`,
-      {
-        next: { revalidate: 3600 } // Revalidate every hour
-      }
-    );
+    // Use safe database access instead of API call
+    const comics = await safePrisma.comics.findMany({
+      include: {
+        Comic_Genres: {
+          include: {
+            Genres: true
+          }
+        },
+        Chapters: {
+          orderBy: { chapter_number: 'desc' },
+          take: 1,
+          select: {
+            id: true,
+            chapter_number: true,
+            title: true,
+            slug: true,
+            release_date: true
+          }
+        },
+        _count: {
+          select: {
+            Chapters: true
+          }
+        }
+      },
+      orderBy: { last_chapter_uploaded_at: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit
+    });
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch latest manga data');
-    }
-
-    const data = await res.json();
+    // Transform database results to component format
     return {
-      manga: data.comics.map((comic: any) => ({
+      manga: comics.map((comic: any) => ({
         id: comic.id.toString(),
         title: comic.title,
         coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
         slug: comic.slug,
         latestChapter: comic.Chapters && comic.Chapters.length > 0
-          ? comic.Chapters[0].title
+          ? `Chapter ${comic.Chapters[0].chapter_number}`
           : undefined,
         latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
           ? comic.Chapters[0].slug
@@ -46,13 +65,13 @@ async function fetchLatestManga(page: number = 1, limit: number = 12) {
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
         rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
         views: comic.total_views || 0,
-        chapterCount: comic._chapterCount || 0,
-        updatedAt: comic.last_chapter_uploaded_at 
-          ? formatDate(comic.last_chapter_uploaded_at) 
+        chapterCount: comic._count?.Chapters || 0,
+        updatedAt: comic.last_chapter_uploaded_at
+          ? formatDate(comic.last_chapter_uploaded_at)
           : 'Recently',
         status: comic.status || 'Ongoing',
       })),
-      totalPages: Math.ceil(data.total / limit) || 1,
+      totalPages: Math.ceil(comics.length / limit) || 1,
       currentPage: page,
     };
   } catch (error) {
@@ -61,11 +80,11 @@ async function fetchLatestManga(page: number = 1, limit: number = 12) {
   }
 }
 
-export default async function LatestUpdateMangaList({ 
-  page = 1, 
-  limit = 12 
-}: { 
-  page?: number; 
+export default async function LatestUpdateMangaList({
+  page = 1,
+  limit = 12
+}: {
+  page?: number;
   limit?: number;
 }) {
   const { manga, totalPages } = await fetchLatestManga(page, limit);

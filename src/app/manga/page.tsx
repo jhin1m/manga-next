@@ -6,10 +6,11 @@ import { constructMetadata } from '@/lib/seo/metadata';
 import JsonLdScript from '@/components/seo/JsonLdScript';
 import { generateMangaListJsonLd } from '@/lib/seo/jsonld';
 import { formatDate } from '@/lib/utils/format';
+import { safePrisma } from '@/lib/db-safe';
 
 // Sử dụng hàm formatDate từ thư viện utils
 
-// Fetch manga from API
+// Fetch manga from database (safe for build time)
 async function fetchManga(params: {
   sort?: string;
   status?: string;
@@ -18,44 +19,70 @@ async function fetchManga(params: {
   limit?: number;
 }) {
   try {
-    // Build query parameters
-    const queryParams = new URLSearchParams();
+    const page = params.page || 1;
+    const limit = params.limit || 20;
 
-    if (params.sort) {
-      queryParams.append('sort', params.sort);
-    }
+    // Build where clause
+    const where: any = {};
 
     if (params.status && params.status !== 'all') {
-      queryParams.append('status', params.status);
+      where.status = params.status;
     }
 
     if (params.genre && params.genre !== 'all') {
-      queryParams.append('genre', params.genre);
+      where.Comic_Genres = {
+        some: {
+          Genres: {
+            slug: params.genre
+          }
+        }
+      };
     }
 
-    if (params.page) {
-      queryParams.append('page', params.page.toString());
-    }
+    // Determine sort order
+    const orderBy = params.sort === 'latest'
+      ? { last_chapter_uploaded_at: 'desc' as const }
+      : params.sort === 'popular'
+        ? { total_views: 'desc' as const }
+        : { title: 'asc' as const };
 
-    if (params.limit) {
-      queryParams.append('limit', params.limit.toString());
-    }
+    // Get comics with safe database access
+    const comics = await safePrisma.comics.findMany({
+      where,
+      include: {
+        Comic_Genres: {
+          include: {
+            Genres: true
+          }
+        },
+        Chapters: {
+          orderBy: { chapter_number: 'desc' },
+          take: 1,
+          select: {
+            id: true,
+            chapter_number: true,
+            title: true,
+            slug: true,
+            release_date: true
+          }
+        },
+        _count: {
+          select: {
+            Chapters: true
+          }
+        }
+      },
+      orderBy,
+      skip: (page - 1) * limit,
+      take: limit
+    });
 
-    // Fetch data from API
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?${queryParams.toString()}`
-    );
+    // Get total count
+    const totalComics = await safePrisma.comics.count({ where });
 
-    if (!res.ok) {
-      console.error('Failed to fetch manga list');
-      return { data: [], totalPages: 0, currentPage: 1, totalResults: 0 };
-    }
-
-    const data = await res.json();
-
-    // Transform API data to match our component needs
+    // Transform database results to match our component needs
     return {
-      data: data.comics.map((comic: any) => ({
+      data: comics.map((comic: any) => ({
         id: comic.id.toString(),
         title: comic.title,
         coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
@@ -69,14 +96,14 @@ async function fetchManga(params: {
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
         rating: 8.5, // Placeholder as it's not in the API
         views: comic.total_views || 0,
-        chapterCount: comic._chapterCount || 0,
+        chapterCount: comic._count?.Chapters || 0,
         updatedAt: comic.last_chapter_uploaded_at ?
           formatDate(comic.last_chapter_uploaded_at) : 'Recently',
         status: comic.status || 'Ongoing',
       })),
-      totalPages: data.totalPages,
-      currentPage: data.currentPage,
-      totalResults: data.totalComics
+      totalPages: Math.ceil(totalComics / limit),
+      currentPage: page,
+      totalResults: totalComics
     };
   } catch (error) {
     console.error('Error fetching manga list:', error);
@@ -93,7 +120,7 @@ export const metadata: Metadata = constructMetadata({
 export default async function MangaPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // Extract search parameters safely - await them in Next.js 15
   const params = await searchParams;
