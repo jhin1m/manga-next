@@ -20,7 +20,8 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            slug: true
+            slug: true,
+            cover_image_url: true
           }
         }
       }

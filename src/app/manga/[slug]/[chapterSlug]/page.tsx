@@ -44,6 +44,7 @@ async function getChapterData(mangaSlug: string, chapterSlug: string) {
         id: chapterData.chapter.Comics.id.toString(),
         title: chapterData.chapter.Comics.title,
         slug: chapterData.chapter.Comics.slug,
+        cover_image_url: chapterData.chapter.Comics.cover_image_url || '',
       },
       chapter: {
         id: chapterData.chapter.id.toString(),
