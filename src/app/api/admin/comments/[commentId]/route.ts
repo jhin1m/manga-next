@@ -36,9 +36,7 @@ export async function PUT(
     // Check if comment exists
     const existingComment = await prisma.comments.findUnique({
       where: { id },
-      select: { 
-        id: true, 
-        status: true,
+      include: {
         Users: {
           select: {
             id: true,
@@ -144,7 +142,7 @@ export async function PUT(
  * Get detailed comment information for moderation (admin only)
  */
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ commentId: string }> }
 ) {
   const session = await getServerSession(authOptions)
@@ -265,7 +263,7 @@ export async function GET(
       }
     })
 
-    const userStats = userCommentStats.reduce((acc, stat) => {
+    const userStats = userCommentStats.reduce((acc: Record<string, number>, stat: any) => {
       acc[stat.status] = stat._count.id
       return acc
     }, {} as Record<string, number>)
@@ -273,7 +271,7 @@ export async function GET(
     return NextResponse.json({
       comment,
       userStats: {
-        totalComments: Object.values(userStats).reduce((sum, count) => sum + count, 0),
+        totalComments: Object.values(userStats).reduce((sum: number, count: unknown) => sum + (count as number), 0),
         approved: userStats.APPROVED || 0,
         pending: userStats.PENDING || 0,
         rejected: userStats.REJECTED || 0,
