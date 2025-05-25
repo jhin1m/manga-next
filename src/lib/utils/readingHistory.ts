@@ -43,18 +43,51 @@ const STORAGE_KEY = 'manga-reading-history';
 const MAX_HISTORY_ITEMS = 20;
 
 /**
- * Get reading history from localStorage
+ * Get reading history from localStorage with automatic deduplication
  */
 export function getReadingHistory(): ReadingHistory[] {
   if (typeof window === 'undefined') return [];
 
   try {
     const storedHistory = localStorage.getItem(STORAGE_KEY);
-    return storedHistory ? JSON.parse(storedHistory) : [];
+    if (!storedHistory) return [];
+
+    const history: ReadingHistory[] = JSON.parse(storedHistory);
+
+    // Deduplicate by manga ID, keeping most recent entry for each manga
+    const deduplicatedHistory = deduplicateReadingHistory(history);
+
+    // If deduplication changed the array, save the cleaned version
+    if (deduplicatedHistory.length !== history.length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(deduplicatedHistory));
+    }
+
+    return deduplicatedHistory;
   } catch (error) {
     console.error('Failed to get reading history:', error);
     return [];
   }
+}
+
+/**
+ * Deduplicate reading history by manga ID, keeping most recent entry for each manga
+ */
+function deduplicateReadingHistory(history: ReadingHistory[]): ReadingHistory[] {
+  const mangaMap = new Map<string, ReadingHistory>();
+
+  history.forEach(item => {
+    const existing = mangaMap.get(item.manga.id);
+
+    // Keep the most recent entry for this manga
+    if (!existing || new Date(item.readAt) > new Date(existing.readAt)) {
+      mangaMap.set(item.manga.id, item);
+    }
+  });
+
+  // Convert back to array and sort by readAt (most recent first)
+  return Array.from(mangaMap.values())
+    .sort((a, b) => new Date(b.readAt).getTime() - new Date(a.readAt).getTime())
+    .slice(0, MAX_HISTORY_ITEMS);
 }
 
 /**
@@ -72,10 +105,10 @@ export function addToReadingHistory(historyItem: Omit<ReadingHistory, 'readAt'>)
       readAt: new Date().toISOString(),
     };
 
-    // Remove existing entry for the same manga and chapter if exists
+    // Remove ANY existing entry for the same manga (regardless of chapter)
+    // This ensures only one entry per manga is kept, showing the most recent chapter
     const filteredHistory = history.filter(
-      item => !(item.manga.id === newItem.manga.id &&
-               (!item.chapter || !newItem.chapter || item.chapter.id === newItem.chapter.id))
+      item => item.manga.id !== newItem.manga.id
     );
 
     // Add new item at the beginning
@@ -159,6 +192,7 @@ export function convertLocalToDbHistory(localHistory: ReadingHistory[]): Array<{
 
 /**
  * Merge localStorage and database history, keeping most recent entries
+ * Only one entry per manga is kept (the most recent chapter)
  */
 export function mergeReadingHistory(
   localHistory: ReadingHistory[],
@@ -166,12 +200,13 @@ export function mergeReadingHistory(
 ): ReadingHistory[] {
   const merged = new Map<string, ReadingHistory>();
 
-  // Add all entries to map, using manga-chapter combination as key
+  // Add all entries to map, using manga ID as key (not manga-chapter combination)
+  // This ensures only one entry per manga is kept
   [...localHistory, ...dbHistory].forEach(item => {
-    const key = `${item.manga.id}-${item.chapter?.id || 'manga'}`;
+    const key = item.manga.id;
     const existing = merged.get(key);
 
-    // Keep the most recent entry
+    // Keep the most recent entry for this manga
     if (!existing || new Date(item.readAt) > new Date(existing.readAt)) {
       merged.set(key, item);
     }
