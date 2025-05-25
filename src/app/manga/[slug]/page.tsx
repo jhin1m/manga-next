@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import { constructMangaMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateMangaJsonLd } from "@/lib/seo/jsonld";
+import CommentSection from "@/components/feature/comments/CommentSection";
 import { formatDate, formatViews } from "@/lib/utils/format";
 
 // Fetch manga data from API
@@ -32,7 +33,7 @@ async function getMangaBySlug(slug: string) {
 
     // Transform API data to match our component needs
     return {
-      id: data.manga.id.toString(),
+      id: data.manga.id,
       title: data.manga.title,
       alternativeTitles: data.manga.alternative_titles ?
         Object.values(data.manga.alternative_titles as Record<string, string>) : [],
@@ -285,7 +286,7 @@ export default async function MangaDetailPage({
               </Link>
             </Button>
             <FavoriteButton
-              comicId={parseInt(manga.id)}
+              comicId={manga.id}
               variant="outline"
               size="default"
               showText={true}
@@ -315,6 +316,14 @@ export default async function MangaDetailPage({
           <RelatedManga relatedManga={relatedManga} />
         </section>
       </div>
+
+      {/* Comments Section */}
+      <section className="mt-8">
+        <CommentSection
+          mangaId={manga.id}
+          mangaSlug={manga.slug}
+        />
+      </section>
     </div>
   );
 }

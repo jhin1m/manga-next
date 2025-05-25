@@ -121,9 +121,16 @@ For detailed backend implementation tasks and guides, refer to:
 
 ## Additional Features (Optional)
 - [x] User authentication and profiles
-- [ ] Bookmark/favorite functionality
-- [ ] Reading history
-- [ ] Comments and ratings
+- [x] Bookmark/favorite functionality
+- [x] Reading history
+- [x] **Comments and ratings** ✨
+  - [x] Comprehensive comment system with threaded replies
+  - [x] Like/dislike functionality
+  - [x] Comment reporting and moderation
+  - [x] Admin moderation interface
+  - [x] Real-time comment counts and pagination
+  - [x] Spam detection and rate limiting
+  - [x] Mobile-responsive comment interface
 - [ ] Admin panel for content management
 - [ ] Notifications for new chapters
 - [ ] Progressive Web App (PWA) features

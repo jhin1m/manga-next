@@ -1,106 +1,54 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/format";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-type Comment = {
-  id: string;
+type RecentComment = {
+  id: number;
   content: string;
-  user: {
-    id: string;
-    name: string;
-    avatar: string;
+  created_at: string;
+  Users: {
+    id: number;
+    username: string;
+    avatar_url?: string;
   };
-  manga: {
-    id: string;
+  Comics?: {
+    id: number;
     title: string;
     slug: string;
   };
-  chapter?: {
-    id: string;
-    number: number;
+  Chapters?: {
+    id: number;
+    title: string;
+    chapter_number: number;
     slug: string;
   };
-  createdAt: string;
 };
 
 export default function RecentComments() {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<RecentComment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        // Simulate API call - replace with actual API endpoint when available
-        // const res = await fetch('/api/comments/recent');
-        // const data = await res.json();
-        
-        // Mock data for now
-        const mockComments: Comment[] = [
-          {
-            id: "1",
-            content: "This chapter was amazing! Can't wait for the next one.",
-            user: {
-              id: "user1",
-              name: "MangaFan123",
-              avatar: "https://placehold.co/100x100/png",
-            },
-            manga: {
-              id: "manga1",
-              title: "One Piece",
-              slug: "one-piece",
-            },
-            chapter: {
-              id: "chapter1",
-              number: 1084,
-              slug: "one-piece-chapter-1084",
-            },
-            createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
-          },
-          {
-            id: "2",
-            content: "The art style in this manga is absolutely beautiful!",
-            user: {
-              id: "user2",
-              name: "ArtLover",
-              avatar: "https://placehold.co/100x100/png",
-            },
-            manga: {
-              id: "manga2",
-              title: "Demon Slayer",
-              slug: "demon-slayer",
-            },
-            createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-          },
-          {
-            id: "3",
-            content: "This plot twist was unexpected. The author is a genius!",
-            user: {
-              id: "user3",
-              name: "PlotTwistFan",
-              avatar: "https://placehold.co/100x100/png",
-            },
-            manga: {
-              id: "manga3",
-              title: "Attack on Titan",
-              slug: "attack-on-titan",
-            },
-            chapter: {
-              id: "chapter3",
-              number: 139,
-              slug: "attack-on-titan-chapter-139",
-            },
-            createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(), // 5 hours ago
-          },
-        ];
-        
-        setComments(mockComments);
-        setLoading(false);
+        // Fetch recent comments from API
+        const response = await fetch('/api/comments/recent?limit=5');
+
+        if (response.ok) {
+          const data = await response.json();
+          setComments(data.comments || []);
+        } else {
+          // Fallback to empty array if API fails
+          setComments([]);
+        }
       } catch (error) {
         console.error("Failed to fetch recent comments:", error);
+        setComments([]);
+      } finally {
         setLoading(false);
       }
     };
@@ -129,34 +77,37 @@ export default function RecentComments() {
       {comments.length > 0 ? (
         comments.map((comment) => (
           <div key={comment.id} className="flex gap-3">
-            <div className="relative h-10 w-10 rounded-full overflow-hidden">
-              <Image
-                src={comment.user.avatar}
-                alt={comment.user.name}
-                fill
-                className="object-cover"
+            <Avatar className="h-10 w-10">
+              <AvatarImage
+                src={comment.Users.avatar_url || undefined}
+                alt={comment.Users.username}
               />
-            </div>
+              <AvatarFallback className="text-sm font-medium">
+                {comment.Users.username.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <div className="space-y-1 flex-1">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-sm">{comment.user.name}</span>
+                <span className="font-medium text-sm">{comment.Users.username}</span>
                 <span className="text-xs text-muted-foreground">
-                  {formatDate(comment.createdAt)}
+                  {formatDate(comment.created_at)}
                 </span>
               </div>
               <p className="text-sm line-clamp-2">{comment.content}</p>
-              <div className="text-xs text-primary">
-                <Link
-                  href={
-                    comment.chapter
-                      ? `/manga/${comment.manga.slug}/${comment.chapter.slug}`
-                      : `/manga/${comment.manga.slug}`
-                  }
-                >
-                  {comment.manga.title}
-                  {comment.chapter ? ` Ch.${comment.chapter.number}` : ""}
-                </Link>
-              </div>
+              {(comment.Comics || comment.Chapters) && (
+                <div className="text-xs text-primary">
+                  <Link
+                    href={
+                      comment.Chapters
+                        ? `/manga/${comment.Comics?.slug}/chapter/${comment.Chapters.slug}`
+                        : `/manga/${comment.Comics?.slug}`
+                    }
+                  >
+                    {comment.Comics?.title}
+                    {comment.Chapters ? ` Ch.${comment.Chapters.chapter_number}` : ""}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         ))

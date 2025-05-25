@@ -1,0 +1,192 @@
+"use client"
+
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Loader2, Flag } from 'lucide-react'
+import { toast } from 'sonner'
+import { commentReportSchema } from '@/types/comment'
+
+interface CommentReportDialogProps {
+  commentId: number
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+const reportReasons = [
+  { value: 'spam', label: 'Spam or unwanted content' },
+  { value: 'harassment', label: 'Harassment or bullying' },
+  { value: 'inappropriate_content', label: 'Inappropriate or offensive content' },
+  { value: 'spoilers', label: 'Spoilers without warning' },
+  { value: 'off_topic', label: 'Off-topic or irrelevant' },
+  { value: 'other', label: 'Other (please specify)' },
+]
+
+export default function CommentReportDialog({
+  commentId,
+  open,
+  onOpenChange
+}: CommentReportDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const form = useForm<z.infer<typeof commentReportSchema>>({
+    resolver: zodResolver(commentReportSchema),
+    defaultValues: {
+      reason: 'spam',
+      details: '',
+    },
+  })
+
+  const selectedReason = form.watch('reason')
+
+  const onSubmit = async (values: z.infer<typeof commentReportSchema>) => {
+    try {
+      setIsSubmitting(true)
+
+      const response = await fetch(`/api/comments/${commentId}/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values)
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to report comment')
+      }
+
+      toast.success('Comment reported successfully. Thank you for helping keep our community safe.')
+      onOpenChange(false)
+      form.reset()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to report comment')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Flag className="h-5 w-5" />
+            Report Comment
+          </DialogTitle>
+          <DialogDescription>
+            Help us maintain a safe and respectful community by reporting inappropriate content.
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="reason"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Reason for reporting</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="grid grid-cols-1 gap-2"
+                    >
+                      {reportReasons.map((reason) => (
+                        <div key={reason.value} className="flex items-center space-x-2">
+                          <RadioGroupItem value={reason.value} id={reason.value} />
+                          <Label 
+                            htmlFor={reason.value} 
+                            className="text-sm font-normal cursor-pointer flex-1"
+                          >
+                            {reason.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {selectedReason === 'other' && (
+              <FormField
+                control={form.control}
+                name="details"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Additional details</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Please provide more details about why you're reporting this comment..."
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Reporting...
+                  </>
+                ) : (
+                  <>
+                    <Flag className="h-4 w-4 mr-2" />
+                    Report Comment
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+
+        <div className="mt-4 p-3 bg-muted rounded-lg">
+          <p className="text-xs text-muted-foreground">
+            <strong>Note:</strong> False reports may result in restrictions on your account. 
+            Please only report content that genuinely violates our community guidelines.
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}

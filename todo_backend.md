@@ -52,13 +52,13 @@
   - [x] Authentication routes (login, register, profile)
   - [x] User preferences and settings
 
-- [ ] Bookmarks/Favorites
-  - [ ] Save/remove manga from favorites
-  - [ ] Get user's favorite manga list
+- [x] Bookmarks/Favorites
+  - [x] Save/remove manga from favorites
+  - [x] Get user's favorite manga list
 
-- [ ] Reading Progress
-  - [ ] Save/update reading progress
-  - [ ] Get user's reading history
+- [x] Reading Progress
+  - [x] Save/update reading progress
+  - [x] Get user's reading history
 
 - [ ] Comments
   - [ ] Add/edit/delete comments on manga or chapters
