@@ -55,12 +55,14 @@ export async function PUT(
     }
 
     // Update comment status
+    const updateData: any = {
+      status: validatedData.status,
+      updated_at: new Date(),
+    };
+
     const updatedComment = await prisma.comments.update({
       where: { id },
-      data: {
-        status: validatedData.status as any,
-        updated_at: new Date(),
-      },
+      data: updateData,
       include: {
         Users: {
           select: {
