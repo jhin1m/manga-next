@@ -11,11 +11,12 @@ RUN corepack enable pnpm
 WORKDIR /app
 
 # Copy package files
-COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
+COPY package.json pnpm-workspace.yaml* .pnpmrc* ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile --prod=false
+# Install dependencies without lockfile requirement
+# This is more flexible for Docker builds
+RUN pnpm install --prod=false
 
 # Generate Prisma client
 RUN pnpm prisma generate

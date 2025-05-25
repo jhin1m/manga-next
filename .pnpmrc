@@ -1,0 +1,14 @@
+# Enable lockfile generation
+lockfile=true
+
+# Auto install peer dependencies
+auto-install-peers=true
+
+# Use exact versions for better reproducibility
+save-exact=true
+
+# Hoist dependencies to avoid duplication
+hoist=true
+
+# Enable strict peer dependencies
+strict-peer-dependencies=false

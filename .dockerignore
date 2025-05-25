@@ -5,6 +5,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Keep pnpm config files
+!.pnpmrc
+!pnpm-workspace.yaml
+
 # Testing
 coverage
 .nyc_output
