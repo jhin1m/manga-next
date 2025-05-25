@@ -1,6 +1,0 @@
-# Railway deployment configuration - use npm instead of pnpm
-engine-strict=false
-package-manager=npm
-package-lock=true
-auto-install-peers=true
-save-exact=false
