@@ -1,230 +1,180 @@
-# Hướng Dẫn Triển Khai Toàn Diện - Trang Web Manga NextJS 15
+# Simple Deployment Guide for NextJS 15 Manga Website
 
-## 📋 Mục Lục
-1. [Điều Kiện Tiên Quyết](#điều-kiện-tiên-quyết)
-2. [Thiết Lập Môi Trường](#thiết-lập-môi-trường)
-3. [Quy Trình Xây Dựng](#quy-trình-xây-dựng)
-4. [Các Bước Triển Khai](#các-bước-triển-khai)
-5. [Cân Nhắc Về Cơ Sở Dữ Liệu](#cân-nhắc-về-cơ-sở-dữ-liệu)
-6. [Xác Minh Sau Khi Triển Khai](#xác-minh-sau-khi-triển-khai)
+This guide provides step-by-step instructions for deploying your manga website. We'll focus on **Vercel** (easiest option), with Railway and Docker as alternatives.
 
-## 🔧 Điều Kiện Tiên Quyết
+## 🚀 Quick Start - Vercel Deployment (Recommended)
 
-### Phiên Bản Phần Mềm Bắt Buộc
-- **Node.js**: 18.17 hoặc mới hơn (khuyến nghị 20.x LTS)
-- **npm**: 9.x hoặc mới hơn
-- **PostgreSQL**: 13.x hoặc mới hơn
-- **Git**: Phiên bản mới nhất
+Vercel is the easiest way to deploy NextJS applications with automatic GitHub integration.
 
-### Kiểm Tra Phiên Bản
-```bash
-node --version    # >= 18.17
-npm --version     # >= 9.0
-psql --version    # >= 13.0
-git --version
+### Step 1: Fix pnpm Version Issue
+
+**Problem**: Vercel uses pnpm 6.35.1 but your project requires pnpm >=8.0.0
+
+**Solution**: Update your `package.json` to be compatible with Vercel's pnpm version:
+
+```json
+{
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=6.35.1"
+  },
+  "packageManager": "pnpm@6.35.1"
+}
 ```
 
-## 🌍 Thiết Lập Môi Trường
+**Alternative Solution** (if you need newer pnpm features):
+Create a `.nvmrc` file in your project root:
+```
+18.17.0
+```
 
-### Biến Môi Trường Cho Production
+And add this to your `package.json`:
+```json
+{
+  "scripts": {
+    "vercel-build": "npm install -g pnpm@8.15.0 && pnpm install && pnpm build"
+  }
+}
+```
 
-Tạo file `.env.production` với các biến sau:
+### Step 2: Prepare Your Environment Variables
+
+Create these environment variables (you'll add them to Vercel later):
 
 ```env
-# Node Environment
-NODE_ENV=production
+# Required for production
+DATABASE_URL="your-postgresql-connection-string"
+NEXTAUTH_SECRET="your-32-character-secret-key"
+NEXTAUTH_URL="https://your-app-name.vercel.app"
+NEXT_PUBLIC_API_URL="https://your-app-name.vercel.app"
 
-# Database Configuration
-DATABASE_URL="postgresql://username:password@host:port/database_name?schema=public"
-
-# NextAuth Configuration
-NEXTAUTH_SECRET="your-production-secret-key-minimum-32-characters-long"
-NEXTAUTH_URL="https://your-domain.com"
-
-# API Configuration
-NEXT_PUBLIC_API_URL="https://your-domain.com"
-
-# External API (nếu sử dụng)
-MANGARAW_API_TOKEN="your-production-api-token"
-
-# Optional: Email Configuration (cho reset password)
-EMAIL_SERVER="smtp://username:password@smtp.provider.com:587"
-EMAIL_FROM="noreply@your-domain.com"
-
-# Optional: OAuth Providers
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
-GITHUB_CLIENT_ID="your-github-client-id"
-GITHUB_CLIENT_SECRET="your-github-client-secret"
+# Optional (if using manga crawler)
+MANGARAW_API_TOKEN="your-api-token"
 ```
 
-### Bảo Mật Biến Môi Trường
-- **Không bao giờ** commit file `.env` vào repository
-- Sử dụng secrets management của platform hosting
-- Tạo NEXTAUTH_SECRET mạnh: `openssl rand -base64 32`
+### Step 3: Set Up Database
 
-## 🏗️ Quy Trình Xây Dựng
+**Option A: Use Vercel Postgres (Easiest)**
+1. Go to your Vercel dashboard
+2. Create a new project or select existing one
+3. Go to Storage tab → Create Database → Postgres
+4. Vercel automatically provides the `DATABASE_URL`
 
-### 1. Chuẩn Bị Mã Nguồn
+**Option B: Use External Database (Supabase, Railway, etc.)**
+1. Create a PostgreSQL database on your preferred service
+2. Get the connection string
+3. Use it as your `DATABASE_URL`
+
+### Step 4: Deploy to Vercel
+
+**Method 1: GitHub Integration (Recommended)**
+1. Push your code to GitHub
+2. Go to [vercel.com](https://vercel.com) and sign in
+3. Click "New Project"
+4. Import your GitHub repository
+5. Configure settings:
+   - **Framework Preset**: Next.js
+   - **Build Command**: `pnpm build` (or leave default)
+   - **Output Directory**: `.next` (or leave default)
+   - **Install Command**: `pnpm install` (or leave default)
+
+**Method 2: Vercel CLI**
 ```bash
-# Clone repository
-git clone <your-repo-url>
-cd manga-fake
-
-# Checkout branch production (nếu có)
-git checkout main
-git pull origin main
-```
-
-### 2. Cài Đặt Dependencies
-```bash
-# Cài đặt dependencies
-npm ci --production=false
-
-# Hoặc sử dụng yarn
-yarn install --frozen-lockfile
-```
-
-### 3. Thiết Lập Database
-```bash
-# Generate Prisma client
-npx prisma generate
-
-# Chạy migrations (production database)
-npx prisma migrate deploy
-
-# Seed data (nếu cần)
-npm run seed
-```
-
-### 4. Build Application
-```bash
-# Build ứng dụng cho production
-npm run build
-
-# Kiểm tra build thành công
-npm run start
-```
-
-### 5. Tối Ưu Hóa Build
-```bash
-# Phân tích bundle size (optional)
-npm install --save-dev @next/bundle-analyzer
-ANALYZE=true npm run build
-```
-
-## 🚀 Các Bước Triển Khai
-
-### Option 1: Triển Khai Lên Vercel (Khuyến Nghị)
-
-#### Bước 1: Chuẩn Bị
-```bash
-# Cài đặt Vercel CLI
+# Install Vercel CLI
 npm install -g vercel
 
-# Login vào Vercel
+# Login and deploy
 vercel login
-```
-
-#### Bước 2: Cấu Hình Project
-```bash
-# Khởi tạo project
 vercel
 
-# Thiết lập environment variables
-vercel env add DATABASE_URL
-vercel env add NEXTAUTH_SECRET
-vercel env add NEXTAUTH_URL
-vercel env add NEXT_PUBLIC_API_URL
+# Follow the prompts
 ```
 
-#### Bước 3: Deploy
+### Step 5: Add Environment Variables in Vercel
+
+1. Go to your project in Vercel dashboard
+2. Click Settings → Environment Variables
+3. Add each variable:
+   - `DATABASE_URL`
+   - `NEXTAUTH_SECRET`
+   - `NEXTAUTH_URL`
+   - `NEXT_PUBLIC_API_URL`
+   - `MANGARAW_API_TOKEN` (if needed)
+
+### Step 6: Set Up Database Schema
+
+After deployment, run database migrations:
+
 ```bash
-# Deploy lên production
-vercel --prod
+# If using Vercel CLI
+vercel env pull .env.local
+pnpm prisma migrate deploy
 
-# Hoặc sử dụng Git integration (khuyến nghị)
-git push origin main
+# Or run this in Vercel's function (create /api/setup route temporarily)
 ```
 
-### Option 2: Triển Khai Lên VPS/Server
+### Step 7: Test Your Deployment
 
-#### Bước 1: Chuẩn Bị Server
-```bash
-# Cập nhật system
-sudo apt update && sudo apt upgrade -y
+Visit your Vercel URL and test:
+- Homepage loads correctly
+- Database connection works
+- Authentication functions
+- Search and favorites work
 
-# Cài đặt Node.js
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
+## 🛠️ Alternative Deployment Options
 
-# Cài đặt PM2
-sudo npm install -g pm2
-```
+### Railway Deployment (Good for Full-Stack)
 
-#### Bước 2: Deploy Application
-```bash
-# Upload code lên server
-rsync -avz --exclude node_modules . user@server:/path/to/app
+Railway provides both hosting and managed PostgreSQL in one place.
 
-# Trên server
-cd /path/to/app
-npm ci --production
-npm run build
-```
+1. **Create Account**: Sign up at [railway.app](https://railway.app)
 
-#### Bước 3: Chạy với PM2
-```bash
-# Tạo ecosystem file
-cat > ecosystem.config.js << EOF
-module.exports = {
-  apps: [{
-    name: 'manga-website',
-    script: 'npm',
-    args: 'start',
-    env: {
-      NODE_ENV: 'production',
-      PORT: 3000
-    }
-  }]
-}
-EOF
+2. **Create New Project**:
+   ```bash
+   # Install Railway CLI
+   npm install -g @railway/cli
 
-# Start application
-pm2 start ecosystem.config.js
-pm2 save
-pm2 startup
-```
+   # Login and create project
+   railway login
+   railway new
+   ```
 
-### Option 3: Docker Deployment
+3. **Add PostgreSQL**:
+   - In Railway dashboard, click "New" → "Database" → "PostgreSQL"
+   - Railway automatically provides `DATABASE_URL`
 
-#### Dockerfile
+4. **Configure Environment Variables**:
+   ```bash
+   railway variables set NEXTAUTH_SECRET=your-secret
+   railway variables set NEXTAUTH_URL=https://your-app.railway.app
+   railway variables set NEXT_PUBLIC_API_URL=https://your-app.railway.app
+   ```
+
+5. **Deploy**:
+   ```bash
+   railway up
+   ```
+
+### Docker Deployment (Advanced Users)
+
+For those who want full control over their deployment environment.
+
+1. **Create Dockerfile**:
 ```dockerfile
-FROM node:20-alpine AS base
-
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
+FROM node:18-alpine AS deps
 WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
-COPY package.json package-lock.json* ./
-RUN npm ci
-
-# Rebuild the source code only when needed
-FROM base AS builder
+FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN npm install -g pnpm && pnpm prisma generate && pnpm build
 
-RUN npx prisma generate
-RUN npm run build
-
-# Production image
-FROM base AS runner
+FROM node:18-alpine AS runner
 WORKDIR /app
-
 ENV NODE_ENV production
-
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -233,172 +183,213 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
-
 EXPOSE 3000
-
 ENV PORT 3000
-
 CMD ["node", "server.js"]
 ```
 
-#### Docker Compose
-```yaml
-version: '3.8'
-services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - NEXTAUTH_URL=${NEXTAUTH_URL}
-    depends_on:
-      - postgres
-
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: manga-next
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+2. **Update next.config.ts**:
+```typescript
+const nextConfig: NextConfig = {
+  output: 'standalone', // Required for Docker
+  // ... your other config
+};
 ```
 
-## 🗄️ Cân Nhắc Về Cơ Sở Dữ Liệu
-
-### 1. Database Migration
+3. **Build and Run**:
 ```bash
-# Chạy migrations trên production database
-npx prisma migrate deploy
-
-# Kiểm tra trạng thái migrations
-npx prisma migrate status
+docker build -t manga-website .
+docker run -p 3000:3000 -e DATABASE_URL=your_db_url manga-website
 ```
 
-### 2. Database Connection Pool
-Đối với production, cấu hình connection pooling:
+## 🔧 Common Issues & Solutions
+
+### pnpm Version Problems
+
+**Issue**: `ERR_PNPM_UNSUPPORTED_ENGINE Unsupported environment (bad pnpm and/or Node.js version)`
+
+**Solutions**:
+
+1. **Quick Fix** - Update `package.json`:
+```json
+{
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=6.35.1"
+  },
+  "packageManager": "pnpm@6.35.1"
+}
+```
+
+2. **Force Newer pnpm** - Add custom build script:
+```json
+{
+  "scripts": {
+    "vercel-build": "npm install -g pnpm@8.15.0 && pnpm install && pnpm build"
+  }
+}
+```
+
+3. **Use npm instead** - Change Vercel build settings:
+   - Build Command: `npm run build`
+   - Install Command: `npm install`
+
+### Database Connection Issues
+
+**Issue**: Database connection fails
+
+**Solutions**:
+1. Check your `DATABASE_URL` format:
 ```env
-DATABASE_URL="postgresql://user:pass@host:port/db?schema=public&connection_limit=10&pool_timeout=20"
+# Correct format
+DATABASE_URL="postgresql://username:password@host:port/database?schema=public"
+
+# For SSL connections (required by most cloud databases)
+DATABASE_URL="postgresql://username:password@host:port/database?sslmode=require"
 ```
 
-### 3. Backup Strategy
+2. Ensure Prisma client is generated:
+```json
+{
+  "scripts": {
+    "postinstall": "prisma generate",
+    "build": "prisma generate && next build"
+  }
+}
+```
+
+### Build Failures
+
+**Issue**: Build fails with TypeScript or ESLint errors
+
+**Quick Fix** - Temporarily disable strict checks in `next.config.ts`:
+```typescript
+const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: true, // Only for deployment emergencies
+  },
+  eslint: {
+    ignoreDuringBuilds: true, // Only for deployment emergencies
+  },
+};
+```
+
+**Better Solution** - Fix the actual errors:
 ```bash
-# Tạo backup script
-#!/bin/bash
-DATE=$(date +%Y%m%d_%H%M%S)
-pg_dump $DATABASE_URL > backup_$DATE.sql
+# Check for TypeScript errors
+pnpm run build
 
-# Cron job cho backup hàng ngày
-0 2 * * * /path/to/backup-script.sh
+# Fix ESLint issues
+pnpm run lint --fix
 ```
 
-### 4. Database Optimization
-- Tạo indexes cho các trường tìm kiếm thường xuyên
-- Sử dụng connection pooling (PgBouncer)
-- Monitor query performance
+### Environment Variables Not Working
 
-## ✅ Xác Minh Sau Khi Triển Khai
+**Issue**: Environment variables are undefined in production
 
-### 1. Health Checks
+**Solutions**:
+1. Make sure variable names are correct (case-sensitive)
+2. Public variables must start with `NEXT_PUBLIC_`
+3. Restart your deployment after adding new variables
+4. Check that `NEXTAUTH_URL` exactly matches your domain
+
+### Prisma Migration Issues
+
+**Issue**: Database schema doesn't match
+
+**Solutions**:
 ```bash
-# Kiểm tra application status
-curl -f https://your-domain.com/api/health || exit 1
+# Reset database (development only!)
+pnpm prisma migrate reset
 
-# Kiểm tra database connection
-curl -f https://your-domain.com/api/manga?limit=1 || exit 1
+# Deploy migrations to production
+pnpm prisma migrate deploy
+
+# Check migration status
+pnpm prisma migrate status
 ```
 
-### 2. Functional Testing
-- [ ] Trang chủ load thành công
-- [ ] API endpoints hoạt động:
-  - `/api/manga` - Danh sách manga
-  - `/api/manga/[slug]` - Chi tiết manga
-  - `/api/search` - Tìm kiếm
-  - `/api/chapters/[id]` - Nội dung chapter
-- [ ] Authentication system:
-  - Đăng ký tài khoản
-  - Đăng nhập/đăng xuất
-  - Protected routes
-- [ ] Database operations:
-  - Đọc dữ liệu
-  - Ghi dữ liệu (favorites, comments)
-  - Search functionality
+## ✅ Quick Testing Checklist
 
-### 3. Performance Monitoring
+After deployment, test these features:
+
+### Basic Functionality
+- [ ] Homepage loads without errors
+- [ ] Navigation works correctly
+- [ ] Images display properly
+
+### Database Features
+- [ ] Manga list loads with data
+- [ ] Individual manga pages work
+- [ ] Search functionality works
+- [ ] Pagination works
+
+### Authentication (if implemented)
+- [ ] Login/logout works
+- [ ] User sessions persist
+- [ ] Protected routes work correctly
+
+### API Endpoints
+Test these URLs (replace with your domain):
 ```bash
-# Kiểm tra response time
-curl -w "@curl-format.txt" -o /dev/null -s https://your-domain.com
+# Basic API health
+https://your-domain.com/api/manga
 
-# Monitor memory usage
-free -h
+# Search API
+https://your-domain.com/api/search?q=test
+
+# Authentication API
+https://your-domain.com/api/auth/session
 ```
 
-### 4. Security Checklist
-- [ ] HTTPS được kích hoạt
-- [ ] Environment variables được bảo mật
-- [ ] Database credentials được mã hóa
-- [ ] CORS được cấu hình đúng
-- [ ] Rate limiting được thiết lập
+## 🎯 Essential Tips
 
-### 5. SEO và Performance
-- [ ] Sitemap accessible: `/sitemap.xml`
-- [ ] Robots.txt configured: `/robots.txt`
-- [ ] Meta tags hiển thị đúng
-- [ ] Images được optimize
-- [ ] Page load speed < 3s
-
-## 🔧 Troubleshooting
-
-### Lỗi Thường Gặp
-
-#### 1. Database Connection Error
+### 1. Generate a Strong Secret
 ```bash
-# Kiểm tra connection string
-npx prisma db pull
-
-# Test database connectivity
-psql $DATABASE_URL -c "SELECT 1"
+# Generate a secure NEXTAUTH_SECRET
+openssl rand -base64 32
 ```
 
-#### 2. Build Errors
+### 2. Database Connection String Format
+```env
+# Local development
+DATABASE_URL="postgresql://username:password@localhost:5432/manga-next"
+
+# Production (with SSL)
+DATABASE_URL="postgresql://username:password@host:port/database?sslmode=require"
+```
+
+### 3. Environment Variable Naming
+- Use `NEXT_PUBLIC_` prefix for client-side variables
+- Keep server-side secrets without the prefix
+- Use UPPERCASE with underscores
+
+### 4. Quick Deployment Commands
 ```bash
-# Clear cache và rebuild
-rm -rf .next node_modules
-npm install
-npm run build
+# Vercel
+vercel --prod
+
+# Railway
+railway up
+
+# Check deployment status
+vercel ls  # for Vercel
+railway status  # for Railway
 ```
-
-#### 3. Environment Variables
-```bash
-# Kiểm tra env vars được load
-node -e "console.log(process.env.DATABASE_URL)"
-```
-
-### Monitoring và Logs
-```bash
-# PM2 logs
-pm2 logs manga-website
-
-# Vercel logs
-vercel logs
-
-# Docker logs
-docker logs container-name
-```
-
-## 📞 Hỗ Trợ
-
-Nếu gặp vấn đề trong quá trình triển khai:
-1. Kiểm tra logs chi tiết
-2. Xác minh environment variables
-3. Test database connectivity
-4. Kiểm tra network và firewall settings
 
 ---
 
-**Lưu ý**: Hướng dẫn này được thiết kế cho dự án manga website sử dụng NextJS 15, ShadcnUI, Prisma ORM và PostgreSQL. Điều chỉnh theo nhu cầu cụ thể của môi trường production.
+## 📝 Summary
+
+**Recommended Deployment Path**:
+1. Fix pnpm version in `package.json`
+2. Set up Vercel Postgres database
+3. Deploy via GitHub integration
+4. Add environment variables in Vercel dashboard
+5. Test your deployment
+
+**If Vercel doesn't work**: Try Railway for a simpler full-stack solution with built-in PostgreSQL.
+
+**For advanced users**: Use Docker for complete control over your deployment environment.
+
+Remember: Start simple with Vercel, then move to more complex solutions only if needed!
