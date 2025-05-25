@@ -41,6 +41,9 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+# Set a dummy DATABASE_URL for build time (will be overridden at runtime)
+ENV DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy"
+
 # Build the application
 RUN pnpm build
 
