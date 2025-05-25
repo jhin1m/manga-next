@@ -1,32 +1,10 @@
 [build]
-builder = "nixpacks"
-# Override both install and build phases
-installCommand = "npm install --ignore-scripts"
-buildCommand = "npx prisma generate && npx prisma migrate deploy && npm run build"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile.railway"
 
 [deploy]
-startCommand = "npm start"
 restartPolicyType = "always"
 
 [env]
 NODE_ENV = "production"
 PORT = "3000"
-
-# Force npm usage and disable pnpm detection
-[nixpacks]
-providers = ["node"]
-
-[nixpacks.variables]
-NPM_CONFIG_PACKAGE_MANAGER = "npm"
-NIXPACKS_NO_CACHE = "1"
-NPM_CONFIG_IGNORE_SCRIPTS = "true"
-
-# Disable pnpm detection by removing packageManager field
-[nixpacks.phases.setup]
-nixPkgs = ["nodejs_22", "npm", "openssl"]
-
-[nixpacks.phases.install]
-cmds = ["npm install --ignore-scripts"]
-
-[nixpacks.phases.build]
-cmds = ["npx prisma generate", "npx prisma migrate deploy", "npm run build"]
