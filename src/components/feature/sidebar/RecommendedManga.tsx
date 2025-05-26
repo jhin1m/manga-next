@@ -1,12 +1,9 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, Eye, Clock } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { formatViews, formatDate } from "@/lib/utils/format";
+import { mangaApi } from '@/lib/api/client';
 
 type RecommendedMangaType = {
   id: string;
@@ -24,72 +21,44 @@ type RecommendedMangaType = {
   } | null;
 };
 
-// Chuyển hàm fetch vào component chính để tránh gọi nhiều lần
+// Server-side data fetching
+async function fetchRecommendedManga(): Promise<RecommendedMangaType[]> {
+  try {
+    // Use centralized API client with built-in ISR caching
+    const data = await mangaApi.getList({
+      sort: 'popular',
+      limit: 5,
+    });
 
-export default function RecommendedManga() {
-  const [manga, setManga] = useState<RecommendedMangaType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    const fetchRecommendedManga = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=popular&limit=5`);
-
-        if (!res.ok) {
-          throw new Error('Failed to fetch recommended manga data');
-        }
-
-        const data = await res.json();
-        const recommendedManga = data.comics.map((comic: any) => ({
-          id: comic.id.toString(),
-          title: comic.title,
-          slug: comic.slug,
-          coverImage: comic.cover_image_url || 'https://placehold.co/100x150/png',
-          rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
-          status: comic.status || 'Updating',
-          views: comic.views || Math.floor(Math.random() * 10000) + 1000,
-          genres: comic.genres?.map((g: any) => g.name) || ['Action', 'Adventure'],
-          latestChapter: comic.chapters && comic.chapters.length > 0 
-            ? {
-                number: comic.chapters[0].number,
-                title: comic.chapters[0].title,
-                updatedAt: comic.chapters[0].updated_at || new Date().toISOString()
-              }
-            : null
-        }));
-        
-        setManga(recommendedManga);
-        setError(false);
-      } catch (error) {
-        console.error('Error fetching recommended manga data:', error);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecommendedManga();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex gap-3">
-            <Skeleton className="h-16 w-12 rounded-md" />
-            <div className="space-y-2 flex-1">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-3 w-4/5" />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+    // Transform API data to match component needs
+    return data.comics.map((comic: any) => ({
+      id: comic.id.toString(),
+      title: comic.title,
+      slug: comic.slug,
+      coverImage: comic.cover_image_url || 'https://placehold.co/100x150/png',
+      rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
+      status: comic.status || 'Updating',
+      views: comic.total_views || Math.floor(Math.random() * 10000) + 1000,
+      genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || ['Action', 'Adventure'],
+      latestChapter: comic.Chapters && comic.Chapters.length > 0
+        ? {
+            number: parseFloat(comic.Chapters[0].chapter_number),
+            title: comic.Chapters[0].title,
+            updatedAt: comic.Chapters[0].release_date || new Date().toISOString()
+          }
+        : null
+    }));
+  } catch (error) {
+    console.error('Error fetching recommended manga data:', error);
+    return [];
   }
-  
-  if (error || manga.length === 0) {
+}
+
+// Server Component - fetches data before render
+export default async function RecommendedManga() {
+  const manga = await fetchRecommendedManga();
+
+  if (manga.length === 0) {
     return (
       <div className="space-y-4 text-center py-2">
         <p className="text-sm text-muted-foreground">Failed to load recommendations.</p>

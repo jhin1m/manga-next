@@ -6,10 +6,11 @@ import { constructMetadata } from '@/lib/seo/metadata';
 import JsonLdScript from '@/components/seo/JsonLdScript';
 import { generateMangaListJsonLd } from '@/lib/seo/jsonld';
 import { formatDate } from '@/lib/utils/format';
+import { mangaApi } from '@/lib/api/client';
 
 // Sử dụng hàm formatDate từ thư viện utils
 
-// Fetch manga from API
+// Fetch manga from API using centralized API client
 async function fetchManga(params: {
   sort?: string;
   status?: string;
@@ -18,42 +19,16 @@ async function fetchManga(params: {
   limit?: number;
 }) {
   try {
-    // Build query parameters
-    const queryParams = new URLSearchParams();
+    // Use centralized API client with built-in ISR caching
+    const data = await mangaApi.getList({
+      sort: params.sort,
+      status: params.status !== 'all' ? params.status : undefined,
+      genre: params.genre !== 'all' ? params.genre : undefined,
+      page: params.page,
+      limit: params.limit,
+    });
 
-    if (params.sort) {
-      queryParams.append('sort', params.sort);
-    }
-
-    if (params.status && params.status !== 'all') {
-      queryParams.append('status', params.status);
-    }
-
-    if (params.genre && params.genre !== 'all') {
-      queryParams.append('genre', params.genre);
-    }
-
-    if (params.page) {
-      queryParams.append('page', params.page.toString());
-    }
-
-    if (params.limit) {
-      queryParams.append('limit', params.limit.toString());
-    }
-
-    // Fetch data from API
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?${queryParams.toString()}`
-    );
-
-    if (!res.ok) {
-      console.error('Failed to fetch manga list');
-      return { data: [], totalPages: 0, currentPage: 1, totalResults: 0 };
-    }
-
-    const data = await res.json();
-
-    // Transform API data to match our component needs
+    // Transform API data to match our component needs (preserve existing logic)
     return {
       data: data.comics.map((comic: any) => ({
         id: comic.id.toString(),

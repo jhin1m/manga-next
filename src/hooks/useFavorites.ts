@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
+
 interface UseFavoritesOptions {
   comicId: number
   initialIsFavorite?: boolean

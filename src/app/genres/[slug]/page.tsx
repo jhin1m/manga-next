@@ -6,6 +6,7 @@ import PaginationWrapper from "@/components/feature/PaginationWrapper";
 import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateGenreJsonLd } from "@/lib/seo/jsonld";
+import { genreApi } from '@/lib/api/client';
 
 // Generate metadata for the page
 export async function generateMetadata({
@@ -16,16 +17,8 @@ export async function generateMetadata({
   const { slug } = await params;
 
   try {
-    // Fetch genre info
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/genres`, {
-      next: { revalidate: 3600 }
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to fetch genre data');
-    }
-
-    const data = await res.json();
+    // Use centralized API client for metadata generation
+    const data = await genreApi.getList();
     const genre = data.genres.find((g: any) => g.slug === slug);
 
     if (!genre) {
@@ -58,7 +51,7 @@ export async function generateMetadata({
   }
 }
 
-// Fetch manga by genre
+// Fetch manga by genre using centralized API client
 async function fetchMangaByGenre({
   genre,
   page = 1,
@@ -71,16 +64,12 @@ async function fetchMangaByGenre({
   sort?: string;
 }) {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?genre=${genre}&page=${page}&limit=${limit}&sort=${sort}`,
-      { next: { revalidate: 3600 } }
-    );
-
-    if (!res.ok) {
-      throw new Error('Failed to fetch manga by genre');
-    }
-
-    const data = await res.json();
+    // Use centralized API client with built-in ISR caching
+    const data = await genreApi.getMangaByGenre(genre, {
+      page,
+      limit,
+      sort,
+    });
 
     // Transform API data to match our component needs
     const manga = data.comics.map((comic: any) => {
@@ -126,18 +115,11 @@ async function fetchMangaByGenre({
   }
 }
 
-// Fetch genre info
+// Fetch genre info using centralized API client
 async function fetchGenreInfo(slug: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/genres`, {
-      next: { revalidate: 3600 }
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to fetch genre data');
-    }
-
-    const data = await res.json();
+    // Use centralized API client with built-in ISR caching
+    const data = await genreApi.getList();
     return data.genres.find((g: any) => g.slug === slug);
   } catch (error) {
     console.error('Error fetching genre info:', error);

@@ -8,22 +8,22 @@ import Sidebar from "@/components/feature/Sidebar";
 import Link from "next/link";
 
 import { formatDate } from '@/lib/utils/format';
+import { mangaApi } from '@/lib/api/client';
 
-// Fetch manga data from API
+// Fetch manga data from API using centralized API client
 async function fetchMangaData(sort: string = 'latest', limit: number = 16, page: number = 1) {
   try {
     const sortParam = sort === 'latest' ? 'latest' :
                       sort === 'popular' ? 'popular' : 'alphabetical';
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=${sortParam}&limit=${limit}&page=${page}`, {
-      next: { revalidate: 3600 } // Revalidate every hour
+    // Use centralized API client with built-in ISR caching
+    const data = await mangaApi.getList({
+      sort: sortParam,
+      limit,
+      page,
     });
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch manga data');
-    }
-
-    const data = await res.json();
+    // Transform API data to match component needs (preserve existing logic)
     return {
       manga: data.comics.map((comic: any) => ({
         id: comic.id.toString(),

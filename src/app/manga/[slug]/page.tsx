@@ -14,22 +14,13 @@ import { constructMangaMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateMangaJsonLd } from "@/lib/seo/jsonld";
 import { formatDate, formatViews } from "@/lib/utils/format";
+import { mangaApi } from '@/lib/api/client';
 
-// Fetch manga data from API
+// Fetch manga data from API using centralized API client
 async function getMangaBySlug(slug: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${slug}`, {
-      next: { revalidate: 3600 } // Revalidate every hour
-    });
-
-    if (!res.ok) {
-      if (res.status === 404) {
-        return null;
-      }
-      throw new Error('Failed to fetch manga data');
-    }
-
-    const data = await res.json();
+    // Use centralized API client with built-in ISR caching
+    const data = await mangaApi.getDetail(slug);
 
     // Transform API data to match our component needs
     return {
@@ -60,20 +51,13 @@ async function getMangaBySlug(slug: string) {
   }
 }
 
-// Fetch chapters from API
+// Fetch chapters from API using centralized API client
 async function getChapters(slug: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${slug}/chapters`, {
-      next: { revalidate: 3600 } // Revalidate every hour
-    });
+    // Use centralized API client with built-in ISR caching
+    const data = await mangaApi.getChapters(slug);
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch chapters');
-    }
-
-    const data = await res.json();
-
-    // Transform API data to match our component needs
+    // Transform API data to match our component needs (preserve existing logic)
     return data.chapters.map((chapter: any) => ({
       id: chapter.id.toString(),
       number: parseFloat(chapter.chapter_number),
@@ -88,21 +72,17 @@ async function getChapters(slug: string) {
   }
 }
 
-// Fetch related manga from API
+// Fetch related manga from API using centralized API client
 async function getRelatedManga(slug: string, genres: string[]) {
   try {
     // Use the first genre to find related manga
     const genre = genres.length > 0 ? genres[0].toLowerCase() : '';
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?genre=${genre}&limit=5`, {
-      next: { revalidate: 3600 } // Revalidate every hour
+    // Use centralized API client with built-in ISR caching
+    const data = await mangaApi.getList({
+      genre,
+      limit: 5,
     });
-
-    if (!res.ok) {
-      throw new Error('Failed to fetch related manga');
-    }
-
-    const data = await res.json();
 
     // Filter out the current manga and transform data
     return data.comics

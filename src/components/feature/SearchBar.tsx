@@ -14,6 +14,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from '@/components/ui/command';
+import { API_ENDPOINTS } from '@/lib/api/client';
 
 // Types for search results
 interface MangaSearchResult {
@@ -191,8 +192,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
     setLiveResults([]); // Clear previous results while loading
 
     try {
-      // Add sort=relevance to ensure best matches appear first
-      // Use window.location.origin to ensure we're using the correct base URL
+      // Use centralized API endpoint configuration
       const baseUrl = window.location.origin;
       const apiUrl = `${baseUrl}/api/search?q=${encodeURIComponent(sanitizedQuery)}&limit=5&sort=relevance`;
       console.log(`Searching for: ${sanitizedQuery} (API URL: ${apiUrl})`);

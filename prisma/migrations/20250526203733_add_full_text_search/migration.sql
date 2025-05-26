@@ -1,3 +1,6 @@
+-- Add full-text search functionality to Comics table
+-- This migration adds tsvector column, GIN index, trigger function, and trigger
+
 -- Add tsvector column to Comics table if it doesn't exist
 DO $$
 BEGIN

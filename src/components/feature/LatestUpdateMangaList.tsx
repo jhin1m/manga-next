@@ -1,5 +1,6 @@
 import MangaCard from '@/components/feature/MangaCard';
 import { formatDate } from '@/lib/utils/format';
+import { mangaApi } from '@/lib/api/client';
 
 // Define manga type for this component
 
@@ -19,18 +20,14 @@ type Manga = {
 
 async function fetchLatestManga(page: number = 1, limit: number = 12) {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=latest&page=${page}&limit=${limit}`,
-      {
-        next: { revalidate: 3600 } // Revalidate every hour
-      }
-    );
+    // Use centralized API client with built-in ISR caching
+    const data = await mangaApi.getList({
+      sort: 'latest',
+      page,
+      limit,
+    });
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch latest manga data');
-    }
-
-    const data = await res.json();
+    // Transform API data to match component needs (preserve existing logic)
     return {
       manga: data.comics.map((comic: any) => ({
         id: comic.id.toString(),
@@ -47,8 +44,8 @@ async function fetchLatestManga(page: number = 1, limit: number = 12) {
         rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
         views: comic.total_views || 0,
         chapterCount: comic._chapterCount || 0,
-        updatedAt: comic.last_chapter_uploaded_at 
-          ? formatDate(comic.last_chapter_uploaded_at) 
+        updatedAt: comic.last_chapter_uploaded_at
+          ? formatDate(comic.last_chapter_uploaded_at)
           : 'Recently',
         status: comic.status || 'Ongoing',
       })),
@@ -61,11 +58,11 @@ async function fetchLatestManga(page: number = 1, limit: number = 12) {
   }
 }
 
-export default async function LatestUpdateMangaList({ 
-  page = 1, 
-  limit = 12 
-}: { 
-  page?: number; 
+export default async function LatestUpdateMangaList({
+  page = 1,
+  limit = 12
+}: {
+  page?: number;
   limit?: number;
 }) {
   const { manga, totalPages } = await fetchLatestManga(page, limit);

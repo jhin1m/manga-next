@@ -4,21 +4,13 @@ import MangaReader from "@/components/manga/MangaReader";
 import { constructChapterMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateChapterJsonLd } from "@/lib/seo/jsonld";
+import { mangaApi, chapterApi } from '@/lib/api/client';
 
-// Function to get chapter data from API
+// Function to get chapter data from API using centralized API client
 async function getChapterData(mangaSlug: string, chapterSlug: string) {
   try {
-    // First, we need to get the chapter ID from the slug
-    const chaptersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${mangaSlug}/chapters`, {
-      next: { revalidate: 3600 } // Revalidate every hour
-    });
-
-    if (!chaptersRes.ok) {
-      console.error('Failed to fetch chapters list');
-      return null;
-    }
-
-    const chaptersData = await chaptersRes.json();
+    // First, get the chapter list to find the chapter ID from slug
+    const chaptersData = await mangaApi.getChapters(mangaSlug);
     const chapter = chaptersData.chapters.find((ch: any) => ch.slug === chapterSlug);
 
     if (!chapter) {
@@ -26,17 +18,8 @@ async function getChapterData(mangaSlug: string, chapterSlug: string) {
       return null;
     }
 
-    // Now fetch the chapter content with the chapter ID
-    const chapterRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/chapters/${chapter.id}`, {
-      next: { revalidate: 3600 } // Revalidate every hour
-    });
-
-    if (!chapterRes.ok) {
-      console.error('Failed to fetch chapter content');
-      return null;
-    }
-
-    const chapterData = await chapterRes.json();
+    // Now fetch the chapter content with the chapter ID using centralized API client
+    const chapterData = await chapterApi.getDetail(chapter.id);
 
     // Chuyển đổi dữ liệu API để phù hợp với các component
     return {
