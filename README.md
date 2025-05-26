@@ -1,10 +1,10 @@
-# 🎌 Dokinaw - Trang Web Manga Hiện Đại
+# 🇻🇳 MangaNext - Trang Web Manga Hiện Đại
 
 Một trang web manga được xây dựng với NextJS 15, cung cấp trải nghiệm đọc manga mượt mà với thiết kế hiện đại và tính năng đầy đủ.
 
 ## 📋 Tổng Quan Dự Án
 
-Dokinaw là một trang web manga toàn diện được phát triển bằng NextJS 15 với App Router, cung cấp:
+MangaNext là một trang web manga toàn diện được phát triển bằng NextJS 15 với App Router, cung cấp:
 
 - **Duyệt manga**: Khám phá thư viện manga phong phú với nhiều thể loại
 - **Tìm kiếm nâng cao**: Tìm kiếm toàn văn với PostgreSQL và bộ lọc thông minh
