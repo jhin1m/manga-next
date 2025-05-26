@@ -46,6 +46,7 @@ interface CommentItemProps {
   currentUserId?: number
   isAdmin?: boolean
   isReply?: boolean
+  showSourceBadge?: boolean
 }
 
 export default function CommentItem({
@@ -56,7 +57,8 @@ export default function CommentItem({
   onLike,
   currentUserId,
   isAdmin = false,
-  isReply = false
+  isReply = false,
+  showSourceBadge = false
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -68,6 +70,21 @@ export default function CommentItem({
   const canEdit = isOwner && !isReply // Only allow editing top-level comments
   const canDelete = isOwner || isAdmin
   const canReport = currentUserId && !isOwner
+
+  // Get source badge for comment
+  const getSourceBadge = () => {
+    if (!showSourceBadge) return null
+
+    // Only show badge for chapter comments, not general comments
+    if (comment.chapter_id && comment.Chapters) {
+      return (
+        <Badge variant="outline" className="text-xs">
+          Chapter {comment.Chapters.chapter_number}
+        </Badge>
+      )
+    }
+    return null
+  }
 
   // Handle like/dislike
   const handleLike = async (isLike: boolean) => {
@@ -169,6 +186,7 @@ export default function CommentItem({
             <span className="font-medium text-sm">{comment.Users.username}</span>
             {getUserRoleBadge()}
             {getStatusBadge()}
+            {getSourceBadge()}
             <span className="text-xs text-muted-foreground">
               {formatDate(comment.created_at)}
             </span>
@@ -282,6 +300,7 @@ export default function CommentItem({
                       currentUserId={currentUserId}
                       isAdmin={isAdmin}
                       isReply
+                      showSourceBadge={showSourceBadge}
                     />
                   ))}
                 </div>

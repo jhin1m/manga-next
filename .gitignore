@@ -37,6 +37,13 @@ yarn-error.log*
 .env.production.local
 .env
 
+# Production environment files (NEVER commit these!)
+.env.production
+.env.production.db
+
+# Docker secrets
+secrets/
+
 # vercel
 .vercel
 

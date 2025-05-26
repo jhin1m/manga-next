@@ -8,11 +8,11 @@ import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
 import Description from "@/components/manga/Description";
 import { FavoriteButton } from "@/components/manga/FavoriteButton";
+import CommentSection from "@/components/feature/comments/CommentSection";
 import { notFound } from "next/navigation";
 import { constructMangaMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateMangaJsonLd } from "@/lib/seo/jsonld";
-import CommentSection from "@/components/feature/comments/CommentSection";
 import { formatDate, formatViews } from "@/lib/utils/format";
 
 // Fetch manga data from API
@@ -322,6 +322,8 @@ export default async function MangaDetailPage({
         <CommentSection
           mangaId={manga.id}
           mangaSlug={manga.slug}
+          defaultViewMode="all"
+          hideToggle={true}
         />
       </section>
     </div>

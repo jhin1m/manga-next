@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description: "Browse manga by genre - action, adventure, comedy, drama, fantasy, and more.",
 };
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // Fetch all genres directly from database
 async function fetchGenres() {
   try {

@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +25,8 @@ interface CommentSectionProps {
   mangaSlug?: string
   chapterSlug?: string
   initialCommentsCount?: number
+  defaultViewMode?: 'chapter' | 'all'
+  hideToggle?: boolean
 }
 
 export default function CommentSection({
@@ -31,7 +34,9 @@ export default function CommentSection({
   chapterId,
   mangaSlug,
   chapterSlug,
-  initialCommentsCount = 0
+  initialCommentsCount = 0,
+  defaultViewMode = 'chapter',
+  hideToggle = false
 }: CommentSectionProps) {
   const { data: session } = useSession()
   const [comments, setComments] = useState<Comment[]>([])
@@ -44,11 +49,12 @@ export default function CommentSection({
     perPage: 20
   })
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'most_liked'>('newest')
+  const [viewMode, setViewMode] = useState<'chapter' | 'all'>(defaultViewMode)
   const [showForm, setShowForm] = useState(false)
   const [replyingTo, setReplyingTo] = useState<number | null>(null)
 
   // Fetch comments
-  const fetchComments = async (page = 1, sort = sortBy) => {
+  const fetchComments = async (page = 1, sort = sortBy, mode = viewMode) => {
     try {
       setLoading(true)
       setError(null)
@@ -57,8 +63,9 @@ export default function CommentSection({
         page: page.toString(),
         limit: '20',
         sort,
+        view_mode: mode,
         ...(mangaId ? { comic_id: mangaId.toString() } : {}),
-        ...(chapterId ? { chapter_id: chapterId.toString() } : {}),
+        ...(chapterId && mode === 'chapter' ? { chapter_id: chapterId.toString() } : {}),
       })
 
       const response = await fetch(`/api/comments?${params}`)
@@ -158,12 +165,19 @@ export default function CommentSection({
   // Handle sort change
   const handleSortChange = (newSort: 'newest' | 'oldest' | 'most_liked') => {
     setSortBy(newSort)
-    fetchComments(1, newSort)
+    fetchComments(1, newSort, viewMode)
+  }
+
+  // Handle view mode change
+  const handleViewModeChange = (value: string) => {
+    const newMode = value as 'chapter' | 'all'
+    setViewMode(newMode)
+    fetchComments(1, sortBy, newMode)
   }
 
   // Handle page change
   const handlePageChange = (page: number) => {
-    fetchComments(page, sortBy)
+    fetchComments(page, sortBy, viewMode)
   }
 
   // Handle reply
@@ -174,7 +188,7 @@ export default function CommentSection({
 
   useEffect(() => {
     fetchComments()
-  }, [mangaId, chapterId])
+  }, [mangaId, chapterId, viewMode])
 
   if (error) {
     return (
@@ -198,6 +212,16 @@ export default function CommentSection({
 
   return (
     <div className="space-y-6">
+      {/* View Mode Toggle - Only show when both mangaId and chapterId are available and not hidden */}
+      {mangaId && chapterId && !hideToggle && (
+        <Tabs value={viewMode} onValueChange={handleViewModeChange} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="chapter">Chapter Comments</TabsTrigger>
+            <TabsTrigger value="all">All Comments</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
+
       {/* Header */}
       <Card>
         <CardHeader>
@@ -321,6 +345,7 @@ export default function CommentSection({
                   onLike={handleCommentLiked}
                   currentUserId={session?.user?.id ? parseInt(session.user.id) : undefined}
                   isAdmin={session?.user?.role === 'admin'}
+                  showSourceBadge={viewMode === 'all' || defaultViewMode === 'all'}
                 />
               ))}
             </div>

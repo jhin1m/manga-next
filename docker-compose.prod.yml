@@ -1,0 +1,95 @@
+# Production Docker Compose with Enhanced Security
+# Usage: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  # NextJS Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    # Use external environment file (not committed to git)
+    env_file:
+      - .env.production
+    environment:
+      # Only non-sensitive variables here
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    # Alternative: Use Docker secrets (uncomment for high-security environments)
+    # secrets:
+    #   - database_url
+    #   - nextauth_secret
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - manga-network
+    # Security: Read-only root filesystem (optional)
+    # read_only: true
+    # tmpfs:
+    #   - /tmp
+    #   - /app/.next/cache
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    env_file:
+      - .env.production.db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Remove migration mount in production
+      # - ./prisma/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    # Don't expose port in production
+    # ports:
+    #   - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-manga-next}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - manga-network
+    # Security: Run as non-root user
+    user: "999:999"
+
+  # Redis (Optional - for caching and sessions)
+  redis:
+    image: redis:7-alpine
+    # Don't expose port in production
+    # ports:
+    #   - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - manga-network
+
+# Uncomment for Docker Secrets (high-security environments)
+# secrets:
+#   database_url:
+#     external: true
+#   nextauth_secret:
+#     external: true
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  manga-network:
+    driver: bridge
+    # Security: Internal network only
+    internal: false  # Set to true if no external access needed

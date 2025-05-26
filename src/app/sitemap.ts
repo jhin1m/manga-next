@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/db';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 /**
  * Tạo sitemap động cho trang web
  * Tham khảo: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap

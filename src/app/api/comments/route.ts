@@ -27,20 +27,32 @@ export async function GET(request: Request) {
 
     const comic_id = searchParams.get('comic_id')
     const chapter_id = searchParams.get('chapter_id')
+    const view_mode = searchParams.get('view_mode') || 'chapter' // 'chapter' or 'all'
 
-    if (!comic_id && !chapter_id) {
+    // Build where clause based on view mode
+    let where: any = {
+      parent_comment_id: null, // Only top-level comments
+      status: query.status || CommentStatus.APPROVED,
+    }
+
+    // Always require comic_id
+    if (!comic_id) {
       return NextResponse.json(
-        { error: 'Either comic_id or chapter_id must be provided' },
+        { error: 'comic_id is required' },
         { status: 400 }
       )
     }
 
-    // Build where clause
-    const where = {
-      ...(comic_id ? { comic_id: parseInt(comic_id) } : {}),
-      ...(chapter_id ? { chapter_id: parseInt(chapter_id) } : {}),
-      parent_comment_id: null, // Only top-level comments
-      status: query.status || CommentStatus.APPROVED,
+    where.comic_id = parseInt(comic_id)
+
+    if (view_mode === 'all') {
+      // Show both manga and chapter comments for this comic
+      // No additional filter needed, just comic_id
+    } else {
+      // Default: show only specific comments (chapter or manga)
+      if (chapter_id) {
+        where.chapter_id = parseInt(chapter_id)
+      }
     }
 
     // Build order by clause
@@ -76,14 +88,14 @@ export async function GET(request: Request) {
               slug: true,
             }
           } : undefined,
-          Chapters: chapter_id ? {
+          Chapters: {
             select: {
               id: true,
               title: true,
               chapter_number: true,
               slug: true,
             }
-          } : undefined,
+          },
           other_Comments: {
             where: { status: CommentStatus.APPROVED },
             include: {

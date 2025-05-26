@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Enable standalone output for Docker deployment
+  output: 'standalone',
+
   images: {
     remotePatterns: [
       {
@@ -21,6 +24,9 @@ const nextConfig: NextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+
+  // External packages for server components
+  serverExternalPackages: ['@prisma/client', 'bcrypt'],
 };
 
 export default nextConfig;

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ReaderNavigation from "./ReaderNavigation";
+import CommentSection from "@/components/feature/comments/CommentSection";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useReadingHistory } from "@/hooks/useReadingHistory";
 
@@ -137,6 +138,18 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
           </div>
         </div>
       </main>
+
+      {/* Comment Section */}
+      <div className="bg-background">
+        <div className="max-w-5xl mx-auto px-4 py-8">
+          <CommentSection
+            mangaId={parseInt(chapterData.manga.id)}
+            chapterId={parseInt(chapterData.chapter.id)}
+            mangaSlug={chapterData.manga.slug}
+            chapterSlug={chapterData.chapter.slug}
+          />
+        </div>
+      </div>
 
     </div>
   );
