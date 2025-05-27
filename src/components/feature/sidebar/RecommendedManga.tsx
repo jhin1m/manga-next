@@ -106,12 +106,12 @@ export default async function RecommendedManga() {
                 )}
               </div>
             )}
-            {item.latestChapter && (
+            {/* {item.latestChapter && (
               <div className="flex items-center gap-1 text-[10px] mt-1">
                 <Clock className="w-2 h-2" />
                 <span>Ch.{item.latestChapter.number} • {formatDate(item.latestChapter.updatedAt)}</span>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       ))}

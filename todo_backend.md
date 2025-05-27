@@ -60,9 +60,18 @@
   - [x] Save/update reading progress
   - [x] Get user's reading history
 
-- [ ] Comments
-  - [ ] Add/edit/delete comments on manga or chapters
-  - [ ] Get comments for a manga or chapter
+- [x] Report error chapter
+  - [x] Create ChapterReport database model
+  - [x] Implement chapter report API endpoints
+  - [x] Create chapter report validation schemas
+  - [x] Add admin moderation API routes
+
+- [x] Comments
+  - [x] Add/edit/delete comments on manga or chapters
+  - [x] Get comments for a manga or chapter
+  - [x] Comment likes/dislikes functionality
+  - [x] Comment reporting and moderation
+  - [x] Threaded replies support
 
 ## API Testing and Documentation
 

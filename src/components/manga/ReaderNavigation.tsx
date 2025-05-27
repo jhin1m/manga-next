@@ -4,18 +4,20 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Home, 
-  List,
-  Heart
+import {
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  List
 } from 'lucide-react';
+import { ChapterReportButton } from '@/components/feature/chapter-reports/ChapterReportButton';
+import { FavoriteButton } from '@/components/manga/FavoriteButton';
 
 interface ReaderNavigationProps {
   mangaTitle: string;
   mangaSlug: string;
   currentChapterId: string;
+  currentChapterTitle?: string;
   prevChapter: string | null;
   nextChapter: string | null;
   chapters: Array<{
@@ -24,18 +26,18 @@ interface ReaderNavigationProps {
     title?: string;
     slug?: string; // Thêm slug cho chapter
   }>;
-  isFollowing?: boolean;
-  onToggleFollow?: () => void;
+  comicId: number; // Thay thế isFollowing và onToggleFollow bằng comicId
 }
 
 export default function ReaderNavigation({
+  mangaTitle,
   mangaSlug,
   currentChapterId,
+  currentChapterTitle,
   prevChapter,
   nextChapter,
   chapters,
-  isFollowing = false,
-  onToggleFollow = () => {}
+  comicId
 }: ReaderNavigationProps) {
   const router = useRouter();
   const [isSticky, setIsSticky] = useState(false);
@@ -54,14 +56,14 @@ export default function ReaderNavigation({
   const handleChapterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     router.push(`/manga/${mangaSlug}/${e.target.value}`);
   };
-  
+
   // Tìm slug của chapter hiện tại
   const currentChapter = chapters.find(ch => ch.id === currentChapterId);
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-200 ${
-      isSticky 
-        ? 'bg-background/90 backdrop-blur-sm shadow-md' 
+      isSticky
+        ? 'bg-background/90 backdrop-blur-sm shadow-md'
         : 'bg-background'
     } p-2 border-b w-full`}>
       <div className="flex items-center gap-1 justify-center md:container md:mx-auto overflow-x-auto">
@@ -72,7 +74,7 @@ export default function ReaderNavigation({
           <span className="sr-only">Trang chủ</span>
         </Link>
       </Button>
-      
+
       {/* Nút Danh sách - luôn hiển thị */}
       <Button asChild variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
         <Link href={`/manga/${mangaSlug}`}>
@@ -80,7 +82,7 @@ export default function ReaderNavigation({
           <span className="sr-only">Danh sách chương</span>
         </Link>
       </Button>
-      
+
       {/* Nút Chương trước - luôn hiển thị */}
       <Button
         asChild={!!prevChapter}
@@ -100,9 +102,9 @@ export default function ReaderNavigation({
           </span>
         )}
       </Button>
-      
+
       {/* Dropdown chọn chương */}
-      <select 
+      <select
         className="flex-1 h-9 px-2 rounded bg-background border border-input text-sm max-w-[150px] md:max-w-[250px] truncate"
         value={currentChapter?.slug || currentChapterId}
         onChange={handleChapterChange}
@@ -113,7 +115,7 @@ export default function ReaderNavigation({
           </option>
         ))}
       </select>
-      
+
       {/* Nút Chương sau - luôn hiển thị */}
       <Button
         asChild={!!nextChapter}
@@ -133,21 +135,25 @@ export default function ReaderNavigation({
           </span>
         )}
       </Button>
-      
+
       {/* Nút Theo dõi - hiển thị trên cả mobile */}
-      <Button
+      <FavoriteButton
+        comicId={comicId}
         variant="ghost"
         size="icon"
         className="h-9 w-9 flex-shrink-0"
-        onClick={onToggleFollow}
-      >
-        {isFollowing ? (
-          <Heart className="h-5 w-5 fill-red-500 text-red-500" />
-        ) : (
-          <Heart className="h-5 w-5" />
-        )}
-        <span className="sr-only">Theo dõi</span>
-      </Button>
+      />
+
+      {/* Nút Report Chapter - hiển thị trên cả mobile */}
+      <ChapterReportButton
+        chapterId={parseInt(currentChapterId)}
+        chapterTitle={currentChapterTitle}
+        mangaTitle={mangaTitle}
+        variant="ghost"
+        size="icon"
+        className="h-9 w-9 flex-shrink-0"
+        iconOnly={true}
+      />
       </div>
     </header>
   );

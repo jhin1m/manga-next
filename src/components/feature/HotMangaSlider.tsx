@@ -4,6 +4,7 @@ import { mangaApi } from '@/lib/api/client';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import MangaCard from './MangaCard';
 import { useEffect, useState } from 'react';
+import { formatDate } from '@/lib/utils/format';
 
 export type HotManga = {
   id: string;
@@ -14,8 +15,9 @@ export type HotManga = {
   views: number;
   status?: string;
   chapterCount?: number;
-  latestChapter?: string;
-  latestChapterSlug?: string;
+  latestChapter?: string | undefined;
+  latestChapterSlug?: string | undefined;
+  updatedAt?: string;
 };
 
 export default function HotMangaSlider() {
@@ -43,11 +45,12 @@ export default function HotMangaSlider() {
           status: comic.status || 'Ongoing',
           chapterCount: comic._chapterCount || Math.floor(Math.random() * 100) + 10,
           latestChapter: comic.Chapters && comic.Chapters.length > 0
-            ? `Chapter ${comic.Chapters[0].chapter_number}`
-            : 'Updating',
+            ? comic.Chapters[0].title
+            : undefined,
           latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
             ? comic.Chapters[0].slug
-            : '',
+            : undefined,
+          updatedAt: comic.last_chapter_uploaded_at ? formatDate(comic.last_chapter_uploaded_at) : 'Recently',
         }));
 
         setHotManga(transformedData);
@@ -153,6 +156,7 @@ export default function HotMangaSlider() {
               chapterCount={item.chapterCount}
               latestChapter={item.latestChapter}
               latestChapterSlug={item.latestChapterSlug}
+              updatedAt={item.updatedAt}
             />
           </div>
         ))}

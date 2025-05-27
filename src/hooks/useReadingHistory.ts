@@ -10,6 +10,7 @@ type UseReadingHistoryProps = {
   mangaSlug: string;
   coverImage: string;
   chapterId?: string;
+  chapterTitle?: string;
   chapterNumber?: number;
   chapterSlug?: string;
 };
@@ -25,6 +26,7 @@ export function useReadingHistory({
   mangaSlug,
   coverImage,
   chapterId,
+  chapterTitle,
   chapterNumber,
   chapterSlug,
 }: UseReadingHistoryProps) {
@@ -47,6 +49,7 @@ export function useReadingHistory({
         ? {
             chapter: {
               id: chapterId,
+              title: chapterTitle || `Chapter ${chapterNumber}`,
               number: chapterNumber,
               slug: chapterSlug,
             },
@@ -61,7 +64,7 @@ export function useReadingHistory({
     if (status === 'authenticated' && session?.user) {
       syncToDatabase(mangaId, chapterId);
     }
-  }, [mangaId, mangaTitle, mangaSlug, coverImage, chapterId, chapterNumber, chapterSlug, session, status]);
+  }, [mangaId, mangaTitle, mangaSlug, coverImage, chapterId, chapterTitle, chapterNumber, chapterSlug, session, status]);
 
   // Function to sync reading progress to database
   const syncToDatabase = async (comicId: string, chapterId?: string) => {

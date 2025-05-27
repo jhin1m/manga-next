@@ -48,6 +48,7 @@ model Chapters {
   Comments         Comments[]
   Pages            Pages[]
   Reading_Progress Reading_Progress[]
+  ChapterReports   ChapterReport[]
 
   @@unique([comic_id, chapter_number])
   @@unique([comic_id, slug])
@@ -204,6 +205,26 @@ model CommentReport {
   @@index([comment_id], map: "idx_comment_reports_comment_id")
 }
 
+/// Chapter error reporting for content issues
+model ChapterReport {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      // User who reported
+  chapter_id Int      // Chapter being reported
+  reason     String   @db.VarChar(255)
+  details    String?  @db.Text
+  status     String   @default("pending") @db.VarChar(50) // pending, resolved, dismissed
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  Users    Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  Chapters Chapters @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, chapter_id])
+  @@index([chapter_id], map: "idx_chapter_reports_chapter_id")
+  @@index([status], map: "idx_chapter_reports_status")
+}
+
 model Favorites {
   user_id    Int
   comic_id   Int
@@ -283,6 +304,9 @@ model Users {
   // Comment engagement relations
   CommentLikes     CommentLike[]
   CommentReports   CommentReport[]
+
+  // Chapter error reporting
+  ChapterReports   ChapterReport[]
 
   // NextAuth.js relationships
   accounts         Account[]

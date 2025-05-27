@@ -123,6 +123,7 @@ For detailed backend implementation tasks and guides, refer to:
 - [x] User authentication and profiles
 - [x] Bookmark/favorite functionality
 - [x] Reading history
+- [x] Report error chapter
 - [x] **Comments and ratings** ✨
   - [x] Comprehensive comment system with threaded replies
   - [x] Like/dislike functionality

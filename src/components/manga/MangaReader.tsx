@@ -1,12 +1,11 @@
 'use client';
-
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ReaderNavigation from "./ReaderNavigation";
 import CommentSection from "@/components/feature/comments/CommentSection";
+import { ChapterReportButton } from "@/components/feature/chapter-reports/ChapterReportButton";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useReadingHistory } from "@/hooks/useReadingHistory";
 
@@ -44,7 +43,6 @@ interface MangaReaderProps {
 export default function MangaReader({ chapterData }: MangaReaderProps) {
   // State for reader settings
   const [brightness] = useLocalStorage('manga-brightness', 100);
-  const [isFollowing, setIsFollowing] = useState(false);
 
   // Sử dụng hook để tự động lưu lịch sử đọc truyện
   useReadingHistory({
@@ -53,15 +51,10 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
     mangaSlug: chapterData.manga.slug,
     coverImage: chapterData.manga.cover_image_url || '',
     chapterId: chapterData.chapter.id,
+    chapterTitle: chapterData.chapter.title,
     chapterNumber: chapterData.chapter.number,
     chapterSlug: chapterData.chapter.slug,
   });
-
-  // Xử lý theo dõi truyện
-  const handleToggleFollow = () => {
-    setIsFollowing(prev => !prev);
-    // Ở đây có thể thêm logic lưu trạng thái theo dõi vào database
-  };
 
   // Chuẩn bị dữ liệu cho dropdown chọn chương
   const chapters = chapterData.chapters || [
@@ -85,11 +78,11 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
         mangaTitle={chapterData.manga.title}
         mangaSlug={chapterData.manga.slug}
         currentChapterId={chapterData.chapter.id}
+        currentChapterTitle={chapterData.chapter.title}
         prevChapter={chapterData.navigation.prevChapter}
         nextChapter={chapterData.navigation.nextChapter}
         chapters={chapters}
-        isFollowing={isFollowing}
-        onToggleFollow={handleToggleFollow}
+        comicId={parseInt(chapterData.manga.id)}
       />
 
       {/* Reader Content */}
@@ -134,6 +127,17 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
                   </Link>
                 </Button>
               )}
+            </div>
+
+            {/* Report Chapter Button */}
+            <div className="mt-4">
+              <ChapterReportButton
+                chapterId={parseInt(chapterData.chapter.id)}
+                chapterTitle={chapterData.chapter.title}
+                mangaTitle={chapterData.manga.title}
+                variant="outline"
+                size="sm"
+              />
             </div>
           </div>
         </div>

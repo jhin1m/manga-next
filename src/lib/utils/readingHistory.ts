@@ -12,6 +12,7 @@ export type ReadingHistory = {
   };
   chapter?: {
     id: string;
+    title: string;
     number: number;
     slug: string;
   };
@@ -167,6 +168,7 @@ export function convertDbToLocalHistory(dbProgress: DatabaseReadingProgress[]): 
     ...(progress.Chapters ? {
       chapter: {
         id: progress.last_read_chapter_id!.toString(),
+        title: progress.Chapters.title || '',
         number: progress.Chapters.chapter_number,
         slug: progress.Chapters.slug,
       }

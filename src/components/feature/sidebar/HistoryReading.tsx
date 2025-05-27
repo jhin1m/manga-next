@@ -71,7 +71,7 @@ export default function HistoryReading() {
                   {item.chapter && (
                     <p className="text-xs text-muted-foreground">
                       <Link href={`/manga/${item.manga.slug}/${item.chapter.slug}`} className="hover:text-primary">
-                        Chapter {item.chapter.number}
+                        {item.chapter.title}
                       </Link>
                     </p>
                   )}
