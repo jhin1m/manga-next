@@ -22,7 +22,7 @@ export default function Header() {
   return (
     <header className='border-b border-border/40 bg-background/95 backdrop-blur-sm top-0 z-50'>
       <div className='container mx-auto px-4 py-3'>
-        <div className='flex justify-between items-center sm:px-24'>
+        <div className='flex justify-between items-center sm:px-14 2xl:px-44'>
           <Link href='/' className='text-xl font-bold'>
             Dokinaw
           </Link>

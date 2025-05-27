@@ -46,7 +46,7 @@ export default function MangaCard({
       <Card className='overflow-hidden h-full transition-all hover:shadow-md border-border/40 bg-card/50'>
         <Link href={`/manga/${slug}`} className='block'>
           {/* Ảnh bìa manga ở phía trên với kích thước cố định */}
-          <div className='relative w-full h-[280px] overflow-hidden'>
+          <div className='relative w-full h-[280px] lg:h-[200px] xl:h-[200px] overflow-hidden'>
             <Image
               src={coverImage}
               alt={title}

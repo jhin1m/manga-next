@@ -17,6 +17,7 @@ import { toast } from 'sonner'
 import CommentForm from './CommentForm'
 import CommentItem from './CommentItem'
 import CommentPagination from './CommentPagination'
+import LoadMoreComments from './LoadMoreComments'
 import { Comment, CommentListResponse } from '@/types/comment'
 
 interface CommentSectionProps {
@@ -27,6 +28,7 @@ interface CommentSectionProps {
   initialCommentsCount?: number
   defaultViewMode?: 'chapter' | 'all'
   hideToggle?: boolean
+  paginationType?: 'offset' | 'cursor' // New prop to control pagination type
 }
 
 export default function CommentSection({
@@ -36,17 +38,26 @@ export default function CommentSection({
   chapterSlug,
   initialCommentsCount = 0,
   defaultViewMode = 'chapter',
-  hideToggle = false
+  hideToggle = false,
+  paginationType = 'offset'
 }: CommentSectionProps) {
   const { data: session } = useSession()
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState<{
+    total?: number
+    currentPage?: number
+    totalPages?: number
+    perPage: number
+    nextCursor?: string
+    hasMore?: boolean
+  }>({
     total: initialCommentsCount,
     currentPage: 1,
     totalPages: 1,
-    perPage: 20
+    perPage: 20,
+    hasMore: false
   })
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'most_liked'>('newest')
   const [viewMode, setViewMode] = useState<'chapter' | 'all'>(defaultViewMode)
@@ -54,16 +65,17 @@ export default function CommentSection({
   const [replyingTo, setReplyingTo] = useState<number | null>(null)
 
   // Fetch comments
-  const fetchComments = async (page = 1, sort = sortBy, mode = viewMode) => {
+  const fetchComments = async (page = 1, sort = sortBy, mode = viewMode, resetComments = true) => {
     try {
       setLoading(true)
       setError(null)
 
       const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '20',
+        limit: '10', // Giảm xuống 10 để test Load More
         sort,
         view_mode: mode,
+        pagination_type: paginationType,
+        ...(paginationType === 'offset' ? { page: page.toString() } : {}),
         ...(mangaId ? { comic_id: mangaId.toString() } : {}),
         ...(chapterId && mode === 'chapter' ? { chapter_id: chapterId.toString() } : {}),
       })
@@ -75,7 +87,14 @@ export default function CommentSection({
       }
 
       const data: CommentListResponse = await response.json()
-      setComments(data.comments)
+
+      if (resetComments) {
+        setComments(data.comments)
+      } else {
+        // For "Load More" functionality
+        setComments(prevComments => [...prevComments, ...data.comments])
+      }
+
       setPagination(data.pagination)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load comments')
@@ -83,6 +102,16 @@ export default function CommentSection({
     } finally {
       setLoading(false)
     }
+  }
+
+  // Load more comments for cursor-based pagination
+  const handleLoadMoreComments = (newComments: Comment[], hasMore: boolean) => {
+    setComments(prevComments => [...prevComments, ...newComments])
+    setPagination(prev => ({
+      ...prev,
+      hasMore,
+      nextCursor: newComments.length > 0 ? newComments[newComments.length - 1].id.toString() : undefined
+    }))
   }
 
   // Handle new comment
@@ -104,10 +133,10 @@ export default function CommentSection({
     } else {
       // If it's a top-level comment, add it to the beginning
       setComments(prevComments => [newComment, ...prevComments])
-      setPagination(prev => ({ ...prev, total: prev.total + 1 }))
+      setPagination(prev => ({ ...prev, total: (prev.total || 0) + 1 }))
     }
     setShowForm(false)
-    toast.success('Comment posted successfully!')
+    // Note: Toast notification is handled in CommentForm to avoid duplicates
   }
 
   // Handle comment update
@@ -125,7 +154,7 @@ export default function CommentSection({
     setComments(prevComments =>
       prevComments.filter(comment => comment.id !== commentId)
     )
-    setPagination(prev => ({ ...prev, total: prev.total - 1 }))
+    setPagination(prev => ({ ...prev, total: Math.max((prev.total || 0) - 1, 0) }))
     toast.success('Comment deleted successfully!')
   }
 
@@ -228,7 +257,7 @@ export default function CommentSection({
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
-              Comments ({pagination.total})
+              Comments ({pagination.total ?? comments.length})
             </CardTitle>
 
             {/* Sort Options */}
@@ -359,14 +388,27 @@ export default function CommentSection({
           )}
 
           {/* Pagination */}
-          {pagination.totalPages > 1 && (
+          {paginationType === 'offset' && pagination.totalPages && pagination.totalPages > 1 && (
             <div className="mt-6">
               <CommentPagination
-                currentPage={pagination.currentPage}
+                currentPage={pagination.currentPage || 1}
                 totalPages={pagination.totalPages}
                 onPageChange={handlePageChange}
               />
             </div>
+          )}
+
+          {/* Load More for cursor-based pagination */}
+          {paginationType === 'cursor' && pagination.hasMore && comments.length > 0 && (
+            <LoadMoreComments
+              mangaId={mangaId}
+              chapterId={chapterId}
+              viewMode={viewMode}
+              sortBy={sortBy}
+              lastCommentId={comments[comments.length - 1]?.id}
+              onCommentsLoaded={handleLoadMoreComments}
+              disabled={loading}
+            />
           )}
         </CardContent>
       </Card>

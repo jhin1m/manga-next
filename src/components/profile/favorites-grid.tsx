@@ -80,9 +80,9 @@ export default function FavoritesGrid({ favorites }: FavoritesGridProps) {
 
         return (
           <div key={favorite.comic_id} className="group relative">
-            <Card className="overflow-hidden h-full transition-all hover:shadow-md border-border/40 bg-card/50">
+            <Card className="overflow-hidden h-full transition-all hover:shadow-md border-border/40 bg-card/50 flex flex-col">
               <Link href={`/manga/${manga.slug}`} className="block">
-                <div className="relative w-full h-[280px] overflow-hidden">
+                <div className="relative w-full h-[240px] sm:h-[260px] md:h-[280px] lg:h-[300px] xl:h-[320px] overflow-hidden">
                   <Image
                     src={manga.cover_image_url || '/images/placeholder.png'}
                     alt={manga.title}
@@ -121,7 +121,7 @@ export default function FavoritesGrid({ favorites }: FavoritesGridProps) {
                 </div>
               </Link>
 
-              <CardContent className="p-3 space-y-2">
+              <CardContent className="p-3 space-y-2 flex-1">
                 {/* Title */}
                 <Link href={`/manga/${manga.slug}`} className="block">
                   <h3 className="font-bold text-base line-clamp-1 hover:text-primary transition-colors">

@@ -14,13 +14,14 @@ import {
 /**
  * GET /api/comments
  * Get paginated comments for a manga or chapter
+ * Supports both offset-based and cursor-based pagination
  */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const query = commentQuerySchema.parse({
       page: searchParams.get('page') || '1',
-      limit: searchParams.get('limit') || '20',
+      limit: searchParams.get('limit') || '10',
       sort: searchParams.get('sort') || 'newest',
       status: searchParams.get('status') || undefined,
     })
@@ -28,6 +29,10 @@ export async function GET(request: Request) {
     const comic_id = searchParams.get('comic_id')
     const chapter_id = searchParams.get('chapter_id')
     const view_mode = searchParams.get('view_mode') || 'chapter' // 'chapter' or 'all'
+
+    // Cursor-based pagination parameters
+    const cursor = searchParams.get('cursor') // comment ID for cursor-based pagination
+    const pagination_type = searchParams.get('pagination_type') || 'offset' // 'offset' or 'cursor'
 
     // Build where clause based on view mode
     let where: any = {
@@ -62,15 +67,48 @@ export async function GET(request: Request) {
         ? { created_at: 'asc' as const }
         : { likes_count: 'desc' as const }
 
-    const offset = (query.page - 1) * query.limit
-
     // Get session for user-specific data
     const session = await getServerSession(authOptions)
     const userId = session?.user?.id ? parseInt(session.user.id) : null
 
-    // Fetch comments with pagination
-    const [comments, totalComments] = await Promise.all([
-      prisma.comments.findMany({
+    let comments, totalComments, nextCursor = null
+
+    if (pagination_type === 'cursor') {
+      // Cursor-based pagination
+      if (cursor) {
+        // If cursor is provided, add cursor condition to where clause
+        const cursorComment = await prisma.comments.findUnique({
+          where: { id: parseInt(cursor) },
+          select: { created_at: true, likes_count: true }
+        })
+
+        if (!cursorComment) {
+          return NextResponse.json(
+            { error: 'Invalid cursor' },
+            { status: 400 }
+          )
+        }
+
+        // Add cursor condition to where clause
+        if (query.sort === 'newest') {
+          where.created_at = { lt: cursorComment.created_at }
+        } else if (query.sort === 'oldest') {
+          where.created_at = { gt: cursorComment.created_at }
+        } else {
+          // For most_liked, use likes_count and created_at as tiebreaker
+          where.OR = [
+            { likes_count: { lt: cursorComment.likes_count } },
+            {
+              likes_count: cursorComment.likes_count,
+              created_at: { lt: cursorComment.created_at }
+            }
+          ]
+        }
+      }
+      // If no cursor, start from the beginning (first page)
+
+      // Fetch comments with cursor pagination
+      comments = await prisma.comments.findMany({
         where,
         include: {
           Users: {
@@ -128,11 +166,91 @@ export async function GET(request: Request) {
           }
         },
         orderBy,
-        skip: offset,
-        take: query.limit,
-      }),
-      prisma.comments.count({ where })
-    ])
+        take: query.limit + 1, // Take one extra to check if there are more
+      })
+
+      // Check if there are more comments and set next cursor
+      if (comments.length > query.limit) {
+        const lastComment = comments[query.limit - 1]
+        nextCursor = lastComment.id.toString()
+        comments = comments.slice(0, query.limit) // Remove the extra comment
+      }
+
+      // For cursor pagination, we don't calculate total count for performance
+      totalComments = null
+    } else {
+      // Offset-based pagination (default)
+      const offset = (query.page - 1) * query.limit
+
+      // Fetch comments with offset pagination
+      const [commentsResult, totalCommentsResult] = await Promise.all([
+        prisma.comments.findMany({
+          where,
+          include: {
+            Users: {
+              select: {
+                id: true,
+                username: true,
+                avatar_url: true,
+                role: true,
+              }
+            },
+            Comics: comic_id ? {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+              }
+            } : undefined,
+            Chapters: {
+              select: {
+                id: true,
+                title: true,
+                chapter_number: true,
+                slug: true,
+              }
+            },
+            other_Comments: {
+              where: { status: CommentStatus.APPROVED },
+              include: {
+                Users: {
+                  select: {
+                    id: true,
+                    username: true,
+                    avatar_url: true,
+                    role: true,
+                  }
+                },
+                CommentLikes: userId ? {
+                  where: { user_id: userId },
+                  select: { is_like: true }
+                } : false,
+              },
+              orderBy: { created_at: 'asc' },
+              take: 5, // Limit replies shown initially
+            },
+            CommentLikes: userId ? {
+              where: { user_id: userId },
+              select: { is_like: true }
+            } : false,
+            _count: {
+              select: {
+                other_Comments: {
+                  where: { status: CommentStatus.APPROVED }
+                }
+              }
+            }
+          },
+          orderBy,
+          skip: offset,
+          take: query.limit,
+        }),
+        prisma.comments.count({ where })
+      ])
+
+      comments = commentsResult
+      totalComments = totalCommentsResult
+    }
 
     // Add computed fields
     const commentsWithUserData = comments.map(comment => ({
@@ -155,10 +273,14 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       comments: commentsWithUserData,
-      pagination: {
+      pagination: pagination_type === 'cursor' ? {
+        perPage: query.limit,
+        nextCursor,
+        hasMore: nextCursor !== null,
+      } : {
         total: totalComments,
         currentPage: query.page,
-        totalPages: Math.ceil(totalComments / query.limit),
+        totalPages: Math.ceil(totalComments! / query.limit),
         perPage: query.limit,
       }
     })

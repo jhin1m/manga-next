@@ -304,6 +304,7 @@ export default async function MangaDetailPage({
           mangaSlug={manga.slug}
           defaultViewMode="all"
           hideToggle={true}
+          paginationType="cursor"
         />
       </section>
     </div>

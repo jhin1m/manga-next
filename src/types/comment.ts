@@ -21,7 +21,7 @@ export interface Comment {
   dislikes_count: number
   created_at: string
   updated_at: string
-  
+
   // Relations
   Users: {
     id: number
@@ -43,7 +43,7 @@ export interface Comment {
   Comments?: Comment // Parent comment
   other_Comments?: Comment[] // Replies
   CommentLikes?: CommentLike[]
-  
+
   // Computed fields
   userLikeStatus?: 'like' | 'dislike' | null
   repliesCount?: number
@@ -70,10 +70,12 @@ export interface CommentReport {
 export interface CommentListResponse {
   comments: Comment[]
   pagination: {
-    total: number
-    currentPage: number
-    totalPages: number
+    total?: number // Optional for cursor-based pagination
+    currentPage?: number // Optional for cursor-based pagination
+    totalPages?: number // Optional for cursor-based pagination
     perPage: number
+    nextCursor?: string // For cursor-based pagination
+    hasMore?: boolean // For cursor-based pagination
   }
 }
 
