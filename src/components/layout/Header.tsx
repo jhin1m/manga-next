@@ -12,9 +12,10 @@ import {
   SheetTitle
 } from '@/components/ui/sheet';
 import { SearchButton, DesktopSearchButton } from '@/components/feature/SearchBar';
-import { Home, Clock, LayoutGrid } from 'lucide-react';
+import { Home, Clock } from 'lucide-react';
 import { UserMenu } from '@/components/layout/user-menu';
 import { useSession } from 'next-auth/react';
+import { GenreDropdown, MobileGenreDropdown } from '@/components/feature/GenreDropdown';
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -42,12 +43,7 @@ export default function Header() {
               Latest
             </Link>
 
-            <Link
-              href='/genres'
-              className='text-sm font-medium transition-colors hover:text-primary'
-            >
-              Genres
-            </Link>
+            <GenreDropdown />
             <DesktopSearchButton />
             {isAuthenticated && session?.user ? (
               <UserMenu user={session.user} />
@@ -91,13 +87,7 @@ export default function Header() {
                     <Clock className="mr-3 h-5 w-5" />
                     Latest
                   </Link>
-                  <Link
-                    href='/genres'
-                    className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                  >
-                    <LayoutGrid className="mr-3 h-5 w-5" />
-                    Genres
-                  </Link>
+                  <MobileGenreDropdown />
                   {isAuthenticated && session?.user ? (
                     <>
                       <Link
