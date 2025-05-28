@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatDate } from "@/lib/utils/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { commentApi } from "@/lib/api/client";
 
 type RecentComment = {
   id: number;
@@ -36,15 +37,8 @@ export default function RecentComments() {
     const fetchComments = async () => {
       try {
         // Fetch recent comments from API
-        const response = await fetch('/api/comments/recent?limit=5');
-
-        if (response.ok) {
-          const data = await response.json();
-          setComments(data.comments || []);
-        } else {
-          // Fallback to empty array if API fails
-          setComments([]);
-        }
+        const data = await commentApi.getRecent({ limit: 5 });
+        setComments(data.comments || []);
       } catch (error) {
         console.error("Failed to fetch recent comments:", error);
         setComments([]);

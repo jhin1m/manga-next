@@ -27,6 +27,7 @@ import {
 import { Loader2, Flag } from 'lucide-react'
 import { toast } from 'sonner'
 import { commentReportSchema } from '@/types/comment'
+import { commentApi } from '@/lib/api/client'
 
 interface CommentReportDialogProps {
   commentId: number
@@ -64,16 +65,7 @@ export default function CommentReportDialog({
     try {
       setIsSubmitting(true)
 
-      const response = await fetch(`/api/comments/${commentId}/report`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values)
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to report comment')
-      }
+      await commentApi.report(commentId, values)
 
       toast.success('Comment reported successfully. Thank you for helping keep our community safe.')
       onOpenChange(false)
@@ -115,8 +107,8 @@ export default function CommentReportDialog({
                       {reportReasons.map((reason) => (
                         <div key={reason.value} className="flex items-center space-x-2">
                           <RadioGroupItem value={reason.value} id={reason.value} />
-                          <Label 
-                            htmlFor={reason.value} 
+                          <Label
+                            htmlFor={reason.value}
                             className="text-sm font-normal cursor-pointer flex-1"
                           >
                             {reason.label}
@@ -182,7 +174,7 @@ export default function CommentReportDialog({
 
         <div className="mt-4 p-3 bg-muted rounded-lg">
           <p className="text-xs text-muted-foreground">
-            <strong>Note:</strong> False reports may result in restrictions on your account. 
+            <strong>Note:</strong> False reports may result in restrictions on your account.
             Please only report content that genuinely violates our community guidelines.
           </p>
         </div>

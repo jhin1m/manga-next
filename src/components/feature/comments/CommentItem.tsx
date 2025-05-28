@@ -36,6 +36,7 @@ import { toast } from 'sonner'
 import { Comment } from '@/types/comment'
 import CommentForm from './CommentForm'
 import CommentReportDialog from './CommentReportDialog'
+import { commentApi } from '@/lib/api/client'
 
 interface CommentItemProps {
   comment: Comment
@@ -95,18 +96,7 @@ export default function CommentItem({
 
     try {
       setLoading(true)
-      const response = await fetch(`/api/comments/${comment.id}/like`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_like: isLike })
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to like comment')
-      }
-
-      const data = await response.json()
+      const data = await commentApi.like(comment.id, isLike)
       onLike(comment.id, data.likes_count, data.dislikes_count, data.userLikeStatus)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to like comment')
@@ -119,15 +109,7 @@ export default function CommentItem({
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/comments/${comment.id}`, {
-        method: 'DELETE'
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to delete comment')
-      }
-
+      await commentApi.delete(comment.id)
       onDelete(comment.id)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to delete comment')

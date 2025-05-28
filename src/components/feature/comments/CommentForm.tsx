@@ -6,17 +6,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormMessage 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage
 } from '@/components/ui/form'
 import { Card, CardContent } from '@/components/ui/card'
 import { Loader2, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { Comment, commentCreateSchema, commentUpdateSchema } from '@/types/comment'
+import { commentApi } from '@/lib/api/client'
 
 const formSchema = z.object({
   content: z.string()
@@ -61,18 +62,7 @@ export default function CommentForm({
 
       if (isEditing && commentId) {
         // Update existing comment
-        const response = await fetch(`/api/comments/${commentId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: values.content })
-        })
-
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Failed to update comment')
-        }
-
-        const data = await response.json()
+        const data = await commentApi.update(commentId, { content: values.content })
         onCommentAdded(data.comment)
       } else {
         // Create new comment
@@ -83,20 +73,9 @@ export default function CommentForm({
           ...(parentCommentId ? { parent_comment_id: parentCommentId } : {}),
         }
 
-        const response = await fetch('/api/comments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestData)
-        })
-
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Failed to post comment')
-        }
-
-        const data = await response.json()
+        const data = await commentApi.create(requestData)
         onCommentAdded(data.comment)
-        
+
         // Show appropriate message based on comment status
         if (data.comment.status === 'PENDING') {
           toast.info('Comment submitted for review')
@@ -129,8 +108,8 @@ export default function CommentForm({
                   <FormControl>
                     <Textarea
                       placeholder={
-                        parentCommentId 
-                          ? "Write a reply..." 
+                        parentCommentId
+                          ? "Write a reply..."
                           : "Share your thoughts about this manga..."
                       }
                       className="min-h-[100px] resize-none"

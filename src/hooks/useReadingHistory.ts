@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { addToReadingHistory } from "@/lib/utils/readingHistory";
+import { readingProgressApi } from "@/lib/api/client";
 
 type UseReadingHistoryProps = {
   mangaId: string;
@@ -69,20 +70,10 @@ export function useReadingHistory({
   // Function to sync reading progress to database
   const syncToDatabase = async (comicId: string, chapterId?: string) => {
     try {
-      const response = await fetch('/api/reading-progress', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          comicId: parseInt(comicId),
-          chapterId: chapterId ? parseInt(chapterId) : undefined,
-        }),
+      await readingProgressApi.create({
+        comicId: parseInt(comicId),
+        chapterId: chapterId ? parseInt(chapterId) : undefined,
       });
-
-      if (!response.ok) {
-        console.error('Failed to sync reading progress to database');
-      }
     } catch (error) {
       console.error('Error syncing reading progress:', error);
     }

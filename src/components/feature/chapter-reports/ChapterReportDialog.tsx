@@ -31,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import { chapterReportSchema, CHAPTER_REPORT_REASONS } from '@/types/chapter-report'
+import { chapterReportApi } from '@/lib/api/client'
 
 interface ChapterReportDialogProps {
   chapterId: number
@@ -63,16 +64,7 @@ export function ChapterReportDialog({
     try {
       setIsSubmitting(true)
 
-      const response = await fetch(`/api/chapters/${chapterId}/report`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values)
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to report chapter')
-      }
+      await chapterReportApi.report(chapterId, values)
 
       toast.success('Chapter reported successfully. Thank you for helping us improve the content quality.')
       onOpenChange(false)

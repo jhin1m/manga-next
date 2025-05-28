@@ -33,7 +33,10 @@ async function getMangaBySlug(slug: string) {
       author: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', ') || 'Unknown',
       artist: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', ') || 'Unknown',
       description: data.manga.description || 'No description available.',
-      genres: data.manga.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
+      genres: data.manga.Comic_Genres?.map((cg: any) => ({
+        name: cg.Genres.name,
+        slug: cg.Genres.slug
+      })) || [],
       status: data.manga.status || 'Unknown',
       rating: 8.5, // Placeholder as it's not in the API
       views: data.manga.total_views || 0,
@@ -73,14 +76,14 @@ async function getChapters(slug: string) {
 }
 
 // Fetch related manga from API using centralized API client
-async function getRelatedManga(slug: string, genres: string[]) {
+async function getRelatedManga(slug: string, genres: { name: string; slug: string }[]) {
   try {
-    // Use the first genre to find related manga
-    const genre = genres.length > 0 ? genres[0].toLowerCase() : '';
+    // Use the first genre slug to find related manga
+    const genreSlug = genres.length > 0 ? genres[0].slug : '';
 
     // Use centralized API client with built-in ISR caching
     const data = await mangaApi.getList({
-      genre,
+      genre: genreSlug,
       limit: 5,
     });
 
@@ -133,7 +136,7 @@ export async function generateMetadata({
     keywords: [
       manga.title,
       ...manga.alternativeTitles || [],
-      ...manga.genres,
+      ...manga.genres.map((g: { name: string; slug: string }) => g.name),
       manga.author,
       'manga', 'read online', 'free manga'
     ],
@@ -168,7 +171,7 @@ export default async function MangaDetailPage({
     coverImage: manga.coverImage,
     author: manga.author,
     slug: manga.slug,
-    genres: manga.genres,
+    genres: manga.genres.map((g: { name: string; slug: string }) => g.name),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
@@ -201,9 +204,14 @@ export default async function MangaDetailPage({
           )}
 
           <div className="flex flex-wrap gap-2">
-            {manga.genres.map((genre: string) => (
-              <Badge key={genre} variant="secondary">
-                {genre}
+            {manga.genres.map((genre: { name: string; slug: string }) => (
+              <Badge key={genre.slug} variant="secondary" asChild>
+                <Link
+                  href={`/genres/${genre.slug}`}
+                  className="cursor-pointer transition-colors hover:bg-secondary/80"
+                >
+                  {genre.name}
+                </Link>
               </Badge>
             ))}
           </div>

@@ -19,6 +19,7 @@ import CommentItem from './CommentItem'
 import CommentPagination from './CommentPagination'
 import LoadMoreComments from './LoadMoreComments'
 import { Comment, CommentListResponse } from '@/types/comment'
+import { commentApi } from '@/lib/api/client'
 
 interface CommentSectionProps {
   mangaId?: number
@@ -70,23 +71,17 @@ export default function CommentSection({
       setLoading(true)
       setError(null)
 
-      const params = new URLSearchParams({
-        limit: '10', // Giảm xuống 10 để test Load More
+      const params = {
+        limit: 10, // Giảm xuống 10 để test Load More
         sort,
         view_mode: mode,
         pagination_type: paginationType,
-        ...(paginationType === 'offset' ? { page: page.toString() } : {}),
-        ...(mangaId ? { comic_id: mangaId.toString() } : {}),
-        ...(chapterId && mode === 'chapter' ? { chapter_id: chapterId.toString() } : {}),
-      })
-
-      const response = await fetch(`/api/comments?${params}`)
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch comments')
+        ...(paginationType === 'offset' ? { page } : {}),
+        ...(mangaId ? { comic_id: mangaId } : {}),
+        ...(chapterId && mode === 'chapter' ? { chapter_id: chapterId } : {}),
       }
 
-      const data: CommentListResponse = await response.json()
+      const data: CommentListResponse = await commentApi.getList(params)
 
       if (resetComments) {
         setComments(data.comments)

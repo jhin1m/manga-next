@@ -2,6 +2,8 @@
  * Utility functions for managing reading history in localStorage and database
  */
 
+import { readingProgressApi } from '@/lib/api/client'
+
 export type ReadingHistory = {
   id: string;
   manga: {
@@ -241,13 +243,7 @@ export async function removeFromReadingHistoryComplete(itemId: string, isAuthent
       const comicId = itemId.split('-')[0];
 
       if (comicId && !isNaN(parseInt(comicId))) {
-        const response = await fetch(`/api/reading-progress/${comicId}`, {
-          method: 'DELETE',
-        });
-
-        if (!response.ok) {
-          console.error('Failed to remove reading progress from database');
-        }
+        await readingProgressApi.delete(parseInt(comicId));
       }
     } catch (error) {
       console.error('Error removing reading progress from database:', error);
@@ -260,13 +256,7 @@ export async function removeFromReadingHistoryComplete(itemId: string, isAuthent
  */
 export async function removeFromDatabaseByComicId(comicId: number): Promise<void> {
   try {
-    const response = await fetch(`/api/reading-progress/${comicId}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      console.error('Failed to remove reading progress from database');
-    }
+    await readingProgressApi.delete(comicId);
   } catch (error) {
     console.error('Error removing reading progress from database:', error);
   }

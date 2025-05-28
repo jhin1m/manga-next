@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { genreApi } from '@/lib/api/client';
 
 // Genre type
 type Genre = {
@@ -71,16 +72,13 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
   const [genres, setGenres] = useState<Genre[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch genres from API
+  // Fetch genres from API using centralized API client
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch('/api/genres');
-        if (res.ok) {
-          const data = await res.json();
-          setGenres(data.genres);
-        }
+        const data = await genreApi.getList();
+        setGenres(data.genres);
       } catch (error) {
         console.error('Error fetching genres:', error);
       } finally {
@@ -145,7 +143,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
 
     // Use { scroll: false } để tránh reload trang
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    
+
     // Cuộn lên đầu trang với hiệu ứng mượt
     setTimeout(() => {
       window.scrollTo({

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
+import { favoritesApi } from '@/lib/api/client'
 
 
 interface UseFavoritesOptions {
@@ -42,19 +43,7 @@ export function useFavorites({ comicId, initialIsFavorite = false }: UseFavorite
       setIsLoading(true)
       setError(null)
 
-      const response = await fetch('/api/favorites/check', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comicId }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to check favorite status')
-      }
-
-      const data = await response.json()
+      const data = await favoritesApi.check(comicId)
       setIsFavorite(data.isFavorite)
     } catch (err) {
       console.error('Error checking favorite status:', err)
@@ -75,19 +64,7 @@ export function useFavorites({ comicId, initialIsFavorite = false }: UseFavorite
       setIsLoading(true)
       setError(null)
 
-      const response = await fetch('/api/favorites', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comicId }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to update favorite status')
-      }
-
-      const data: FavoriteResponse = await response.json()
+      const data: FavoriteResponse = await favoritesApi.toggle(comicId)
       setIsFavorite(data.isFavorite)
 
       // Show success message
@@ -143,13 +120,7 @@ export function useFavoritesList() {
       setIsLoading(true)
       setError(null)
 
-      const response = await fetch(`/api/favorites?page=${page}&limit=${limit}`)
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch favorites')
-      }
-
-      const data = await response.json()
+      const data = await favoritesApi.getList({ page, limit })
       setFavorites(data.favorites)
       setPagination(data.pagination)
       return data

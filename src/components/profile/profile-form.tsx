@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
+import { userApi } from '@/lib/api/client'
 
 // Profile form schema
 const profileSchema = z.object({
@@ -54,25 +55,15 @@ export function ProfileForm({ user }: ProfileFormProps) {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/users/me', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+      await userApi.updateProfile({
+        username: data.username,
+        ...(data.avatar_url && { avatar_url: data.avatar_url }),
       })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        toast.error(result.error || 'Failed to update profile')
-        return
-      }
 
       toast.success('Profile updated successfully')
       router.refresh()
     } catch (error) {
-      toast.error('Something went wrong')
+      toast.error(error instanceof Error ? error.message : 'Failed to update profile')
       console.error('Profile update error:', error)
     } finally {
       setIsLoading(false)

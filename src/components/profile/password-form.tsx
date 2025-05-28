@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { userApi } from '@/lib/api/client'
 
 // Password form schema
 const passwordSchema = z.object({
@@ -48,25 +49,15 @@ export function PasswordForm() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/users/me/password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+      await userApi.changePassword({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
       })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        toast.error(result.error || 'Failed to change password')
-        return
-      }
 
       toast.success('Password changed successfully')
       form.reset()
     } catch (error) {
-      toast.error('Something went wrong')
+      toast.error(error instanceof Error ? error.message : 'Failed to change password')
       console.error('Password change error:', error)
     } finally {
       setIsLoading(false)

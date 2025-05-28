@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Loader2, MessageCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { Comment, CommentListResponse } from '@/types/comment'
+import { commentApi } from '@/lib/api/client'
 
 interface LoadMoreCommentsProps {
   mangaId?: number
@@ -33,23 +34,17 @@ export default function LoadMoreComments({
     try {
       setLoading(true)
 
-      const params = new URLSearchParams({
-        limit: '10', // Giảm xuống 10 để test Load More
+      const params = {
+        limit: 10, // Giảm xuống 10 để test Load More
         sort: sortBy,
         view_mode: viewMode,
-        pagination_type: 'cursor',
+        pagination_type: 'cursor' as const,
         cursor: lastCommentId.toString(),
-        ...(mangaId ? { comic_id: mangaId.toString() } : {}),
-        ...(chapterId && viewMode === 'chapter' ? { chapter_id: chapterId.toString() } : {}),
-      })
-
-      const response = await fetch(`/api/comments?${params}`)
-
-      if (!response.ok) {
-        throw new Error('Failed to load more comments')
+        ...(mangaId ? { comic_id: mangaId } : {}),
+        ...(chapterId && viewMode === 'chapter' ? { chapter_id: chapterId } : {}),
       }
 
-      const data: CommentListResponse = await response.json()
+      const data: CommentListResponse = await commentApi.getList(params)
 
       // Check if there are more comments by looking at the nextCursor
       const hasMore = data.pagination?.nextCursor != null

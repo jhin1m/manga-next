@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
+import { authApi } from '@/lib/api/client'
 
 // Registration form schema
 const registerSchema = z.object({
@@ -53,25 +54,16 @@ export function RegisterForm() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+      await authApi.register({
+        username: data.username,
+        email: data.email,
+        password: data.password,
       })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        toast.error(result.error || 'Registration failed')
-        return
-      }
 
       toast.success('Registration successful! Please log in.')
       router.push('/auth/login')
     } catch (error) {
-      toast.error('Something went wrong')
+      toast.error(error instanceof Error ? error.message : 'Registration failed')
       console.error('Registration error:', error)
     } finally {
       setIsLoading(false)

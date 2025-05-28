@@ -11,6 +11,7 @@ import {
   mergeReadingHistory,
   getUnsyncedHistory,
 } from "@/lib/utils/readingHistory";
+import { readingProgressApi } from "@/lib/api/client";
 
 interface SyncStatus {
   isLoading: boolean;
@@ -64,19 +65,7 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
 
       const dbFormatItems = convertLocalToDbHistory(unsyncedItems);
 
-      const response = await fetch('/api/reading-progress/sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ progressItems: dbFormatItems }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to sync to database');
-      }
-
-      const result = await response.json();
+      const result = await readingProgressApi.sync(dbFormatItems);
 
       setSyncStatus(prev => ({
         ...prev,
@@ -105,13 +94,7 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
     setSyncStatus(prev => ({ ...prev, isLoading: true, error: undefined }));
 
     try {
-      const response = await fetch('/api/reading-progress');
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch from database');
-      }
-
-      const data = await response.json();
+      const data = await readingProgressApi.getList();
       const dbHistory = convertDbToLocalHistory(data.progress);
       const localHistory = getReadingHistory();
 
@@ -163,13 +146,7 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
     setSyncStatus(prev => ({ ...prev, isLoading: true, error: undefined }));
 
     try {
-      const response = await fetch('/api/reading-progress', {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to clear database history');
-      }
+      await readingProgressApi.deleteAll();
 
       setSyncStatus(prev => ({
         ...prev,

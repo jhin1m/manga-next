@@ -33,6 +33,32 @@ export const API_ENDPOINTS = {
   // Chapter endpoints
   chapters: {
     detail: (id: string) => `/api/chapters/${id}`,
+    report: (id: number) => `/api/chapters/${id}/report`,
+  },
+  // Comment endpoints
+  comments: {
+    list: '/api/comments',
+    recent: '/api/comments/recent',
+    create: '/api/comments',
+    detail: (id: number) => `/api/comments/${id}`,
+    update: (id: number) => `/api/comments/${id}`,
+    delete: (id: number) => `/api/comments/${id}`,
+    like: (id: number) => `/api/comments/${id}/like`,
+    report: (id: number) => `/api/comments/${id}/report`,
+  },
+  // Favorites endpoints
+  favorites: {
+    list: '/api/favorites',
+    toggle: '/api/favorites',
+    check: '/api/favorites/check',
+  },
+  // Reading progress endpoints
+  readingProgress: {
+    list: '/api/reading-progress',
+    create: '/api/reading-progress',
+    sync: '/api/reading-progress/sync',
+    delete: (id: number) => `/api/reading-progress/${id}`,
+    deleteAll: '/api/reading-progress',
   },
   // Genre endpoints
   genres: {
@@ -42,6 +68,15 @@ export const API_ENDPOINTS = {
   // Search endpoints
   search: {
     manga: '/api/search',
+  },
+  // Auth endpoints
+  auth: {
+    register: '/api/auth/register',
+  },
+  // User endpoints
+  users: {
+    me: '/api/users/me',
+    password: '/api/users/me/password',
   },
   // Admin endpoints
   admin: {
@@ -56,7 +91,7 @@ export const API_ENDPOINTS = {
 export async function apiClient<T = any>(
   endpoint: string,
   options: {
-    method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
     body?: any;
     headers?: Record<string, string>;
     cache?: 'force-cache' | 'no-store' | 'no-cache';
@@ -203,7 +238,10 @@ export const genreApi = {
     sort?: string;
   } = {}) => {
     return apiClient(API_ENDPOINTS.genres.bySlug(slug), {
-      params,
+      params: {
+        genre: slug,
+        ...params,
+      },
       next: {
         ...API_CONFIG.defaultCacheOptions.manga,
         tags: ['manga-list', `manga-genre-${slug}`, `manga-${params.sort || 'latest'}`],
@@ -320,8 +358,222 @@ export const searchApi = {
   },
 };
 
+// Comment API functions
+export const commentApi = {
+  // Get comments list
+  getList: async (params: {
+    comic_id?: number;
+    chapter_id?: number;
+    page?: number;
+    limit?: number;
+    sort?: 'newest' | 'oldest' | 'most_liked';
+    view_mode?: 'chapter' | 'all';
+    pagination_type?: 'offset' | 'cursor';
+    cursor?: string;
+  } = {}) => {
+    return apiClient(API_ENDPOINTS.comments.list, {
+      params,
+      cache: 'no-store', // Comments should be fresh
+    });
+  },
+
+  // Get recent comments
+  getRecent: async (params: { limit?: number } = {}) => {
+    return apiClient(API_ENDPOINTS.comments.recent, {
+      params,
+      cache: 'no-store', // Comments should be fresh
+    });
+  },
+
+  // Create comment
+  create: async (data: {
+    content: string;
+    comic_id?: number;
+    chapter_id?: number;
+    parent_comment_id?: number;
+  }) => {
+    return apiClient(API_ENDPOINTS.comments.create, {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+
+  // Update comment
+  update: async (id: number, data: { content: string }) => {
+    return apiClient(API_ENDPOINTS.comments.update(id), {
+      method: 'PUT',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+
+  // Delete comment
+  delete: async (id: number) => {
+    return apiClient(API_ENDPOINTS.comments.delete(id), {
+      method: 'DELETE',
+      cache: 'no-store',
+    });
+  },
+
+  // Like/dislike comment
+  like: async (id: number, isLike: boolean) => {
+    return apiClient(API_ENDPOINTS.comments.like(id), {
+      method: 'POST',
+      body: { is_like: isLike },
+      cache: 'no-store',
+    });
+  },
+
+  // Report comment
+  report: async (id: number, data: { reason: string; details?: string }) => {
+    return apiClient(API_ENDPOINTS.comments.report(id), {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+};
+
+// Chapter API functions
+export const chapterReportApi = {
+  // Report chapter
+  report: async (id: number, data: { reason: string; details?: string }) => {
+    return apiClient(API_ENDPOINTS.chapters.report(id), {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+};
+
+// Favorites API functions
+export const favoritesApi = {
+  // Get favorites list
+  getList: async (params: { page?: number; limit?: number } = {}) => {
+    return apiClient(API_ENDPOINTS.favorites.list, {
+      params,
+      cache: 'no-store',
+    });
+  },
+
+  // Toggle favorite
+  toggle: async (comicId: number) => {
+    return apiClient(API_ENDPOINTS.favorites.toggle, {
+      method: 'POST',
+      body: { comicId },
+      cache: 'no-store',
+    });
+  },
+
+  // Check favorite status
+  check: async (comicId: number) => {
+    return apiClient(API_ENDPOINTS.favorites.check, {
+      method: 'POST',
+      body: { comicId },
+      cache: 'no-store',
+    });
+  },
+};
+
+// Reading Progress API functions
+export const readingProgressApi = {
+  // Get reading progress list
+  getList: async () => {
+    return apiClient(API_ENDPOINTS.readingProgress.list, {
+      cache: 'no-store',
+    });
+  },
+
+  // Create/update reading progress
+  create: async (data: { comicId: number; chapterId?: number }) => {
+    return apiClient(API_ENDPOINTS.readingProgress.create, {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+
+  // Sync reading progress
+  sync: async (progressItems: Array<{
+    comic_id: number;
+    last_read_chapter_id?: number;
+    updated_at: string;
+  }>) => {
+    return apiClient(API_ENDPOINTS.readingProgress.sync, {
+      method: 'POST',
+      body: { progressItems },
+      cache: 'no-store',
+    });
+  },
+
+  // Delete specific reading progress
+  delete: async (comicId: number) => {
+    return apiClient(API_ENDPOINTS.readingProgress.delete(comicId), {
+      method: 'DELETE',
+      cache: 'no-store',
+    });
+  },
+
+  // Delete all reading progress
+  deleteAll: async () => {
+    return apiClient(API_ENDPOINTS.readingProgress.deleteAll, {
+      method: 'DELETE',
+      cache: 'no-store',
+    });
+  },
+};
+
+// Auth API functions
+export const authApi = {
+  // Register user
+  register: async (data: {
+    username: string;
+    email: string;
+    password: string;
+  }) => {
+    return apiClient(API_ENDPOINTS.auth.register, {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+};
+
+// User API functions
+export const userApi = {
+  // Update user profile
+  updateProfile: async (data: {
+    username?: string;
+    email?: string;
+    bio?: string;
+    avatar_url?: string;
+  }) => {
+    return apiClient(API_ENDPOINTS.users.me, {
+      method: 'PATCH',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+
+  // Change password
+  changePassword: async (data: {
+    currentPassword: string;
+    newPassword: string;
+  }) => {
+    return apiClient(API_ENDPOINTS.users.password, {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+};
+
 // Export types for better TypeScript support
 export type MangaListParams = Parameters<typeof mangaApi.getList>[0];
 export type ChapterListParams = Parameters<typeof mangaApi.getChapters>[1];
 export type GenreMangaParams = Parameters<typeof genreApi.getMangaByGenre>[1];
 export type SearchParams = Parameters<typeof searchApi.searchManga>[0];
+export type CommentListParams = Parameters<typeof commentApi.getList>[0];
+export type CommentCreateParams = Parameters<typeof commentApi.create>[0];
+export type FavoritesListParams = Parameters<typeof favoritesApi.getList>[0];

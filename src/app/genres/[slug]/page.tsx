@@ -7,6 +7,7 @@ import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateGenreJsonLd } from "@/lib/seo/jsonld";
 import { genreApi } from '@/lib/api/client';
+import { formatDate } from '@/lib/utils/format';
 
 // Generate metadata for the page
 export async function generateMetadata({
@@ -91,10 +92,14 @@ async function fetchMangaByGenre({
         views: comic.total_views || 0,
         rating: 0, // Not implemented in the API yet
         chapterCount: comic._chapterCount || 0,
-        latestChapter: latestChapter ?
-          `Chapter ${latestChapter.chapter_number}${latestChapter.title ? ': ' + latestChapter.title : ''}`
-        : null,
-        updatedAt: comic.last_chapter_uploaded_at
+        latestChapter: comic.Chapters && comic.Chapters.length > 0
+          ? `Chapter ${comic.Chapters[0].chapter_number}`
+          : 'Updating',
+        latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
+          ? comic.Chapters[0].slug
+          : '',
+        updatedAt: comic.last_chapter_uploaded_at ?
+                  formatDate(comic.last_chapter_uploaded_at) : 'Recently',
       };
     });
 
