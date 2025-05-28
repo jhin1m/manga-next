@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import MangaCard from './MangaCard';
 import { useEffect, useState } from 'react';
 import { formatDate } from '@/lib/utils/format';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export type HotManga = {
   id: string;
@@ -82,15 +83,51 @@ export default function HotMangaSlider() {
     slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   };
 
-  // Loading state
+  // Loading state with skeleton
   if (isLoading) {
     return (
       <div className="relative w-full overflow-hidden rounded-lg">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Hot Manga</h2>
+          <Skeleton className="h-8 w-32" />
+          {/* Navigation buttons skeleton */}
+          <div className="flex gap-2">
+            <Skeleton className="h-9 w-9 rounded-md" />
+            <Skeleton className="h-9 w-9 rounded-md" />
+          </div>
         </div>
-        <div className="w-full h-[300px] bg-muted rounded-lg flex items-center justify-center">
-          <p className="text-muted-foreground">Loading hot manga...</p>
+
+        {/* Slider container skeleton */}
+        <div className="flex gap-4 overflow-hidden pb-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex-shrink-0 w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] lg:w-[calc(20%-16px)]"
+            >
+              {/* Manga card skeleton */}
+              <div className="space-y-3">
+                {/* Cover image skeleton */}
+                <Skeleton className="w-full h-[280px] lg:h-[200px] xl:h-[200px] rounded-lg" />
+
+                {/* Card content skeleton */}
+                <div className="space-y-2 px-1">
+                  {/* Title skeleton */}
+                  <Skeleton className="h-4 w-full" />
+
+                  {/* Rating and views skeleton */}
+                  <div className="flex items-center space-x-4">
+                    <Skeleton className="h-3 w-12" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+
+                  {/* Latest chapter skeleton */}
+                  <Skeleton className="h-3 w-3/4" />
+
+                  {/* Updated date skeleton */}
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
