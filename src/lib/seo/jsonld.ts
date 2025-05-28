@@ -1,73 +1,83 @@
 /**
- * Tạo JSON-LD cho các trang manga và chapter để cải thiện SEO
+ * Enhanced JSON-LD Schema Generation with Centralized Config
  */
 
-// JSON-LD cho trang manga
-export function generateMangaJsonLd(manga: any) {
-  const jsonLd = {
+import { seoConfig, getSiteUrl } from '@/config/seo.config';
+import type {
+  MangaJsonLd,
+  ChapterJsonLd,
+  WebsiteJsonLd,
+  OrganizationJsonLd,
+  MangaMetadataProps,
+  ChapterMetadataProps
+} from './types';
+
+// Enhanced manga JSON-LD with proper typing
+export function generateMangaJsonLd(data: MangaMetadataProps): string {
+  const jsonLd: MangaJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Book',
-    name: manga.title,
-    headline: manga.title,
-    description: manga.description || `Read ${manga.title} manga online for free on Dokinaw.`,
-    image: manga.coverImage || '/images/og-image.jpg',
+    name: data.title,
+    headline: data.title,
+    description: data.description || `Read ${data.title} manga online for free on ${seoConfig.site.name}.`,
+    image: data.coverImage || getSiteUrl(seoConfig.urls.ogImage),
     author: {
       '@type': 'Person',
-      name: manga.author || 'Unknown',
+      name: data.author || 'Unknown',
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Dokinaw',
+      name: seoConfig.schema.organization.name,
       logo: {
         '@type': 'ImageObject',
-        url: 'https://dokinaw.com/logo.png',
+        url: getSiteUrl(seoConfig.urls.logo),
       },
     },
-    datePublished: manga.createdAt || new Date().toISOString(),
-    dateModified: manga.updatedAt || new Date().toISOString(),
-    genre: manga.genres?.map((genre: any) => genre.name).join(', ') || 'Manga',
-    inLanguage: 'ja',
-    url: `https://dokinaw.com/manga/${manga.slug}`,
+    datePublished: data.publishedAt || new Date().toISOString(),
+    dateModified: data.updatedAt || new Date().toISOString(),
+    genre: data.genres?.map(genre => genre.name).join(', ') || 'Manga',
+    inLanguage: seoConfig.site.language,
+    url: getSiteUrl(`/manga/${data.slug}`),
   };
 
   return JSON.stringify(jsonLd);
 }
 
-// JSON-LD cho trang chapter
-export function generateChapterJsonLd(manga: any, chapter: any) {
-  const jsonLd = {
+// Enhanced chapter JSON-LD with proper typing
+export function generateChapterJsonLd(data: ChapterMetadataProps): string {
+  const jsonLd: ChapterJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Chapter',
     isPartOf: {
       '@type': 'Book',
-      name: manga.title,
-      url: `https://dokinaw.com/manga/${manga.slug}`,
+      name: data.manga.title,
+      url: getSiteUrl(`/manga/${data.manga.slug}`),
     },
-    name: `Chapter ${chapter.number}`,
-    headline: `${manga.title} - Chapter ${chapter.number}`,
-    description: `Read ${manga.title} Chapter ${chapter.number} online for free on Dokinaw.`,
-    image: chapter.coverImage || manga.coverImage || '/images/og-image.jpg',
-    datePublished: chapter.createdAt || new Date().toISOString(),
-    dateModified: chapter.updatedAt || new Date().toISOString(),
-    url: `https://dokinaw.com/manga/${manga.slug}/chapter/${chapter.id}`,
+    name: `Chapter ${data.chapter.number}`,
+    headline: `${data.manga.title} - Chapter ${data.chapter.number}`,
+    description: `Read ${data.manga.title} Chapter ${data.chapter.number} online for free on ${seoConfig.site.name}.`,
+    image: data.chapter.images?.[0] || data.manga.coverImage || getSiteUrl(seoConfig.urls.ogImage),
+    datePublished: data.chapter.publishedAt || new Date().toISOString(),
+    dateModified: data.chapter.updatedAt || new Date().toISOString(),
+    url: getSiteUrl(`/manga/${data.manga.slug}/${data.chapterSlug}`),
     pageStart: 1,
-    pageEnd: chapter.pageCount || 1,
+    pageEnd: data.chapter.images?.length || 1,
   };
 
   return JSON.stringify(jsonLd);
 }
 
-// JSON-LD cho trang chủ
-export function generateHomeJsonLd() {
-  const jsonLd = {
+// Enhanced website JSON-LD for homepage
+export function generateHomeJsonLd(): string {
+  const jsonLd: WebsiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Dokinaw',
-    description: '無料で漫画が読めるサイト。人気漫画から名作漫画まで幅広く揃えています。',
-    url: 'https://dokinaw.com',
+    name: seoConfig.site.name,
+    description: seoConfig.site.description,
+    url: getSiteUrl(),
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://dokinaw.com/search?q={search_term_string}',
+      target: getSiteUrl('/search?q={search_term_string}'),
       'query-input': 'required name=search_term_string',
     },
   };
@@ -75,36 +85,78 @@ export function generateHomeJsonLd() {
   return JSON.stringify(jsonLd);
 }
 
-// JSON-LD cho trang danh sách manga
-export function generateMangaListJsonLd() {
-  const jsonLd = {
+// Enhanced organization JSON-LD
+export function generateOrganizationJsonLd(): string {
+  const jsonLd: OrganizationJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Manga List - Dokinaw',
-    description: 'Browse all manga available on Dokinaw.',
-    url: 'https://dokinaw.com/manga',
-    isPartOf: {
-      '@type': 'WebSite',
-      name: 'Dokinaw',
-      url: 'https://dokinaw.com',
+    '@type': 'Organization',
+    name: seoConfig.schema.organization.name,
+    legalName: seoConfig.schema.organization.legalName,
+    url: getSiteUrl(),
+    logo: {
+      '@type': 'ImageObject',
+      url: getSiteUrl(seoConfig.urls.logo),
+    },
+    foundingDate: seoConfig.schema.organization.foundingDate,
+    founders: [...seoConfig.schema.organization.founders],
+    address: seoConfig.schema.organization.address,
+    contactPoint: {
+      ...seoConfig.schema.organization.contactPoint,
+      availableLanguage: [...seoConfig.schema.organization.contactPoint.availableLanguage],
     },
   };
 
   return JSON.stringify(jsonLd);
 }
 
-// JSON-LD cho trang thể loại
-export function generateGenreJsonLd(genre: string) {
+// Enhanced collection page JSON-LD for manga lists
+export function generateMangaListJsonLd(): string {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: `${genre} Manga - Dokinaw`,
-    description: `Browse all ${genre} manga available on Dokinaw.`,
-    url: `https://dokinaw.com/genres/${genre.toLowerCase()}`,
+    name: `Manga List - ${seoConfig.site.name}`,
+    description: `Browse all manga available on ${seoConfig.site.name}.`,
+    url: getSiteUrl('/manga'),
     isPartOf: {
       '@type': 'WebSite',
-      name: 'Dokinaw',
-      url: 'https://dokinaw.com',
+      name: seoConfig.site.name,
+      url: getSiteUrl(),
+    },
+  };
+
+  return JSON.stringify(jsonLd);
+}
+
+// Enhanced genre page JSON-LD
+export function generateGenreJsonLd(genreName: string, genreSlug: string): string {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${genreName} Manga - ${seoConfig.site.name}`,
+    description: `Browse all ${genreName} manga available on ${seoConfig.site.name}.`,
+    url: getSiteUrl(`/genres/${genreSlug}`),
+    isPartOf: {
+      '@type': 'WebSite',
+      name: seoConfig.site.name,
+      url: getSiteUrl(),
+    },
+  };
+
+  return JSON.stringify(jsonLd);
+}
+
+// Search results JSON-LD
+export function generateSearchJsonLd(query?: string): string {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SearchResultsPage',
+    name: query ? `Search results for "${query}" - ${seoConfig.site.name}` : `Search - ${seoConfig.site.name}`,
+    description: query ? `Find manga with keyword "${query}".` : `Search for manga on ${seoConfig.site.name}.`,
+    url: getSiteUrl(query ? `/search?q=${encodeURIComponent(query)}` : '/search'),
+    isPartOf: {
+      '@type': 'WebSite',
+      name: seoConfig.site.name,
+      url: getSiteUrl(),
     },
   };
 

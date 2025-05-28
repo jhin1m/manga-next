@@ -37,7 +37,7 @@ export default function Footer() {
         </div>
 
         <div className='mt-6 text-center text-xs text-muted-foreground'>
-          <p>&copy; {currentYear} Dokinaw. All rights reserved.</p>
+          <p>&copy; {currentYear} Manga Next. All rights reserved.</p>
         </div>
       </div>
     </footer>

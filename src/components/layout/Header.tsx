@@ -25,7 +25,7 @@ export default function Header() {
       <div className='container mx-auto px-4 py-3'>
         <div className='flex justify-between items-center sm:px-14 2xl:px-44'>
           <Link href='/' className='text-xl font-bold'>
-            Dokinaw
+            Manga Next
           </Link>
 
           {/* Desktop Navigation */}

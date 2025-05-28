@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/db';
+import { getSiteUrl } from '@/config/seo.config';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -28,25 +29,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Tạo URL cho trang chủ và các trang tĩnh
   const staticPages = [
     {
-      url: 'https://dokinaw.com',
+      url: getSiteUrl(),
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
-      url: 'https://dokinaw.com/manga',
+      url: getSiteUrl('/manga'),
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: 'https://dokinaw.com/popular',
+      url: getSiteUrl('/popular'),
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: 'https://dokinaw.com/completed',
+      url: getSiteUrl('/completed'),
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.7,
@@ -55,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Tạo URL cho tất cả manga
   const mangaUrls = allManga.map((manga: { slug: string; updated_at: Date | null }) => ({
-    url: `https://dokinaw.com/manga/${manga.slug}`,
+    url: getSiteUrl(`/manga/${manga.slug}`),
     lastModified: manga.updated_at || new Date(),
     changeFrequency: 'weekly',
     priority: 0.7,
@@ -63,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Tạo URL cho tất cả thể loại
   const genreUrls = allGenres.map((genre: { slug: string; updated_at: Date | null }) => ({
-    url: `https://dokinaw.com/genres/${genre.slug}`,
+    url: getSiteUrl(`/genres/${genre.slug}`),
     lastModified: genre.updated_at || new Date(),
     changeFrequency: 'monthly',
     priority: 0.6,

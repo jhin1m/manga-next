@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import MangaCard from "@/components/feature/MangaCard";
 import FilterSortBar from "@/components/feature/FilterSortBar";
 import PaginationWrapper from "@/components/feature/PaginationWrapper";
-import { constructMetadata } from "@/lib/seo/metadata";
+import { constructMetadata, constructGenreMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateGenreJsonLd } from "@/lib/seo/jsonld";
 import { genreApi } from '@/lib/api/client';
 import { formatDate } from '@/lib/utils/format';
+import { seoConfig } from '@/config/seo.config';
 
 // Generate metadata for the page
 export async function generateMetadata({
@@ -30,24 +31,18 @@ export async function generateMetadata({
       });
     }
 
-    return constructMetadata({
-      title: `${genre.name} Manga | Dokinaw`,
-      description: genre.description || `Browse ${genre.name} manga - Find the best ${genre.name} manga series on Dokinaw. Read ${genre.name} manga online for free.`,
-      keywords: [
-        `${genre.name} manga`,
-        `read ${genre.name} manga`,
-        `${genre.name} comics`,
-        'free manga',
-        'online manga',
-        'dokinaw'
-      ],
+    return constructGenreMetadata({
+      name: genre.name,
+      slug: genre.slug,
+      description: genre.description,
+      mangaCount: undefined, // We don't have this info at metadata generation time
     });
   } catch (error) {
     console.error('Error generating metadata:', error);
     return constructMetadata({
-      title: 'Manga by Genre | Dokinaw',
-      description: 'Browse manga by genre on Dokinaw. Find and read your favorite manga series by genre.',
-      keywords: ['manga genres', 'manga categories', 'manga by genre', 'read manga online', 'dokinaw']
+      title: `Manga by Genre | ${seoConfig.site.name}`,
+      description: `Browse manga by genre on ${seoConfig.site.name}. Find and read your favorite manga series by genre.`,
+      keywords: ['manga genres', 'manga categories', 'manga by genre', 'read manga online', seoConfig.site.name.toLowerCase()]
     });
   }
 }
@@ -77,10 +72,7 @@ async function fetchMangaByGenre({
       // Extract genres from Comic_Genres
       const genres = comic.Comic_Genres.map((cg: any) => cg.Genres.name);
 
-      // Get latest chapter if available
-      const latestChapter = comic.Chapters && comic.Chapters.length > 0
-        ? comic.Chapters[0]
-        : null;
+      // Get latest chapter if available (removed unused variable)
 
       return {
         id: comic.id,
@@ -165,7 +157,7 @@ export default async function GenrePage({
   const currentPage = results.currentPage;
 
   // Tạo JSON-LD cho trang thể loại
-  const jsonLd = generateGenreJsonLd(genre.name);
+  const jsonLd = generateGenreJsonLd(genre.name, genre.slug);
 
   return (
     <div className="container mx-auto py-8">

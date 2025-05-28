@@ -6,6 +6,7 @@ import HotMangaSlider from "@/components/feature/HotMangaSlider";
 import LatestUpdateMangaList from "@/components/feature/LatestUpdateMangaList";
 import Sidebar from "@/components/feature/Sidebar";
 import Link from "next/link";
+import { seoConfig, getSiteUrl } from "@/config/seo.config";
 
 import { formatDate } from '@/lib/utils/format';
 import { mangaApi } from '@/lib/api/client';
@@ -55,9 +56,10 @@ async function fetchMangaData(sort: string = 'latest', limit: number = 16, page:
 
 // Tạo metadata cho trang chủ
 export const metadata: Metadata = constructMetadata({
-  title: 'Dokinaw - 無料漫画サイト',
-  description: '無料で漫画が読めるサイト。人気漫画から名作漫画まで幅広く揃えています。最新の漫画を無料で読むことができます。',
-  keywords: ['manga', 'read manga online', 'free manga', 'latest manga', 'popular manga', 'completed manga', 'dokinaw'],
+  title: seoConfig.seo.defaultTitle,
+  description: seoConfig.site.description,
+  keywords: [...seoConfig.site.keywords, 'latest manga', 'popular manga', 'completed manga'],
+  canonical: getSiteUrl(),
 });
 
 export default async function Home({

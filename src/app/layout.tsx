@@ -6,9 +6,10 @@ import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Script from "next/script";
-import { generateHomeJsonLd } from "@/lib/seo/jsonld";
+import { generateHomeJsonLd, generateOrganizationJsonLd } from "@/lib/seo/jsonld";
 import { constructMetadata } from "@/lib/seo/metadata";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { seoConfig } from "@/config/seo.config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" suppressHydrationWarning className="dark">
+    <html lang={seoConfig.site.language} suppressHydrationWarning className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
@@ -45,10 +46,17 @@ export default function RootLayout({
             </main>
             <Footer />
             <Toaster />
+
+            {/* Enhanced JSON-LD Schema */}
             <Script
-              id="schema-org"
+              id="website-schema"
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: generateHomeJsonLd() }}
+            />
+            <Script
+              id="organization-schema"
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: generateOrganizationJsonLd() }}
             />
           </AuthProvider>
         </ThemeProvider>

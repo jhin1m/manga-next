@@ -74,19 +74,22 @@ export async function generateMetadata({
   }
 
   // Sử dụng utility function để tạo metadata chuẩn SEO
-  return constructChapterMetadata(
-    {
+  return constructChapterMetadata({
+    manga: {
       title: chapterData.manga.title,
-      description: `Read ${chapterData.manga.title} manga online for free on Dokinaw.`,
+      slug: chapterData.manga.slug,
       coverImage: chapterData.chapter.images[0] || '',
       genres: [],
     },
-    {
+    chapter: {
       number: chapterData.chapter.number,
       title: chapterData.chapter.title,
-      coverImage: chapterData.chapter.images[0] || '',
-    }
-  );
+      images: chapterData.chapter.images,
+      publishedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    chapterSlug: chapterSlug,
+  });
 }
 
 export default async function ChapterPage({
@@ -103,21 +106,22 @@ export default async function ChapterPage({
   }
 
   // Tạo JSON-LD cho trang chapter
-  const jsonLd = generateChapterJsonLd(
-    {
+  const jsonLd = generateChapterJsonLd({
+    manga: {
       title: chapterData.manga.title,
       slug: chapterData.manga.slug,
       coverImage: chapterData.chapter.images[0] || '',
+      genres: [],
     },
-    {
+    chapter: {
       number: chapterData.chapter.number,
       title: chapterData.chapter.title,
-      coverImage: chapterData.chapter.images[0] || '',
-      pageCount: chapterData.chapter.images.length,
-      createdAt: new Date().toISOString(),
+      images: chapterData.chapter.images,
+      publishedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    }
-  );
+    },
+    chapterSlug: chapterSlug,
+  });
 
   return (
     <>

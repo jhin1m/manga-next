@@ -1,6 +1,16 @@
-import type { Metadata } from 'next';
+import { Metadata } from "next";
+import { seoConfig, getSiteUrl, getPageTitle } from '@/config/seo.config';
+import { getMangaTemplate, getChapterTemplate, getGenreTemplate, getSearchTemplate } from './templates';
+import type {
+  BaseMetadataProps,
+  EnhancedMetadataProps,
+  MangaMetadataProps,
+  ChapterMetadataProps,
+  GenreMetadataProps,
+  SearchMetadataProps
+} from './types';
 
-// Cấu trúc cơ bản cho metadata
+// Legacy interface for backward compatibility
 export interface MetadataProps {
   title?: string;
   description?: string;
@@ -10,97 +20,174 @@ export interface MetadataProps {
   noIndex?: boolean;
 }
 
-// Tạo metadata cơ bản cho tất cả các trang
+// Enhanced metadata construction with centralized config
 export function constructMetadata({
-  title = 'Dokinaw - 無料漫画サイト',
-  description = '無料で漫画が読めるサイト。人気漫画から名作漫画まで幅広く揃えています。',
-  keywords = ['manga', 'comic', 'read manga', 'free manga', 'online manga', 'dokinaw'],
-  image = '/images/og-image.jpg', // Đảm bảo có file này trong thư mục public/images
+  title,
+  description = seoConfig.site.description,
+  keywords = [...seoConfig.site.keywords],
+  image = seoConfig.urls.ogImage,
   type = 'website',
   noIndex = false,
-}: MetadataProps = {}): Metadata {
-  return {
-    title,
+  canonical,
+  publishedTime,
+  modifiedTime,
+  author,
+  section,
+  tags = [],
+  locale = seoConfig.site.locale,
+}: EnhancedMetadataProps = {}): Metadata {
+  // Use template system for title if not provided
+  const finalTitle = title ? getPageTitle(title) : seoConfig.seo.defaultTitle;
+  const finalCanonical = canonical || getSiteUrl();
+  const finalImage = image.startsWith('http') ? image : getSiteUrl(image);
+
+  // Combine keywords with tags
+  const allKeywords = [...keywords, ...tags].filter(Boolean);
+
+  const metadata: Metadata = {
+    title: finalTitle,
     description,
-    keywords: keywords.join(', '),
+    keywords: allKeywords.join(', '),
+
     openGraph: {
-      title,
+      title: finalTitle,
       description,
       images: [
         {
-          url: image,
-          width: 1200,
-          height: 630,
-          alt: title,
+          url: finalImage,
+          width: seoConfig.social.openGraph.type === 'website' ? 1200 : 800,
+          height: seoConfig.social.openGraph.type === 'website' ? 630 : 600,
+          alt: finalTitle,
         },
       ],
       type: type as 'website' | 'article' | 'book' | 'profile',
-      siteName: 'Dokinaw',
+      siteName: seoConfig.social.openGraph.siteName,
+      locale,
+      url: finalCanonical,
     },
+
     twitter: {
-      card: 'summary_large_image',
-      title,
+      card: seoConfig.social.twitter.card,
+      title: finalTitle,
       description,
-      images: [image],
+      images: [finalImage],
+      site: seoConfig.social.twitter.site,
+      creator: seoConfig.social.twitter.creator,
     },
+
     robots: {
       index: !noIndex,
       follow: !noIndex,
       googleBot: {
+        ...seoConfig.seo.robots.googleBot,
         index: !noIndex,
         follow: !noIndex,
       },
     },
+
     alternates: {
-      canonical: 'https://dokinaw.com', // Cần cập nhật theo từng trang
+      canonical: finalCanonical,
     },
-    metadataBase: new URL('https://dokinaw.com'), // Thay đổi URL thực tế khi triển khai
+
+    metadataBase: new URL(seoConfig.urls.base),
   };
+
+  // Add article-specific metadata
+  if (type === 'article' && (publishedTime || modifiedTime || author || section)) {
+    metadata.openGraph = {
+      ...metadata.openGraph,
+      type: 'article',
+      publishedTime,
+      modifiedTime,
+      authors: author ? [author] : undefined,
+      section,
+      tags: allKeywords,
+    };
+  }
+
+  return metadata;
 }
 
-// Hàm tạo metadata cho trang manga cụ thể
-export function constructMangaMetadata(manga: any): Metadata {
-  const title = `${manga.title} - Dokinaw`;
-  const description = manga.description 
-    ? `${manga.description.substring(0, 150)}...` 
-    : `Read ${manga.title} manga online for free on Dokinaw.`;
-  
-  const keywords = [
-    manga.title,
-    ...manga.genres?.map((genre: any) => genre.name) || [],
-    'manga', 'read online', 'free'
-  ];
-  
-  const image = manga.coverImage || '/images/og-image.jpg';
-  
+// Enhanced manga metadata using templates
+export function constructMangaMetadata(data: MangaMetadataProps): Metadata {
+  const template = getMangaTemplate({
+    title: data.title,
+    description: data.description,
+    genres: data.genres?.map(g => g.name),
+    author: data.author,
+  });
+
   return constructMetadata({
-    title,
-    description,
-    keywords,
-    image,
-    type: 'article',
+    title: template.title,
+    description: template.description,
+    keywords: template.keywords,
+    image: data.coverImage || seoConfig.urls.ogImage,
+    type: template.type,
+    canonical: getSiteUrl(`/manga/${data.slug}`),
+    publishedTime: data.publishedAt,
+    modifiedTime: data.updatedAt,
+    author: data.author,
+    section: 'Manga',
+    tags: data.genres?.map(g => g.name) || [],
   });
 }
 
-// Hàm tạo metadata cho trang chapter
-export function constructChapterMetadata(manga: any, chapter: any): Metadata {
-  const title = `${manga.title} - Chapter ${chapter.number} - Dokinaw`;
-  const description = `Read ${manga.title} Chapter ${chapter.number} online for free on Dokinaw.`;
-  
-  const keywords = [
-    manga.title,
-    `Chapter ${chapter.number}`,
-    ...manga.genres?.map((genre: any) => genre.name) || [],
-    'manga', 'read online', 'free'
-  ];
-  
-  const image = chapter.coverImage || manga.coverImage || '/images/og-image.jpg';
-  
+// Enhanced chapter metadata using templates
+export function constructChapterMetadata(data: ChapterMetadataProps): Metadata {
+  const template = getChapterTemplate({
+    mangaTitle: data.manga.title,
+    chapterNumber: data.chapter.number,
+    chapterTitle: data.chapter.title,
+    genres: data.manga.genres?.map(g => g.name),
+  });
+
   return constructMetadata({
-    title,
-    description,
-    keywords,
-    image,
-    type: 'article',
+    title: template.title,
+    description: template.description,
+    keywords: template.keywords,
+    image: data.chapter.images?.[0] || data.manga.coverImage || seoConfig.urls.ogImage,
+    type: template.type,
+    canonical: getSiteUrl(`/manga/${data.manga.slug}/${data.chapterSlug}`),
+    publishedTime: data.chapter.publishedAt,
+    modifiedTime: data.chapter.updatedAt,
+    section: 'Chapter',
+    tags: data.manga.genres?.map(g => g.name) || [],
+  });
+}
+
+// Genre metadata using templates
+export function constructGenreMetadata(data: GenreMetadataProps): Metadata {
+  const template = getGenreTemplate({
+    genreName: data.name,
+    mangaCount: data.mangaCount,
+    description: data.description,
+  });
+
+  return constructMetadata({
+    title: template.title,
+    description: template.description,
+    keywords: template.keywords,
+    type: template.type,
+    canonical: getSiteUrl(`/genres/${data.slug}`),
+    section: 'Genre',
+  });
+}
+
+// Search metadata using templates
+export function constructSearchMetadata(data: SearchMetadataProps = {}): Metadata {
+  const template = getSearchTemplate({
+    query: data.query,
+    resultsCount: data.resultsCount,
+  });
+
+  const searchPath = data.query ? `/search?q=${encodeURIComponent(data.query)}` : '/search';
+
+  return constructMetadata({
+    title: template.title,
+    description: template.description,
+    keywords: template.keywords,
+    type: template.type,
+    canonical: getSiteUrl(searchPath),
+    noIndex: !data.query, // Don't index empty search pages
   });
 }

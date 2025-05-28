@@ -2,6 +2,10 @@ import { Metadata } from 'next';
 import PaginationWrapper from '@/components/feature/PaginationWrapper';
 import { formatDate } from '@/lib/utils/format';
 import { prisma } from '@/lib/db';
+import { constructSearchMetadata } from '@/lib/seo/metadata';
+import { generateSearchJsonLd } from '@/lib/seo/jsonld';
+import JsonLdScript from '@/components/seo/JsonLdScript';
+import { seoConfig, getSiteUrl } from '@/config/seo.config';
 
 // Fetch all genres for filter options
 async function fetchGenres() {
@@ -34,8 +38,8 @@ async function fetchSearchResults(
       searchTerms: []
     };
 
-    // Build the URL with all parameters
-    let url = `${process.env.NEXT_PUBLIC_API_URL || ''}/api/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`;
+    // Build the URL with all parameters using centralized config
+    let url = `${getSiteUrl()}/api/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`;
 
     // Add optional parameters if they exist
     if (genre) url += `&genre=${encodeURIComponent(genre)}`;
@@ -115,12 +119,10 @@ export async function generateMetadata(
   const params = await searchParams;
   const query = typeof params.q === 'string' ? params.q : '';
 
-  return {
-    title: query ? `Search results for "${query}" - Dokinaw` : 'Search - Dokinaw',
-    description: query
-      ? `Find manga with keyword "${query}" on Dokinaw.`
-      : 'Search for manga on Dokinaw.',
-  }
+  return constructSearchMetadata({
+    query,
+    resultsCount: undefined, // We don't have this info at metadata generation time
+  });
 }
 
 
@@ -308,6 +310,9 @@ export default async function SearchPage({ searchParams }: Props) {
   // Fetch genres for filters
   const genres = await fetchGenres();
 
+  // Generate JSON-LD for search page
+  const jsonLd = generateSearchJsonLd(query);
+
   try {
     const results = await fetchSearchResults(query, currentPage, 20, genre, status, sort);
     const manga = results.data;
@@ -322,6 +327,7 @@ export default async function SearchPage({ searchParams }: Props) {
 
     return (
       <div className="container mx-auto px-4 py-8">
+        <JsonLdScript id="search-jsonld" jsonLd={jsonLd} />
         <div className="mb-8">
           <div className="max-w-2xl mx-auto">
             <form action="/search" method="get" className="relative">
@@ -418,6 +424,7 @@ export default async function SearchPage({ searchParams }: Props) {
     // Render error component
     return (
       <div className="container mx-auto px-4 py-8">
+        <JsonLdScript id="search-error-jsonld" jsonLd={jsonLd} />
         <div className="mb-8">
           <div className="max-w-2xl mx-auto">
             <form action="/search" method="get" className="relative">

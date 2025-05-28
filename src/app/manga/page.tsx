@@ -7,6 +7,7 @@ import JsonLdScript from '@/components/seo/JsonLdScript';
 import { generateMangaListJsonLd } from '@/lib/seo/jsonld';
 import { formatDate } from '@/lib/utils/format';
 import { mangaApi } from '@/lib/api/client';
+import { seoConfig, getSiteUrl } from '@/config/seo.config';
 
 // Sử dụng hàm formatDate từ thư viện utils
 
@@ -60,9 +61,10 @@ async function fetchManga(params: {
 }
 
 export const metadata: Metadata = constructMetadata({
-  title: 'Latest Manga - Dokinaw',
-  description: 'Browse the latest manga updates on Dokinaw. Find your favorite manga series and read them online for free.',
-  keywords: ['manga list', 'latest manga', 'read manga online', 'free manga', 'manga updates', 'dokinaw'],
+  title: `Latest Manga - ${seoConfig.site.name}`,
+  description: `Browse the latest manga updates on ${seoConfig.site.name}. Find your favorite manga series and read them online for free.`,
+  keywords: ['manga list', 'latest manga', 'read manga online', 'free manga', 'manga updates', seoConfig.site.name.toLowerCase()],
+  canonical: getSiteUrl('/manga'),
 });
 
 export default async function MangaPage({

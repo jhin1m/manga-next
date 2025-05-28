@@ -132,15 +132,14 @@ export async function generateMetadata({
   return constructMangaMetadata({
     title: manga.title,
     description: manga.description,
-    image: manga.coverImage,
-    keywords: [
-      manga.title,
-      ...manga.alternativeTitles || [],
-      ...manga.genres.map((g: { name: string; slug: string }) => g.name),
-      manga.author,
-      'manga', 'read online', 'free manga'
-    ],
-    type: 'article'
+    coverImage: manga.coverImage,
+    author: manga.author,
+    genres: manga.genres,
+    alternativeTitles: manga.alternativeTitles || [],
+    status: manga.status,
+    publishedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    slug: manga.slug,
   });
 }
 
@@ -170,10 +169,12 @@ export default async function MangaDetailPage({
     description: manga.description,
     coverImage: manga.coverImage,
     author: manga.author,
+    genres: manga.genres,
+    alternativeTitles: manga.alternativeTitles || [],
+    status: manga.status,
+    publishedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     slug: manga.slug,
-    genres: manga.genres.map((g: { name: string; slug: string }) => g.name),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
   });
 
   return (
