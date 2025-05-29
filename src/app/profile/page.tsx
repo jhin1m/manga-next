@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import FavoritesGrid from '@/components/profile/favorites-grid'
 import ReadingHistoryList from '@/components/profile/reading-history-list'
 
@@ -98,19 +99,12 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     <div className="container py-10">
       <div className="flex flex-col gap-8">
         <div className="flex items-center gap-4">
-          {user.avatar_url ? (
-            <Image
-              src={user.avatar_url}
-              alt={user.username}
-              width={100}
-              height={100}
-              className="rounded-full"
-            />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-muted">
-              <span className="text-2xl font-bold">{user.username.charAt(0).toUpperCase()}</span>
-            </div>
-          )}
+          <Avatar className="h-24 w-24">
+            <AvatarImage src={user.avatar_url || undefined} alt={user.username} />
+            <AvatarFallback className="text-2xl font-bold">
+              {user.username.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
           <div>
             <h1 className="text-3xl font-bold">{user.username}</h1>
             <p className="text-muted-foreground">{user.email}</p>

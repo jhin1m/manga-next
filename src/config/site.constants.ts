@@ -39,6 +39,12 @@ export const SITE_CONSTANTS = {
       page: { maxWidth: 1200, maxHeight: 1800 },
       thumbnail: { width: 200, height: 300 },
     },
+    avatar: {
+      small: { width: 32, height: 32 },
+      medium: { width: 64, height: 64 },
+      large: { width: 128, height: 128 },
+      maxSize: 5 * 1024 * 1024, // 5MB
+    },
     og: {
       default: { width: 1200, height: 630 },
       twitter: { width: 1200, height: 600 },

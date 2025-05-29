@@ -46,7 +46,7 @@ export default function Header() {
             <GenreDropdown />
             <DesktopSearchButton />
             {isAuthenticated && session?.user ? (
-              <UserMenu user={session.user} />
+              <UserMenu />
             ) : (
               <Button variant="ghost" size="icon" className="text-foreground" asChild>
                 <Link href="/auth/login">

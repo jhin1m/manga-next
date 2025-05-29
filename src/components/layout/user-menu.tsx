@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { signOut } from 'next-auth/react'
-import { User } from 'next-auth'
+import { signOut, useSession } from 'next-auth/react'
 import { LogOut, Settings, User as UserIcon, Heart } from 'lucide-react'
 
 import {
@@ -18,13 +17,16 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
 
-interface UserMenuProps {
-  user: User
-}
-
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu() {
+  const { data: session } = useSession()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+
+  if (!session?.user) {
+    return null
+  }
+
+  const user = session.user
 
   const handleSignOut = async () => {
     setIsLoading(true)
@@ -45,7 +47,7 @@ export function UserMenu({ user }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-8 w-8" key={user.image || 'no-avatar'}>
             <AvatarImage src={user.image || undefined} alt={user.name || 'User'} />
             <AvatarFallback>
               {user.name?.charAt(0).toUpperCase() || 'U'}

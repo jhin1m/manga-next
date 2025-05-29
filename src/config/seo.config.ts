@@ -7,11 +7,11 @@
 const defaultSeoConfig = {
   site: {
     name: 'Manga Next',
-    tagline: '無料漫画サイト',
-    description: '無料で漫画が読めるサイト。人気漫画から名作漫画まで幅広く揃えています。',
+    tagline: 'Read Manga Online for Free',
+    description: 'Read Manga Online for Free on Manga Next. Discover popular manga series and latest updates.',
     keywords: ['manga', 'comic', 'read manga', 'free manga', 'online manga', 'Manga Next'],
-    language: 'ja',
-    locale: 'ja_JP',
+    language: 'en',
+    locale: 'en_US',
   },
   
   urls: {
@@ -30,13 +30,13 @@ const defaultSeoConfig = {
     openGraph: {
       type: 'website' as const,
       siteName: 'Manga Next',
-      locale: 'ja_JP',
+      locale: 'en_US',
     },
   },
   
   seo: {
-    titleTemplate: '%s | Manga Next',
-    defaultTitle: 'Manga Next - 無料漫画サイト',
+    titleTemplate: '%s',
+    defaultTitle: 'Manga Next - Read Manga Online for Free',
     titleSeparator: ' | ',
     robots: {
       index: true,
@@ -73,7 +73,7 @@ const defaultSeoConfig = {
       },
     },
     website: {
-      inLanguage: 'ja',
+      inLanguage: 'en',
       isAccessibleForFree: true,
       isFamilyFriendly: true,
       audience: {

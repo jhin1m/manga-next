@@ -17,13 +17,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useRouter } from 'next/navigation'
+import { AvatarUpload } from '@/components/ui/avatar-upload'
 import { userApi } from '@/lib/api/client'
+import { uploadAvatar } from '@/lib/upload'
+import { useSession } from 'next-auth/react'
 
 // Profile form schema
 const profileSchema = z.object({
   username: z.string().min(3, { message: 'Username must be at least 3 characters' }).max(50),
-  avatar_url: z.string().url({ message: 'Please enter a valid URL' }).optional().or(z.literal('')),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
@@ -38,15 +39,16 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ user }: ProfileFormProps) {
-  const router = useRouter()
+  const { data: session, update } = useSession()
   const [isLoading, setIsLoading] = useState(false)
+  const [currentAvatar, setCurrentAvatar] = useState(user.avatar_url)
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null)
 
   // Initialize form with user data
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       username: user.username,
-      avatar_url: user.avatar_url || '',
     },
   })
 
@@ -55,19 +57,60 @@ export function ProfileForm({ user }: ProfileFormProps) {
     setIsLoading(true)
 
     try {
+      // Upload avatar first if a new file is selected
+      let avatarUrl = currentAvatar
+      if (selectedAvatarFile) {
+        const uploadResult = await uploadAvatar(selectedAvatarFile)
+        avatarUrl = uploadResult.url
+        setCurrentAvatar(avatarUrl)
+      }
+
+      // Update profile with username and avatar URL
       await userApi.updateProfile({
         username: data.username,
-        ...(data.avatar_url && { avatar_url: data.avatar_url }),
+        ...(avatarUrl && { avatar_url: avatarUrl }),
       })
 
+      // Update NextAuth session with new avatar
+      if (selectedAvatarFile && avatarUrl) {
+        console.log('Updating session with new avatar:', avatarUrl)
+        try {
+          await update({
+            user: {
+              ...session?.user,
+              image: avatarUrl,
+            },
+          })
+          console.log('Session updated successfully')
+
+          // Force refresh session to ensure update is propagated
+          setTimeout(async () => {
+            await update()
+            console.log('Session force refreshed')
+          }, 100)
+        } catch (error) {
+          console.error('Failed to update session:', error)
+        }
+      }
+
       toast.success('Profile updated successfully')
-      router.refresh()
+      setSelectedAvatarFile(null) // Clear selected file after successful upload
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to update profile')
       console.error('Profile update error:', error)
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Handle avatar file selection
+  const handleAvatarFileSelect = (file: File) => {
+    setSelectedAvatarFile(file)
+  }
+
+  // Handle avatar file removal
+  const handleAvatarFileRemove = () => {
+    setSelectedAvatarFile(null)
   }
 
   return (
@@ -77,6 +120,19 @@ export function ProfileForm({ user }: ProfileFormProps) {
         <p className="text-sm text-muted-foreground">
           Update your account profile information.
         </p>
+      </div>
+
+      {/* Avatar Upload Section */}
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium">Profile Picture</h4>
+        <AvatarUpload
+          currentAvatar={currentAvatar}
+          userName={user.username}
+          onFileSelect={handleAvatarFileSelect}
+          onFileRemove={handleAvatarFileRemove}
+          size="large"
+          disabled={isLoading}
+        />
       </div>
 
       <Form {...form}>
@@ -89,20 +145,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
                 <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="avatar_url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Avatar URL</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://example.com/avatar.jpg" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

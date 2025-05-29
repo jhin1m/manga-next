@@ -237,7 +237,7 @@ export const genreApi = {
     limit?: number;
     sort?: string;
   } = {}) => {
-    return apiClient(API_ENDPOINTS.genres.bySlug(slug), {
+    return apiClient(API_ENDPOINTS.manga.list, {
       params: {
         genre: slug,
         ...params,

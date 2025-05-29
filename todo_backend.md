@@ -73,6 +73,10 @@
   - [x] Comment reporting and moderation
   - [x] Threaded replies support
 
+- [ ] Notifications
+  - [ ] Real-time notifications
+  - [ ] Notification preferences
+
 ## API Testing and Documentation
 
 - [ ] Testing
