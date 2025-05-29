@@ -52,18 +52,18 @@ This document outlines the tasks required to build a high-performance manga read
   - [x] Reading progress indicator
   - [x] Reading mode toggle (vertical scroll/page-by-page)
   - [x] Auxiliary buttons (display settings, brightness control)
-- [ ] Implement Search Page
-  - [ ] Search results display
-  - [ ] Advanced filtering options
+- [x] Implement Search Page
+  - [x] Search results display
+  - [x] Advanced filtering options
 - [x] Implement Genre Page
   - [x] Display manga of a specific genre
   - [x] Pagination
   - [x] Sorting options
 
 ### Responsive Design
-- [ ] Implement mobile-first approach
-- [ ] Create responsive layouts for all pages
-- [ ] Test on various device sizes and orientations
+- [x] Implement mobile-first approach
+- [x] Create responsive layouts for all pages
+- [x] Test on various device sizes and orientations
 
 ## Phase 3: Backend Development (API Routes)
 - [x] Design database schema
@@ -80,7 +80,6 @@ This document outlines the tasks required to build a high-performance manga read
 
 For detailed backend implementation tasks and guides, refer to:
 - [todo_backend.md](todo_backend.md) - Comprehensive backend task list
-- [guide_backend.md](guide_backend.md) - Step-by-step implementation guide
 
 ## Phase 4: Performance and SEO Optimization
 ### Performance
@@ -92,11 +91,11 @@ For detailed backend implementation tasks and guides, refer to:
 - [ ] Implement prefetching for faster navigation
 
 ### SEO
-- [ ] Configure metadata for all pages using `next/head` or Metadata API
-- [ ] Create dynamic sitemap.xml
-- [ ] Implement structured data (JSON-LD) for manga and chapters
-- [ ] Ensure SEO-friendly URLs
-- [ ] Optimize for Core Web Vitals
+- [x] Configure metadata for all pages using `next/head` or Metadata API
+- [x] Create dynamic sitemap.xml
+- [x] Implement structured data (JSON-LD) for manga and chapters
+- [x] Ensure SEO-friendly URLs
+- [x] Optimize for Core Web Vitals
 
 ## Phase 5: Maintenance and Scalability
 - [ ] Write clean, commented, and maintainable code
