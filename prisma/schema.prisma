@@ -126,6 +126,7 @@ model Comics {
   Comments                 Comments[]
   Favorites                Favorites[]
   Reading_Progress         Reading_Progress[]
+  Ratings                  Ratings[]
 
   @@index([last_chapter_uploaded_at(sort: Desc)], map: "idx_comics_last_chapter_uploaded_at")
   @@index([status], map: "idx_comics_status")
@@ -284,6 +285,26 @@ model Reading_Progress {
   @@id([user_id, comic_id])
 }
 
+/// Manga ratings model for star rating system
+model Ratings {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  comic_id   Int
+  rating     Float    @db.Real // Supports decimal ratings (0.5 to 5.0)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  Users  Users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  Comics Comics @relation(fields: [comic_id], references: [id], onDelete: Cascade)
+
+  // Constraints and indexes
+  @@unique([user_id, comic_id]) // Prevent duplicate ratings from same user for same manga
+  @@index([comic_id], map: "idx_ratings_comic_id") // Performance optimization for manga rating queries
+  @@index([user_id], map: "idx_ratings_user_id") // Performance optimization for user rating queries
+  @@index([rating], map: "idx_ratings_rating") // Performance optimization for rating calculations
+}
+
 model Users {
   id               Int                @id @default(autoincrement())
   username         String             @unique @db.VarChar(255)
@@ -300,6 +321,7 @@ model Users {
   Comments         Comments[]
   Favorites        Favorites[]
   Reading_Progress Reading_Progress[]
+  Ratings          Ratings[]
 
   // Comment engagement relations
   CommentLikes     CommentLike[]

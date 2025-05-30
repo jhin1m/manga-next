@@ -3,11 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Eye, BookOpen, Heart } from "lucide-react";
+import { Eye, BookOpen, Heart } from "lucide-react";
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
 import Description from "@/components/manga/Description";
 import { FavoriteButton } from "@/components/manga/FavoriteButton";
+import { StarRating } from "@/components/manga/StarRating";
 import CommentSection from "@/components/feature/comments/CommentSection";
 import { notFound } from "next/navigation";
 import { constructMangaMetadata } from "@/lib/seo/metadata";
@@ -38,7 +39,6 @@ async function getMangaBySlug(slug: string) {
         slug: cg.Genres.slug
       })) || [],
       status: data.manga.status || 'Unknown',
-      rating: 8.5, // Placeholder as it's not in the API
       views: data.manga.total_views || 0,
       favorites: data.manga.total_favorites || 0,
       chapterCount: 0, // Will be updated when we fetch chapters
@@ -98,7 +98,6 @@ async function getRelatedManga(slug: string, genres: { name: string; slug: strin
         slug: comic.slug,
         latestChapter: `Chapter ${comic.Chapters?.[0]?.chapter_number || '?'}`,
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
-        rating: 8.5, // Placeholder
         views: comic.total_views || 0,
         chapterCount: comic.Chapters?.length || 0,
         updatedAt: comic.last_chapter_uploaded_at ?
@@ -217,11 +216,15 @@ export default async function MangaDetailPage({
             ))}
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-              <span>{manga.rating.toFixed(1)}</span>
-            </div>
+          {/* Interactive Star Rating */}
+          <div className="py-2">
+            <StarRating
+              mangaId={manga.id}
+              mangaSlug={manga.slug}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
             <div className="flex items-center gap-1">
               <Eye className="h-4 w-4" />
               <span>{formatViews(manga.views)}</span>

@@ -82,6 +82,11 @@ export const API_ENDPOINTS = {
   admin: {
     crawler: '/api/admin/crawler',
   },
+  // Rating endpoints
+  ratings: {
+    submit: '/api/ratings',
+    get: (mangaId: number) => `/api/ratings/${mangaId}`,
+  },
   // Utility endpoints
   health: '/api/health',
   revalidate: '/api/revalidate',
@@ -153,7 +158,22 @@ export async function apiClient<T = any>(
     const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      // Try to parse error response body for more details
+      let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+
+      try {
+        const errorData = await response.json();
+        if (errorData.error) {
+          errorMessage = errorData.error;
+          if (errorData.details) {
+            errorMessage += `: ${errorData.details}`;
+          }
+        }
+      } catch {
+        // If we can't parse the error response, use the default message
+      }
+
+      throw new Error(errorMessage);
     }
 
     return await response.json();
@@ -566,6 +586,44 @@ export const userApi = {
       body: data,
       cache: 'no-store',
     });
+  },
+};
+
+// Rating API functions
+export const ratingApi = {
+  // Submit or update rating
+  submit: async (data: {
+    mangaId: number;
+    rating: number;
+  }) => {
+    const response = await apiClient(API_ENDPOINTS.ratings.submit, {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+
+    // API returns { success: true, data: {...} } format
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    // Fallback for unexpected response format
+    return response;
+  },
+
+  // Get rating statistics for a manga
+  get: async (mangaId: number) => {
+    const response = await apiClient(API_ENDPOINTS.ratings.get(mangaId), {
+      cache: 'no-store',
+    });
+
+    // API returns { success: true, data: {...} } format
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    // Fallback for unexpected response format
+    return response;
   },
 };
 

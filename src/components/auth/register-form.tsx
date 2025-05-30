@@ -54,7 +54,7 @@ export function RegisterForm() {
     setIsLoading(true)
 
     try {
-      await authApi.register({
+      const response = await authApi.register({
         username: data.username,
         email: data.email,
         password: data.password,
@@ -63,8 +63,26 @@ export function RegisterForm() {
       toast.success('Registration successful! Please log in.')
       router.push('/auth/login')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Registration failed')
       console.error('Registration error:', error)
+
+      // Try to extract error message from API response
+      let errorMessage = 'Registration failed'
+
+      if (error instanceof Error) {
+        try {
+          // If the error message contains JSON, try to parse it
+          const errorText = error.message
+          if (errorText.includes('API Error:')) {
+            errorMessage = 'Registration failed. Please check your input and try again.'
+          } else {
+            errorMessage = errorText
+          }
+        } catch {
+          errorMessage = error.message
+        }
+      }
+
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
