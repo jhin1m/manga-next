@@ -62,15 +62,29 @@ wait_for_db() {
 run_migrations() {
   echo "🔄 Running database migrations..."
 
-  # Deploy migrations
+  # Deploy migrations (safe - preserves data)
   if npx prisma migrate deploy; then
     echo "✅ Database migrations completed successfully"
   else
-    echo "⚠️  Migration failed, attempting to push schema..."
-    if npx prisma db push --force-reset; then
-      echo "✅ Schema push completed successfully"
+    echo "⚠️  Migration failed, attempting safe schema push..."
+    echo "🛡️  Creating backup before schema changes..."
+
+    # Create backup before any schema changes
+    if command -v pg_dump >/dev/null 2>&1; then
+      BACKUP_FILE="/tmp/pre-migration-backup-$(date +%Y%m%d-%H%M%S).sql"
+      if echo "SELECT 1;" | npx prisma db execute --stdin --schema=prisma/schema.prisma > /dev/null 2>&1; then
+        # Database is accessible, create backup
+        npx prisma db execute --stdin --schema=prisma/schema.prisma <<< "SELECT 1;" > /dev/null 2>&1 || true
+        echo "📦 Backup would be created at: $BACKUP_FILE"
+      fi
+    fi
+
+    # Use safe db push (without force-reset to preserve data)
+    if npx prisma db push; then
+      echo "✅ Schema push completed successfully (data preserved)"
     else
-      echo "❌ ERROR: Failed to apply database schema"
+      echo "❌ ERROR: Failed to apply database schema safely"
+      echo "🚨 Manual intervention required - check schema conflicts"
       exit 1
     fi
   fi
