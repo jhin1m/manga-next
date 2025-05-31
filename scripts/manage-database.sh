@@ -350,17 +350,48 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Function to load environment variables
+load_environment() {
+    print_status "Loading environment variables..."
+
+    # Try to load from various env files
+    ENV_FILES=(".env.production" ".env.local" ".env")
+
+    for env_file in "${ENV_FILES[@]}"; do
+        if [ -f "$env_file" ]; then
+            print_status "Loading from $env_file"
+            export $(grep -v '^#' "$env_file" | grep -v '^$' | xargs) 2>/dev/null || true
+            break
+        fi
+    done
+
+    # Verify DATABASE_URL is set
+    if [ -z "$DATABASE_URL" ]; then
+        print_error "DATABASE_URL not found in environment"
+        print_status "Please ensure one of these files exists with DATABASE_URL:"
+        print_status "  - .env.production"
+        print_status "  - .env.local"
+        print_status "  - .env"
+        exit 1
+    fi
+
+    print_success "Environment variables loaded"
+}
+
 # Main execution
 main() {
     echo "🗄️  Database Management Script"
     echo "============================="
-    
+
     if [ -z "$COMMAND" ]; then
         print_error "No command specified"
         show_help
         exit 1
     fi
-    
+
+    # Load environment variables first
+    load_environment
+
     # Check database connection
     check_database
     
