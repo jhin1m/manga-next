@@ -36,7 +36,7 @@
   --sidebar-accent-foreground: rgb(42, 42, 74);
   --sidebar-border: rgb(224, 224, 240);
   --sidebar-ring: rgb(110, 86, 207);
-  --font-sans: Inter, sans-serif;
+  --font-sans: var(--font-fira-sans), sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.5rem;
@@ -83,7 +83,7 @@
   --sidebar-accent-foreground: rgb(226, 226, 245);
   --sidebar-border: rgb(48, 48, 82);
   --sidebar-ring: rgb(164, 143, 255);
-  --font-sans: Inter, sans-serif;
+  --font-sans: var(--font-fira-sans), sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.5rem;
@@ -131,7 +131,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-fira-sans), sans-serif;
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
 
@@ -155,7 +155,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 
   /* Đánh dấu các chapter đã đọc bằng a:visited */

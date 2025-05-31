@@ -183,7 +183,7 @@ export function StarRating({
 
           {/* Rating Score and Count - Inline */}
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-sm font-semibold whitespace-nowrap">
+            <span className="text-sm font-light whitespace-nowrap">
               {getDisplayRating()}/10
             </span>
             <span className="text-sm text-muted-foreground whitespace-nowrap">
