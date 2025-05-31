@@ -1,100 +1,112 @@
 # 🚀 Production Deployment Guide
 
-Hướng dẫn triển khai production hiệu quả cho Manga Website với NextJS 15 + Docker + PostgreSQL.
+Hướng dẫn đơn giản để deploy Manga Website lên production.
 
-## 📋 Tổng quan
+## 📋 Chỉ cần nhớ 2 script:
 
-### 🎯 Mục tiêu
-- **Tối ưu thời gian deployment**: Chỉ rebuild những gì cần thiết
-- **Tự động hóa migrations**: Database tự động cập nhật khi có schema mới
-- **Zero-downtime**: Giảm thiểu thời gian ngừng hoạt động
-- **Backup tự động**: Bảo vệ dữ liệu trước khi deployment
+### 1. **Deploy Application** - `./scripts/deploy-production.sh`
+### 2. **Manage Database** - `./scripts/manage-database.sh`
 
-### 🛠️ Công cụ
-- **Smart Deployment Script**: Tự động phát hiện thay đổi
-- **Database Management**: Quản lý migrations và backup
-- **Docker Multi-stage**: Tối ưu build time và image size
+---
 
-## 🚀 Cách sử dụng
+## 🚀 Deployment thông thường
 
-### 1. Cập nhật Source Code + Deployment thông minh
-
+### **Cập nhật code mới:**
 ```bash
-# Deployment thông minh (tự động phát hiện thay đổi)
+git pull origin main
 ./scripts/deploy-production.sh
+```
+**→ Thời gian: 30-60 giây**
 
-# Chỉ restart nhanh (không rebuild)
+### **Chỉ restart nhanh:**
+```bash
 ./scripts/deploy-production.sh --quick
+```
+**→ Thời gian: 10-15 giây**
 
-# Force rebuild toàn bộ
+### **Force rebuild toàn bộ:**
+```bash
 ./scripts/deploy-production.sh --full-rebuild
+```
+**→ Thời gian: 3-5 phút**
 
-# Backup database trước khi deploy
-./scripts/deploy-production.sh --backup-db
+---
+
+## 🗄️ Quản lý Database
+
+### **Khi có bảng mới (migration):**
+```bash
+# Development: tạo migration
+npx prisma migrate dev --name add_new_table
+git add prisma/migrations/ && git commit && git push
+
+# Production: deploy tự động apply migration
+./scripts/deploy-production.sh
 ```
 
-### 2. Quản lý Database
-
+### **Sửa lỗi P3005 migration:**
 ```bash
-# Apply migrations mới
-./scripts/manage-database.sh migrate
+./scripts/manage-database.sh fix-baseline
+```
 
+### **Backup & Restore:**
+```bash
 # Tạo backup
 ./scripts/manage-database.sh backup
 
-# Xem trạng thái migrations
-./scripts/manage-database.sh status
+# Restore từ backup
+./scripts/manage-database.sh restore --file backup.sql
 
-# Seed dữ liệu
+# Xem trạng thái
+./scripts/manage-database.sh status
+```
+
+---
+
+## � Troubleshooting
+
+### **Khi deployment lỗi:**
+```bash
+# Xem logs
+docker compose logs -f app
+
+# Force rebuild
+./scripts/deploy-production.sh --full-rebuild
+```
+
+### **Khi có lỗi P3005 migration:**
+```bash
+# Sửa lỗi migration baseline
+./scripts/manage-database.sh fix-baseline
+
+# Sau đó deploy lại
+./scripts/deploy-production.sh
+```
+
+### **Khôi phục dữ liệu:**
+```bash
+# Restore từ backup
+./scripts/manage-database.sh restore --file backup.sql
+
+# Hoặc seed lại data
 ./scripts/manage-database.sh seed
 ```
 
-## 📊 Các tình huống thường gặp
+---
 
-### 🔄 Cập nhật code thông thường
-```bash
-# 1. Pull code mới
-git pull origin main
+## 📊 Thời gian deployment
 
-# 2. Deploy thông minh (script tự động phát hiện thay đổi)
-./scripts/deploy-production.sh
-```
-**Thời gian**: ~30-60 giây (chỉ rebuild app)
+| Tình huống | Thời gian | Lệnh |
+|------------|-----------|------|
+| Chỉ restart | 10-15s | `./scripts/deploy-production.sh --quick` |
+| Code thay đổi | 30-60s | `./scripts/deploy-production.sh` |
+| Dependencies mới | 3-5m | `./scripts/deploy-production.sh --full-rebuild` |
+| Database mới | 1-2m | `./scripts/deploy-production.sh` (auto-detect) |
 
-### 🗄️ Có bảng database mới
-```bash
-# 1. Tạo migration (development)
-npx prisma migrate dev --name add_new_table
+---
 
-# 2. Commit và push
-git add prisma/migrations/
-git commit -m "Add new table migration"
-git push
+## � Kiểm tra hệ thống
 
-# 3. Deploy (migrations tự động chạy)
-./scripts/deploy-production.sh
-```
-**Thời gian**: ~1-2 phút (rebuild + migration)
-
-### 📦 Thay đổi dependencies
-```bash
-# Script tự động phát hiện thay đổi package.json
-./scripts/deploy-production.sh
-# Hoặc force rebuild
-./scripts/deploy-production.sh --full-rebuild
-```
-**Thời gian**: ~3-5 phút (full rebuild)
-
-### ⚡ Chỉ restart nhanh
-```bash
-# Khi chỉ cần restart service (không có thay đổi code)
-./scripts/deploy-production.sh --quick
-```
-**Thời gian**: ~10-15 giây
-
-## 🔍 Monitoring & Troubleshooting
-
-### Kiểm tra trạng thái
 ```bash
 # Xem logs
 docker compose logs -f app
@@ -104,120 +116,18 @@ curl http://localhost:3000/api/health
 
 # Xem trạng thái containers
 docker compose ps
-```
-
-### Backup & Restore
-```bash
-# Tạo backup
-./scripts/manage-database.sh backup
-
-# Restore từ backup
-./scripts/manage-database.sh restore --file backups/backup-file.sql
-```
-
-## 🎛️ Tối ưu hóa
-
-### Docker Layer Caching
-- Dependencies chỉ rebuild khi `package.json` thay đổi
-- Source code rebuild độc lập với dependencies
-- Multi-stage builds giảm image size
-
-### Smart Detection
-Script tự động phát hiện:
-- ✅ Thay đổi `package.json` → Full rebuild
-- ✅ Thay đổi `Dockerfile` → Full rebuild  
-- ✅ Thay đổi `prisma/schema.prisma` → Rebuild + migration
-- ✅ Chỉ thay đổi source code → Quick rebuild
-- ✅ Không có thay đổi → Quick restart
-
-### Database Migrations
-- Tự động chạy `prisma migrate deploy`
-- Fallback sang `prisma db push` nếu migration lỗi
-- Backup tự động trước khi thay đổi lớn
-
-## 🔧 Cấu hình
-
-### Environment Variables
-```bash
-# Required
-DATABASE_URL=postgresql://user:pass@host:5432/manga-next
-NEXTAUTH_SECRET=your-32-character-secret-key
-NEXTAUTH_URL=http://localhost:3000
-
-# Optional
-SEED_DATABASE=false
-```
-
-### Docker Compose
-Sử dụng `docker-compose.yml` cho production với:
-- PostgreSQL 15 Alpine
-- Redis cho caching
-- Health checks
-- Volume persistence
-
-## 📈 Performance Tips
-
-### 1. Sử dụng đúng deployment mode
-- **Quick mode**: Chỉ restart → 10-15s
-- **Smart mode**: Auto-detect → 30s-2m  
-- **Full rebuild**: Toàn bộ → 3-5m
-
-### 2. Backup strategy
-- Backup tự động trước deployment lớn
-- Giữ 10 backup gần nhất
-- Backup nén để tiết kiệm dung lượng
-
-### 3. Monitoring
-- Health check với retry logic
-- Log aggregation
-- Performance metrics
-
-## 🚨 Troubleshooting
-
-### Deployment fails
-```bash
-# Xem logs chi tiết
-docker compose logs app
 
 # Kiểm tra database
 ./scripts/manage-database.sh status
-
-# Force rebuild
-./scripts/deploy-production.sh --full-rebuild
 ```
-
-### Database issues
-```bash
-# Kiểm tra migrations
-npx prisma migrate status
-
-# Reset database (NGUY HIỂM)
-./scripts/manage-database.sh reset --force
-
-# Restore từ backup
-./scripts/manage-database.sh restore --file backup.sql
-```
-
-### Performance issues
-```bash
-# Xem resource usage
-docker stats
-
-# Clean unused images
-docker image prune -f
-
-# Restart services
-docker compose restart
-```
-
-## 📞 Support
-
-Nếu gặp vấn đề:
-1. Kiểm tra logs: `docker compose logs -f app`
-2. Verify health: `curl http://localhost:3000/api/health`
-3. Check database: `./scripts/manage-database.sh status`
-4. Backup data: `./scripts/manage-database.sh backup`
 
 ---
 
-**Lưu ý**: Luôn tạo backup trước khi thực hiện thay đổi lớn trong production!
+## ⚠️ Lưu ý quan trọng
+
+- ✅ **Luôn backup** trước khi deploy: `./scripts/manage-database.sh backup`
+- ✅ **Data an toàn**: Script tự động dừng nếu có nguy cơ mất data
+- ✅ **Auto-detection**: Script tự biết cần rebuild gì
+- ✅ **Rollback**: Có thể restore từ backup nếu cần
+
+**Chỉ cần nhớ 2 script chính là đủ!** 🎉

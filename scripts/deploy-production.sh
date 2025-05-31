@@ -358,7 +358,20 @@ main() {
         detect_changes
     fi
 
+    # CRITICAL: Always backup before any deployment
     backup_database
+
+    # Check for migration issues before deployment
+    print_status "Checking for potential migration issues..."
+    if docker compose exec app npx prisma migrate status 2>&1 | grep -q "P3005"; then
+        print_error "CRITICAL: P3005 migration error detected!"
+        print_error "This could cause data loss. Please run:"
+        print_error "  ./scripts/manage-database.sh fix-baseline"
+        print_error ""
+        print_error "Deployment STOPPED to prevent data loss."
+        exit 1
+    fi
+
     deploy_application
     verify_deployment
     show_deployment_summary

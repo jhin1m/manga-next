@@ -36,12 +36,12 @@ show_help() {
     echo ""
     echo "Commands:"
     echo "  migrate         Apply pending migrations to production"
-    echo "  rollback        Rollback last migration"
-    echo "  reset           Reset database (DANGEROUS - use with caution)"
+    echo "  fix-baseline    Fix P3005 migration error (baseline existing DB)"
     echo "  backup          Create database backup"
     echo "  restore         Restore database from backup"
     echo "  status          Show migration status"
     echo "  seed            Seed database with initial data"
+    echo "  reset           Reset database (DANGEROUS - use with caution)"
     echo ""
     echo "Options:"
     echo "  --force         Force operation without confirmation"
@@ -215,11 +215,82 @@ seed_database() {
     fi
 }
 
+# Function to fix P3005 migration baseline error
+fix_baseline() {
+    print_warning "This will fix P3005 migration error by baselining the database"
+    print_status "This is SAFE and will NOT delete your data"
+
+    if [ "$FORCE" != true ]; then
+        read -p "Continue with baseline fix? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_status "Baseline fix cancelled"
+            exit 0
+        fi
+    fi
+
+    # Create backup first
+    print_status "Creating backup before baseline fix..."
+    backup_database
+
+    # Create missing search function if needed
+    print_status "Checking for missing database functions..."
+    DB_CONTAINER=$(docker compose ps -q db)
+
+    # Check if update_comics_search_vector function exists
+    FUNCTION_EXISTS=$(docker exec "$DB_CONTAINER" psql -U postgres -d manga-next -t -c "SELECT EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_comics_search_vector');" | tr -d ' \n')
+
+    if [ "$FUNCTION_EXISTS" = "f" ]; then
+        print_status "Creating missing search function..."
+        docker exec "$DB_CONTAINER" psql -U postgres -d manga-next << 'EOF'
+CREATE OR REPLACE FUNCTION update_comics_search_vector()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.search_vector :=
+        setweight(to_tsvector('english', COALESCE(NEW.title, '')), 'A') ||
+        setweight(to_tsvector('english', COALESCE(NEW.description, '')), 'B') ||
+        setweight(to_tsvector('english', COALESCE(NEW.author, '')), 'C');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_comics_search_vector_trigger ON "Comic";
+CREATE TRIGGER update_comics_search_vector_trigger
+    BEFORE INSERT OR UPDATE ON "Comic"
+    FOR EACH ROW
+    EXECUTE FUNCTION update_comics_search_vector();
+EOF
+        print_success "Search function created"
+    fi
+
+    # Baseline migrations
+    print_status "Marking migrations as applied (baseline)..."
+    FIRST_MIGRATION=$(ls prisma/migrations | head -1)
+
+    if [ -n "$FIRST_MIGRATION" ]; then
+        if npx prisma migrate resolve --applied "$FIRST_MIGRATION"; then
+            print_success "Migration baseline completed"
+
+            # Apply any remaining migrations
+            if npx prisma migrate deploy; then
+                print_success "All migrations applied successfully"
+            else
+                print_warning "Some migrations failed to apply"
+            fi
+        else
+            print_error "Failed to baseline migrations"
+            exit 1
+        fi
+    else
+        print_warning "No migrations found to baseline"
+    fi
+}
+
 # Function to reset database
 reset_database() {
     print_warning "This will COMPLETELY RESET the database!"
     print_warning "All data will be lost!"
-    
+
     if [ "$FORCE" != true ]; then
         read -p "Are you sure you want to continue? (y/N): " -n 1 -r
         echo
@@ -228,11 +299,11 @@ reset_database() {
             exit 0
         fi
     fi
-    
+
     # Create backup before reset
     print_status "Creating backup before reset..."
     backup_database
-    
+
     # Reset database
     print_status "Resetting database..."
     if npx prisma migrate reset --force; then
@@ -251,7 +322,7 @@ BACKUP_FILE=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        migrate|rollback|reset|backup|restore|status|seed)
+        migrate|fix-baseline|backup|restore|status|seed|reset)
             COMMAND=$1
             shift
             ;;
@@ -297,6 +368,9 @@ main() {
     case $COMMAND in
         migrate)
             migrate_database
+            ;;
+        fix-baseline)
+            fix_baseline
             ;;
         backup)
             backup_database
