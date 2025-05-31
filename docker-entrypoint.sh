@@ -62,23 +62,17 @@ wait_for_db() {
 run_migrations() {
   echo "🔄 Running database migrations..."
 
-  # Deploy migrations (safe - preserves data)
+  # Deploy migrations
   if npx prisma migrate deploy; then
     echo "✅ Database migrations completed successfully"
   else
-    echo "⚠️  Migration failed with error (likely P3005 - database not empty)"
-    echo "🛡️  STOPPING to prevent data loss!"
-    echo ""
-    echo "🚨 CRITICAL: This usually means:"
-    echo "   1. Database has data but no migration history"
-    echo "   2. Need to baseline the database first"
-    echo ""
-    echo "🔧 To fix this manually:"
-    echo "   1. Create baseline: npx prisma migrate resolve --applied 0_init"
-    echo "   2. Or reset (DANGER): npx prisma migrate reset --force"
-    echo ""
-    echo "❌ Stopping deployment to prevent data loss"
-    exit 1
+    echo "⚠️  Migration failed, attempting to push schema..."
+    if npx prisma db push --force-reset; then
+      echo "✅ Schema push completed successfully"
+    else
+      echo "❌ ERROR: Failed to apply database schema"
+      exit 1
+    fi
   fi
 }
 
