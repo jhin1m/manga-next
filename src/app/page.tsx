@@ -8,11 +8,10 @@ import Sidebar from "@/components/feature/Sidebar";
 import Link from "next/link";
 import { seoConfig, getSiteUrl } from "@/config/seo.config";
 
-import { formatDate } from '@/lib/utils/format';
 import { mangaApi } from '@/lib/api/client';
 
 // Fetch manga data from API using centralized API client
-async function fetchMangaData(sort: string = 'latest', limit: number = 16, page: number = 1) {
+async function fetchMangaData(sort: string = 'latest', limit: number = 20, page: number = 1) {
   try {
     const sortParam = sort === 'latest' ? 'latest' :
                       sort === 'popular' ? 'popular' : 'alphabetical';
@@ -32,16 +31,16 @@ async function fetchMangaData(sort: string = 'latest', limit: number = 16, page:
         coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
         slug: comic.slug,
         latestChapter: comic.Chapters && comic.Chapters.length > 0
-          ? `Chapter ${comic.Chapters[0].chapter_number}`
-          : 'Updating',
+          ? comic.Chapters[0].title
+          : undefined,
         latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
           ? comic.Chapters[0].slug
-          : '',
+          : undefined,
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
         rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
         views: comic.total_views || 0,
         chapterCount: comic._chapterCount || 0,
-        updatedAt: comic.last_chapter_uploaded_at ? formatDate(comic.last_chapter_uploaded_at) : 'Recently',
+        updatedAt: comic.last_chapter_uploaded_at || undefined,
         status: comic.status || 'Ongoing',
       })),
       totalPages: Math.ceil(data.total / limit) || 1,
@@ -75,7 +74,7 @@ export default async function Home({
   const jsonLd = generateHomeJsonLd();
 
   // Fetch data for the latest manga with pagination
-  await fetchMangaData('latest', 16, currentPage);
+  await fetchMangaData('latest', 20, currentPage);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
@@ -89,7 +88,7 @@ export default async function Home({
         {/* Main Content */}
         <section className="space-y-6">
           {/* Latest Update Manga List */}
-          <LatestUpdateMangaList page={currentPage} limit={16} />
+          <LatestUpdateMangaList page={currentPage} limit={20} />
 
           {/* View More Button */}
           <div className="flex justify-center mt-8">

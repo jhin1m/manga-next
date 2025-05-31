@@ -2,13 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RecentComments from "./sidebar/RecentComments";
 import HistoryReading from "./sidebar/HistoryReading";
 import RecommendedManga from "./sidebar/RecommendedManga";
+import { useTranslations } from "next-intl";
 
 export default function Sidebar() {
+  const t = useTranslations('sidebar');
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader className="pb-3 text-2xl">
-          <CardTitle>Recent Comments</CardTitle>
+          <CardTitle>{t('recentComments')}</CardTitle>
         </CardHeader>
         <CardContent>
           <RecentComments />
@@ -17,7 +20,7 @@ export default function Sidebar() {
 
       <Card>
         <CardHeader className="pb-3 text-2xl">
-          <CardTitle>Reading History</CardTitle>
+          <CardTitle>{t('readingHistory')}</CardTitle>
         </CardHeader>
         <CardContent>
           <HistoryReading />
@@ -26,7 +29,7 @@ export default function Sidebar() {
 
       <Card>
         <CardHeader className="pb-3 text-2xl">
-          <CardTitle>Recommended Manga</CardTitle>
+          <CardTitle>{t('recommendedManga')}</CardTitle>
         </CardHeader>
         <CardContent>
           <RecommendedManga />

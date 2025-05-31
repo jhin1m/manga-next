@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, Clock, ArrowUpDown, CheckCircle2 } from 'lucide-react';
-import { formatDate, formatViews } from '@/lib/utils/format';
+import { useFormat } from '@/hooks/useFormat';
 import { getReadingHistory } from '@/lib/utils/readingHistory';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface Chapter {
   id: string;
@@ -29,14 +30,16 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isClient, setIsClient] = useState(false);
   const [readChapters, setReadChapters] = useState<Record<string, boolean>>({});
+  const { formatViews, formatDate } = useFormat();
+  const t = useTranslations('manga');
 
   // Set isClient to true after hydration is complete and load reading history
   useEffect(() => {
     setIsClient(true);
-    
+
     // Lấy lịch sử đọc từ localStorage
     const history = getReadingHistory();
-    
+
     // Tạo map các chapter đã đọc của manga hiện tại
     const readMap: Record<string, boolean> = {};
     history.forEach(item => {
@@ -44,7 +47,7 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
         readMap[item.chapter.slug] = true;
       }
     });
-    
+
     setReadChapters(readMap);
   }, [mangaSlug]);
 
@@ -66,7 +69,7 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-5">
-        <CardTitle className="text-xl">Chapters</CardTitle>
+        <CardTitle className="text-xl">{t('chaptersList')}</CardTitle>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -75,14 +78,14 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
             className="text-xs"
           >
             <ArrowUpDown className="mr-2 h-3 w-3" />
-            {sortOrder === 'newest' ? 'Newest First' : 'Oldest First'}
+            {sortOrder === 'newest' ? t('newestFirst') : t('oldestFirst')}
           </Button>
         </div>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
           <Input
-            placeholder="Search chapters..."
+            placeholder={t('searchChapters')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
@@ -104,8 +107,8 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
               >
                 <div className={cn(
                   "flex flex-col h-full p-3 rounded-md transition-colors border",
-                  readChapters[chapter.slug] 
-                    ? "border-primary/30 bg-primary/5 hover:bg-primary/10" 
+                  readChapters[chapter.slug]
+                    ? "border-primary/30 bg-primary/5 hover:bg-primary/10"
                     : "border-border/40 hover:bg-accent"
                 )}>
                   <div className="font-medium mb-2 flex items-center gap-1">
@@ -131,7 +134,7 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
             ))
           ) : (
             <div className="col-span-2 md:col-span-4 text-center py-4 text-muted-foreground">
-              No chapters found matching &quot;{searchTerm}&quot;
+              {t('noChaptersFound', { searchTerm })}
             </div>
           )}
           </div>

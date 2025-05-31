@@ -16,10 +16,14 @@ import { Home, Clock } from 'lucide-react';
 import { UserMenu } from '@/components/layout/user-menu';
 import { useSession } from 'next-auth/react';
 import { GenreDropdown, MobileGenreDropdown } from '@/components/feature/GenreDropdown';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { useTranslations } from 'next-intl';
 
 export default function Header() {
   const { data: session, status } = useSession();
   const isAuthenticated = status === 'authenticated';
+  const t = useTranslations('navigation');
+  const tAuth = useTranslations('auth');
   return (
     <header className='border-b border-border/40 bg-background/95 backdrop-blur-sm top-0 z-50'>
       <div className='container mx-auto px-4 py-3'>
@@ -34,13 +38,13 @@ export default function Header() {
               href='/'
               className='text-sm font-medium transition-colors hover:text-primary'
             >
-              Home
+              {t('home')}
             </Link>
             <Link
               href='/manga'
               className='text-sm font-medium transition-colors hover:text-primary'
             >
-              Latest
+              {t('latest')}
             </Link>
 
             <GenreDropdown />
@@ -54,12 +58,14 @@ export default function Header() {
                 </Link>
               </Button>
             )}
+            <LanguageSwitcher />
             <ThemeToggle />
           </nav>
 
           {/* Mobile Navigation */}
           <div className='md:hidden flex items-center gap-2'>
             <SearchButton />
+            <LanguageSwitcher />
             <ThemeToggle />
             <Sheet>
               <SheetTrigger asChild>
@@ -78,14 +84,14 @@ export default function Header() {
                     className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                   >
                     <Home className="mr-3 h-5 w-5" />
-                    Home
+                    {t('home')}
                   </Link>
                   <Link
                     href='/manga'
                     className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                   >
                     <Clock className="mr-3 h-5 w-5" />
-                    Latest
+                    {t('latest')}
                   </Link>
                   <MobileGenreDropdown />
                   {isAuthenticated && session?.user ? (
@@ -95,14 +101,14 @@ export default function Header() {
                         className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                       >
                         <User className="mr-3 h-5 w-5" />
-                        Profile
+                        {t('profile')}
                       </Link>
                       <Link
                         href='/profile?tab=favorites'
                         className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                       >
                         <Heart className="mr-3 h-5 w-5" />
-                        My Favorites
+                        {t('myFavorites')}
                       </Link>
                     </>
                   ) : (
@@ -111,7 +117,7 @@ export default function Header() {
                       className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                     >
                       <User className="mr-3 h-5 w-5" />
-                      Login
+                      {tAuth('login')}
                     </Link>
                   )}
                 </nav>

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import PaginationWrapper from '@/components/feature/PaginationWrapper';
-import { formatDate } from '@/lib/utils/format';
+// Removed formatDate import since it's not used for display in search results
 import { prisma } from '@/lib/db';
 import { constructSearchMetadata } from '@/lib/seo/metadata';
 import { generateSearchJsonLd } from '@/lib/seo/jsonld';
@@ -89,8 +89,7 @@ async function fetchSearchResults(
         rating: 8.5, // Placeholder as it's not in the API
         views: comic.total_views || 0,
         chapterCount: comic._chapterCount || 0,
-        updatedAt: comic.last_chapter_uploaded_at ?
-          formatDate(comic.last_chapter_uploaded_at) : 'Recently',
+        updatedAt: comic.last_chapter_uploaded_at || undefined,
         status: comic.status || 'Ongoing',
         highlightedTitle: comic._highlightedTitle || comic.title,
         highlightedDescription: comic._highlightedDescription || comic.description,

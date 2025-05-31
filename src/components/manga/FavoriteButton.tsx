@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useFavorites } from '@/hooks/useFavorites'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 
 interface FavoriteButtonProps {
@@ -28,6 +29,7 @@ export function FavoriteButton({
   onToggleComplete,
 }: FavoriteButtonProps) {
   const router = useRouter()
+  const t = useTranslations('manga')
   const { isFavorite, isLoading, toggleFavorite, isAuthenticated } = useFavorites({
     comicId,
     initialIsFavorite,
@@ -72,7 +74,7 @@ export function FavoriteButton({
             onClick={handleToggleFavorite}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
-            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
           >
             <Heart
               className={cn('h-5 w-5 transition-all', {
@@ -82,13 +84,13 @@ export function FavoriteButton({
             />
             {showText && (
               <span className="ml-2">
-                {isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                {isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
               </span>
             )}
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{isFavorite ? 'Remove from favorites' : 'Add to favorites'}</p>
+          <p>{isFavorite ? t('removeFromFavorites') : t('addToFavorites')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

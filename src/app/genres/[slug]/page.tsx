@@ -85,13 +85,12 @@ async function fetchMangaByGenre({
         rating: 0, // Not implemented in the API yet
         chapterCount: comic._chapterCount || 0,
         latestChapter: comic.Chapters && comic.Chapters.length > 0
-          ? `Chapter ${comic.Chapters[0].chapter_number}`
-          : 'Updating',
+          ? comic.Chapters[0].title
+          : undefined,
         latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
           ? comic.Chapters[0].slug
-          : '',
-        updatedAt: comic.last_chapter_uploaded_at ?
-                  formatDate(comic.last_chapter_uploaded_at) : 'Recently',
+          : undefined,
+        updatedAt: comic.last_chapter_uploaded_at || undefined,
       };
     });
 

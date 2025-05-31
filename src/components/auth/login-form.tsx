@@ -20,14 +20,18 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
-// Login form schema
-const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z.string().min(1, { message: 'Password is required' }),
+// Login form schema - sẽ được tạo động với translations
+const createLoginSchema = (t: any) => z.object({
+  email: z.string().email({ message: t('invalidEmail') }),
+  password: z.string().min(1, { message: t('passwordRequired') }),
 })
 
-type LoginFormValues = z.infer<typeof loginSchema>
+type LoginFormValues = {
+  email: string
+  password: string
+}
 
 export function LoginForm() {
   const router = useRouter()
@@ -35,7 +39,11 @@ export function LoginForm() {
   const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [isLoading, setIsLoading] = useState(false)
 
+  const t = useTranslations('auth')
+  const tErrors = useTranslations('errors')
+
   // Initialize form
+  const loginSchema = createLoginSchema(tErrors)
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -56,15 +64,15 @@ export function LoginForm() {
       })
 
       if (result?.error) {
-        toast.error('Invalid email or password')
+        toast.error(t('loginError'))
         return
       }
 
-      toast.success('Logged in successfully')
+      toast.success(t('loginSuccess'))
       router.push(callbackUrl)
       router.refresh()
     } catch (error) {
-      toast.error('Something went wrong')
+      toast.error(tErrors('somethingWentWrong'))
       console.error('Login error:', error)
     } finally {
       setIsLoading(false)
@@ -74,8 +82,8 @@ export function LoginForm() {
   return (
     <div className="mx-auto max-w-md space-y-6 p-6 bg-card rounded-lg border shadow-sm">
       <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">Login</h1>
-        <p className="text-muted-foreground">Enter your credentials to access your account</p>
+        <h1 className="text-3xl font-bold">{t('login')}</h1>
+        <p className="text-muted-foreground">{t('enterCredentials')}</p>
       </div>
 
       <Form {...form}>
@@ -85,7 +93,7 @@ export function LoginForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t('email')}</FormLabel>
                 <FormControl>
                   <Input placeholder="your.email@example.com" {...field} />
                 </FormControl>
@@ -99,7 +107,7 @@ export function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t('password')}</FormLabel>
                 <FormControl>
                   <Input type="password" placeholder="••••••••" {...field} />
                 </FormControl>
@@ -112,10 +120,10 @@ export function LoginForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Logging in...
+                {t('loggingIn')}
               </>
             ) : (
-              'Login'
+              t('login')
             )}
           </Button>
         </form>

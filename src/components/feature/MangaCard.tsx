@@ -4,8 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Eye } from 'lucide-react';
-import { formatViews } from '@/lib/utils/format';
 import { FavoriteButton } from '@/components/manga/FavoriteButton';
+import { useFormat } from '@/hooks/useFormat';
+import { useTranslations } from 'next-intl';
 
 interface MangaCardProps {
   id: string;
@@ -39,7 +40,8 @@ export default function MangaCard({
   showFavoriteButton = false,
   initialIsFavorite = false,
 }: MangaCardProps) {
-  // Sử dụng hàm formatViews từ thư viện utils
+  const { formatViews, formatDate } = useFormat();
+  const t = useTranslations('manga');
 
   return (
     <div className='group'>
@@ -76,7 +78,7 @@ export default function MangaCard({
             {/* Số chapter ở góc phải dưới ảnh bìa */}
             {chapterCount > 0 && (
               <div className='absolute bottom-0 right-0 bg-black/70 text-white text-xs py-1 px-2 rounded-tl'>
-                {chapterCount} chapters
+                {t('chaptersCount', { count: chapterCount })}
               </div>
             )}
           </div>
@@ -127,12 +129,17 @@ export default function MangaCard({
                 </div>
               ) : (
                 <div className='px-2 py-1 bg-secondary rounded-full'>
-                  <span className='font-medium'>Updating</span>
+                  <span className='font-medium'>{t('updating')}</span>
                 </div>
               )}
               {updatedAt && (
-                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis' title={updatedAt}>
-                  {updatedAt}
+                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis' title={formatDate(updatedAt)}>
+                  {formatDate(updatedAt)}
+                </span>
+              )}
+              {!updatedAt && (
+                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis'>
+                  {t('updating')}
                 </span>
               )}
             </div>

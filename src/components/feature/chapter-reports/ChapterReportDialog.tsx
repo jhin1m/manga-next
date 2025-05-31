@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -30,7 +31,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, Loader2 } from 'lucide-react'
-import { chapterReportSchema, CHAPTER_REPORT_REASONS } from '@/types/chapter-report'
+import { createChapterReportSchema, getTranslatedReasons } from '@/types/chapter-report'
 import { chapterReportApi } from '@/lib/api/client'
 
 interface ChapterReportDialogProps {
@@ -49,6 +50,9 @@ export function ChapterReportDialog({
   onOpenChange
 }: ChapterReportDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const t = useTranslations('chapterReport')
+
+  const chapterReportSchema = createChapterReportSchema(t)
 
   const form = useForm<z.infer<typeof chapterReportSchema>>({
     resolver: zodResolver(chapterReportSchema),
@@ -59,6 +63,11 @@ export function ChapterReportDialog({
   })
 
   const selectedReason = form.watch('reason')
+  const detailsValue = form.watch('details')
+  const translatedReasons = getTranslatedReasons(t)
+
+  // Count words in details
+  const wordCount = detailsValue ? detailsValue.trim().split(/\s+/).filter(word => word.length > 0).length : 0
 
   const onSubmit = async (values: z.infer<typeof chapterReportSchema>) => {
     try {
@@ -66,11 +75,11 @@ export function ChapterReportDialog({
 
       await chapterReportApi.report(chapterId, values)
 
-      toast.success('Chapter reported successfully. Thank you for helping us improve the content quality.')
+      toast.success(t('reportSuccess'))
       onOpenChange(false)
       form.reset()
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to report chapter')
+      toast.error(error instanceof Error ? error.message : t('reportError'))
     } finally {
       setIsSubmitting(false)
     }
@@ -82,10 +91,10 @@ export function ChapterReportDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-orange-500" />
-            Report Chapter Issue
+            {t('reportChapterIssueTitle')}
           </DialogTitle>
           <DialogDescription>
-            Report technical issues with this chapter. Your feedback helps us maintain content quality.
+            {t('reportChapterIssueDescription')}
           </DialogDescription>
           {mangaTitle && chapterTitle && (
             <div className="mt-2 p-2 bg-muted rounded text-sm">
@@ -101,15 +110,15 @@ export function ChapterReportDialog({
               name="reason"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Issue Type *</FormLabel>
+                  <FormLabel>{t('issueTypeRequired')}</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select the type of issue" />
+                        <SelectValue placeholder={t('selectIssueType')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.entries(CHAPTER_REPORT_REASONS).map(([value, label]) => (
+                      {Object.entries(translatedReasons).map(([value, label]) => (
                         <SelectItem key={value} value={value}>
                           {label}
                         </SelectItem>
@@ -127,22 +136,27 @@ export function ChapterReportDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Additional Details
+                    {t('additionalDetails')}
                     {selectedReason === 'other' && ' *'}
                   </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder={
                         selectedReason === 'other'
-                          ? 'Please describe the issue in detail...'
-                          : 'Provide additional context about the issue (optional)...'
+                          ? t('additionalDetailsPlaceholder')
+                          : t('additionalDetailsOptional')
                       }
                       className="resize-none"
                       rows={3}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <FormMessage />
+                    <span className={wordCount > 50 ? 'text-destructive' : ''}>
+                      {wordCount}/50 {t('words')}
+                    </span>
+                  </div>
                 </FormItem>
               )}
             />
@@ -154,11 +168,11 @@ export function ChapterReportDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Submit Report
+                {isSubmitting ? t('submitting') : t('submitReport')}
               </Button>
             </div>
           </form>

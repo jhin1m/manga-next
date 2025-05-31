@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils/format";
+import { useTranslations } from "next-intl";
+import { useFormat } from "@/hooks/useFormat";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { commentApi } from "@/lib/api/client";
@@ -32,6 +33,8 @@ type RecentComment = {
 export default function RecentComments() {
   const [comments, setComments] = useState<RecentComment[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = useTranslations('comments');
+  const { formatDate } = useFormat();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -93,12 +96,13 @@ export default function RecentComments() {
                   <Link
                     href={
                       comment.Chapters
-                        ? `/manga/${comment.Comics?.slug}/chapter/${comment.Chapters.slug}`
+                        ? `/manga/${comment.Comics?.slug}/${comment.Chapters.slug}`
                         : `/manga/${comment.Comics?.slug}`
                     }
+                    className="line-clamp-1"
                   >
                     {comment.Comics?.title}
-                    {comment.Chapters ? ` Ch.${comment.Chapters.chapter_number}` : ""}
+                    {comment.Chapters ? ` ${t('chapter')}${comment.Chapters.chapter_number}` : ""}
                   </Link>
                 </div>
               )}
@@ -106,7 +110,7 @@ export default function RecentComments() {
           </div>
         ))
       ) : (
-        <p className="text-sm text-muted-foreground">No recent comments.</p>
+        <p className="text-sm text-muted-foreground">{t('noRecentComments')}</p>
       )}
     </div>
   );

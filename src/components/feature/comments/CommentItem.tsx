@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from 'react'
-import { formatDate } from '@/lib/utils/format'
+import { useFormat } from '@/hooks/useFormat'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -66,6 +67,8 @@ export default function CommentItem({
   const [showReportDialog, setShowReportDialog] = useState(false)
   const [showReplies, setShowReplies] = useState(true)
   const [loading, setLoading] = useState(false)
+  const { formatDate } = useFormat()
+  const t = useTranslations('comments')
 
   const isOwner = currentUserId === comment.user_id
   const canEdit = isOwner && !isReply // Only allow editing top-level comments
@@ -80,7 +83,7 @@ export default function CommentItem({
     if (comment.chapter_id && comment.Chapters) {
       return (
         <Badge variant="outline" className="text-xs">
-          Chapter {comment.Chapters.chapter_number}
+          {t('badges.chapter', { number: comment.Chapters.chapter_number })}
         </Badge>
       )
     }
@@ -90,7 +93,7 @@ export default function CommentItem({
   // Handle like/dislike
   const handleLike = async (isLike: boolean) => {
     if (!currentUserId) {
-      toast.error('Please sign in to like comments')
+      toast.error(t('messages.signInToLike'))
       return
     }
 
@@ -99,7 +102,7 @@ export default function CommentItem({
       const data = await commentApi.like(comment.id, isLike)
       onLike(comment.id, data.likes_count, data.dislikes_count, data.userLikeStatus)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to like comment')
+      toast.error(error instanceof Error ? error.message : t('messages.failedToLike'))
     } finally {
       setLoading(false)
     }
@@ -112,7 +115,7 @@ export default function CommentItem({
       await commentApi.delete(comment.id)
       onDelete(comment.id)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to delete comment')
+      toast.error(error instanceof Error ? error.message : t('messages.failedToDelete'))
     } finally {
       setLoading(false)
       setShowDeleteDialog(false)
@@ -128,10 +131,10 @@ export default function CommentItem({
   // Get user role badge
   const getUserRoleBadge = () => {
     if (comment.Users.role === 'admin') {
-      return <Badge variant="destructive" className="text-xs"><Crown className="h-3 w-3 mr-1" />Admin</Badge>
+      return <Badge variant="destructive" className="text-xs"><Crown className="h-3 w-3 mr-1" />{t('badges.admin')}</Badge>
     }
     if (comment.Users.role === 'moderator') {
-      return <Badge variant="secondary" className="text-xs"><Shield className="h-3 w-3 mr-1" />Mod</Badge>
+      return <Badge variant="secondary" className="text-xs"><Shield className="h-3 w-3 mr-1" />{t('badges.moderator')}</Badge>
     }
     return null
   }
@@ -139,10 +142,10 @@ export default function CommentItem({
   // Get status badge
   const getStatusBadge = () => {
     if (comment.status === 'PENDING') {
-      return <Badge variant="outline" className="text-xs">Pending</Badge>
+      return <Badge variant="outline" className="text-xs">{t('status.pending')}</Badge>
     }
     if (comment.status === 'FLAGGED') {
-      return <Badge variant="destructive" className="text-xs">Flagged</Badge>
+      return <Badge variant="destructive" className="text-xs">{t('status.flagged')}</Badge>
     }
     return null
   }
@@ -173,7 +176,7 @@ export default function CommentItem({
               {formatDate(comment.created_at)}
             </span>
             {comment.updated_at !== comment.created_at && (
-              <span className="text-xs text-muted-foreground">(edited)</span>
+              <span className="text-xs text-muted-foreground">{t('status.edited')}</span>
             )}
           </div>
 
@@ -227,7 +230,7 @@ export default function CommentItem({
                 className="h-8 px-2"
               >
                 <Reply className="h-4 w-4 mr-1" />
-                Reply
+                {t('actions.reply')}
               </Button>
             )}
 
@@ -243,7 +246,7 @@ export default function CommentItem({
                   {canEdit && (
                     <DropdownMenuItem onClick={() => setIsEditing(true)}>
                       <Edit className="h-4 w-4 mr-2" />
-                      Edit
+                      {t('actions.edit')}
                     </DropdownMenuItem>
                   )}
                   {canDelete && (
@@ -252,13 +255,13 @@ export default function CommentItem({
                       className="text-destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
+                      {t('actions.delete')}
                     </DropdownMenuItem>
                   )}
                   {canReport && (
                     <DropdownMenuItem onClick={() => setShowReportDialog(true)}>
                       <Flag className="h-4 w-4 mr-2" />
-                      Report
+                      {t('actions.report')}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -295,7 +298,10 @@ export default function CommentItem({
                   onClick={() => setShowReplies(!showReplies)}
                   className="text-primary"
                 >
-                  {showReplies ? 'Hide' : 'Show'} {comment.repliesCount - (comment.other_Comments?.length || 0)} more replies
+                  {showReplies
+                    ? t('actions.hideReplies', { count: comment.repliesCount - (comment.other_Comments?.length || 0) })
+                    : t('actions.showReplies', { count: comment.repliesCount - (comment.other_Comments?.length || 0) })
+                  }
                 </Button>
               )}
             </div>
@@ -307,15 +313,15 @@ export default function CommentItem({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Comment</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this comment? This action cannot be undone.
+              {t('deleteDialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('deleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-              Delete
+              {t('deleteDialog.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

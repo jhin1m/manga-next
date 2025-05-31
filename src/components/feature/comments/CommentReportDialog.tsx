@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslations } from 'next-intl'
 import {
   Dialog,
   DialogContent,
@@ -35,21 +36,22 @@ interface CommentReportDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-const reportReasons = [
-  { value: 'spam', label: 'Spam or unwanted content' },
-  { value: 'harassment', label: 'Harassment or bullying' },
-  { value: 'inappropriate_content', label: 'Inappropriate or offensive content' },
-  { value: 'spoilers', label: 'Spoilers without warning' },
-  { value: 'off_topic', label: 'Off-topic or irrelevant' },
-  { value: 'other', label: 'Other (please specify)' },
-]
-
 export default function CommentReportDialog({
   commentId,
   open,
   onOpenChange
 }: CommentReportDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const t = useTranslations('comments.reportDialog')
+
+  const reportReasons = [
+    { value: 'spam', label: t('reasons.spam') },
+    { value: 'harassment', label: t('reasons.harassment') },
+    { value: 'inappropriate_content', label: t('reasons.inappropriate_content') },
+    { value: 'spoilers', label: t('reasons.spoilers') },
+    { value: 'off_topic', label: t('reasons.off_topic') },
+    { value: 'other', label: t('reasons.other') },
+  ]
 
   const form = useForm<z.infer<typeof commentReportSchema>>({
     resolver: zodResolver(commentReportSchema),
@@ -67,11 +69,11 @@ export default function CommentReportDialog({
 
       await commentApi.report(commentId, values)
 
-      toast.success('Comment reported successfully. Thank you for helping keep our community safe.')
+      toast.success(t('success'))
       onOpenChange(false)
       form.reset()
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to report comment')
+      toast.error(error instanceof Error ? error.message : t('error'))
     } finally {
       setIsSubmitting(false)
     }
@@ -83,10 +85,10 @@ export default function CommentReportDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Flag className="h-5 w-5" />
-            Report Comment
+            {t('title')}
           </DialogTitle>
           <DialogDescription>
-            Help us maintain a safe and respectful community by reporting inappropriate content.
+            {t('description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +99,7 @@ export default function CommentReportDialog({
               name="reason"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Reason for reporting</FormLabel>
+                  <FormLabel>{t('reasonLabel')}</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -128,10 +130,10 @@ export default function CommentReportDialog({
                 name="details"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Additional details</FormLabel>
+                    <FormLabel>{t('detailsLabel')}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Please provide more details about why you're reporting this comment..."
+                        placeholder={t('detailsPlaceholder')}
                         className="resize-none"
                         {...field}
                       />
@@ -149,7 +151,7 @@ export default function CommentReportDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 type="submit"
@@ -159,12 +161,12 @@ export default function CommentReportDialog({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Reporting...
+                    {t('submitting')}
                   </>
                 ) : (
                   <>
                     <Flag className="h-4 w-4 mr-2" />
-                    Report Comment
+                    {t('submit')}
                   </>
                 )}
               </Button>
@@ -174,8 +176,7 @@ export default function CommentReportDialog({
 
         <div className="mt-4 p-3 bg-muted rounded-lg">
           <p className="text-xs text-muted-foreground">
-            <strong>Note:</strong> False reports may result in restrictions on your account.
-            Please only report content that genuinely violates our community guidelines.
+            <strong>Note:</strong> {t('note')}
           </p>
         </div>
       </DialogContent>

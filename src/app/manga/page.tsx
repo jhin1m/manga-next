@@ -5,11 +5,8 @@ import PaginationWrapper from '@/components/feature/PaginationWrapper';
 import { constructMetadata } from '@/lib/seo/metadata';
 import JsonLdScript from '@/components/seo/JsonLdScript';
 import { generateMangaListJsonLd } from '@/lib/seo/jsonld';
-import { formatDate } from '@/lib/utils/format';
 import { mangaApi } from '@/lib/api/client';
 import { seoConfig, getSiteUrl } from '@/config/seo.config';
-
-// Sử dụng hàm formatDate từ thư viện utils
 
 // Fetch manga from API using centralized API client
 async function fetchManga(params: {
@@ -37,17 +34,16 @@ async function fetchManga(params: {
         coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
         slug: comic.slug,
         latestChapter: comic.Chapters && comic.Chapters.length > 0
-          ? `Chapter ${comic.Chapters[0].chapter_number}`
-          : 'Updating',
+          ? `${comic.Chapters[0].title}`
+          : undefined,
         latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
           ? comic.Chapters[0].slug
-          : '',
+          : undefined,
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
         rating: 8.5, // Placeholder as it's not in the API
         views: comic.total_views || 0,
         chapterCount: comic._chapterCount || 0,
-        updatedAt: comic.last_chapter_uploaded_at ?
-          formatDate(comic.last_chapter_uploaded_at) : 'Recently',
+        updatedAt: comic.last_chapter_uploaded_at || undefined,
         status: comic.status || 'Ongoing',
       })),
       totalPages: data.totalPages,

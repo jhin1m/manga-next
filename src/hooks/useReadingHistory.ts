@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { addToReadingHistory } from "@/lib/utils/readingHistory";
 import { readingProgressApi } from "@/lib/api/client";
@@ -32,6 +32,7 @@ export function useReadingHistory({
   chapterSlug,
 }: UseReadingHistoryProps) {
   const { data: session, status } = useSession();
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Generate a unique ID for this history item
@@ -58,24 +59,42 @@ export function useReadingHistory({
         : {}),
     };
 
-    // Add to reading history
+    // Add to reading history immediately
     addToReadingHistory(historyItem);
 
-    // If user is authenticated, also sync to database
+    // If user is authenticated, debounce database sync to avoid race conditions
     if (status === 'authenticated' && session?.user) {
-      syncToDatabase(mangaId, chapterId);
+      // Clear any existing timeout
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+      }
+
+      // Set a new timeout to sync after a delay
+      syncTimeoutRef.current = setTimeout(() => {
+        syncToDatabase(mangaId, chapterId);
+      }, 1000); // 1 second debounce
     }
+
+    // Cleanup function
+    return () => {
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+      }
+    };
   }, [mangaId, mangaTitle, mangaSlug, coverImage, chapterId, chapterTitle, chapterNumber, chapterSlug, session, status]);
 
-  // Function to sync reading progress to database
+  // Function to sync reading progress to database with improved error handling
   const syncToDatabase = async (comicId: string, chapterId?: string) => {
     try {
       await readingProgressApi.create({
         comicId: parseInt(comicId),
         chapterId: chapterId ? parseInt(chapterId) : undefined,
       });
-    } catch (error) {
-      console.error('Error syncing reading progress:', error);
+    } catch (error: any) {
+      // Only log errors that aren't expected (like 409 conflicts)
+      if (!error.message?.includes('409') && !error.message?.includes('already exists')) {
+        console.error('Error syncing reading progress:', error);
+      }
     }
   };
 }

@@ -1,43 +1,170 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Separator } from '@/components/ui/separator';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import {
+  Home,
+  Search,
+  TrendingUp,
+  Clock,
+  BookOpen,
+  HelpCircle,
+  Info,
+  Shield,
+  FileText,
+  Mail,
+} from 'lucide-react';
+import { seoConfig } from '@/config/seo.config';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const t = useTranslations('footer');
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <footer className='border-t border-border/40 bg-background'>
-      <div className='container mx-auto px-4 py-6'>
-        <div className='flex flex-wrap justify-between gap-6'>
-          <div className='w-full md:w-auto'>
-            <Link href='/' className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
-              ホーム
-            </Link>
+      <div className='container mx-auto px-4 py-8 sm:px-14 2xl:px-44'>
+        {/* Main Footer Content */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+
+          {/* Site Information Section */}
+          <div className='space-y-4 lg:col-span-2'>
+            <div>
+              <Link href='/' className='flex items-center space-x-2 mb-3'>
+                <BookOpen className='h-6 w-6 text-primary' />
+                <span className='text-lg font-bold text-foreground'>
+                  {t('siteInfo.title')}
+                </span>
+              </Link>
+              <p className='text-sm text-muted-foreground leading-relaxed'>
+                {t('siteInfo.description')}
+              </p>
+            </div>
+
+            {/* Language Switcher */}
+            <div className='flex items-center space-x-2'>
+              <span className='text-sm text-muted-foreground'>Language:</span>
+              <LanguageSwitcher />
+            </div>
           </div>
-          <div className='w-full md:w-auto'>
-            <Link href='/privacy' className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
-              プライバシーポリシー
-            </Link>
+
+          {/* Navigation Links */}
+          <div className='space-y-4'>
+            <h3 className='text-sm font-semibold text-foreground uppercase tracking-wider'>
+              {t('navigation.title')}
+            </h3>
+            <nav className='space-y-2'>
+              <Link
+                href='/'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
+              >
+                <Home className='h-4 w-4' />
+                <span>{t('home')}</span>
+              </Link>
+              <Link
+                href='/manga'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
+              >
+                <Clock className='h-4 w-4' />
+                <span>{t('navigation.latest')}</span>
+              </Link>
+              <Link
+                href='/search'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
+              >
+                <Search className='h-4 w-4' />
+                <span>{t('navigation.search')}</span>
+              </Link>
+              <Link
+                href='/manga?sort=popular'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
+              >
+                <TrendingUp className='h-4 w-4' />
+                <span>{t('navigation.popular')}</span>
+              </Link>
+            </nav>
           </div>
-          <div className='w-full md:w-auto'>
-            <Link href='/terms' className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
-              利用規約
-            </Link>
-          </div>
-          <div className='w-full md:w-auto'>
-            <Link href='/dmca' className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
-              DMCA
-            </Link>
-          </div>
-          <div className='w-full md:w-auto'>
-            <Link href='/contact' className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
-              お問い合わせ
-            </Link>
+
+          {/* Legal & Help Links */}
+          <div className='space-y-4 lg:text-left'>
+            <h3 className='text-sm font-semibold text-foreground uppercase tracking-wider'>
+              {t('legal.title')}
+            </h3>
+            <nav className='space-y-2'>
+              <Link
+                href='/about'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors lg:justify-start'
+              >
+                <span>{t('legal.about')}</span>
+                <Info className='h-4 w-4' />
+              </Link>
+              <Link
+                href='/help'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors lg:justify-start'
+              >
+                <span>{t('legal.help')}</span>
+                <HelpCircle className='h-4 w-4' />
+              </Link>
+              <Link
+                href='/privacy'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors lg:justify-start'
+              >
+                <span>{t('privacy')}</span>
+                <Shield className='h-4 w-4' />
+              </Link>
+              <Link
+                href='/terms'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors lg:justify-start'
+              >
+                <span>{t('terms')}</span>
+                <FileText className='h-4 w-4' />
+              </Link>
+              <Link
+                href='/dmca'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors lg:justify-start'
+              >
+                <span>{t('dmca')}</span>
+                <FileText className='h-4 w-4' />
+              </Link>
+              <Link
+                href='/contact'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors lg:justify-start'
+              >
+                <span>{t('contact')}</span>
+                <Mail className='h-4 w-4' />
+              </Link>
+            </nav>
           </div>
         </div>
 
-        <div className='mt-6 text-center text-xs text-muted-foreground'>
-          <p>&copy; {currentYear} Manga Next. All rights reserved.</p>
+        <Separator className='my-6' />
+
+        {/* Copyright Section */}
+        <div className='flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0'>
+          <div className='text-center sm:text-left'>
+            <p className='text-xs text-muted-foreground'>
+              {t('siteInfo.tagline')}
+            </p>
+          </div>
+
+          <div className='text-center sm:text-right'>
+            <p className='text-xs text-muted-foreground'>
+              {t('copyright', {
+                year: currentYear,
+                siteName: seoConfig.site.name,
+                allRightsReserved: t('allRightsReserved')
+              })}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

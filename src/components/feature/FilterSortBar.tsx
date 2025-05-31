@@ -24,6 +24,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { genreApi } from '@/lib/api/client';
+import { useTranslations } from 'next-intl';
 
 // Genre type
 type Genre = {
@@ -34,21 +35,7 @@ type Genre = {
   mangaCount?: number;
 };
 
-// Mock status options
-const STATUS_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'ongoing', label: 'Ongoing' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'hiatus', label: 'Hiatus' }
-];
 
-// Sort options
-const SORT_OPTIONS = [
-  { value: 'latest', label: 'Latest Update' },
-  { value: 'newest', label: 'Newest Added' },
-  { value: 'popular', label: 'Most Popular' },
-  { value: 'rating', label: 'Highest Rating' }
-];
 
 interface FilterSortBarProps {
   className?: string;
@@ -58,6 +45,23 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations('filterSort');
+
+  // Status options with translations
+  const STATUS_OPTIONS = [
+    { value: 'all', label: t('statusOptions.all') },
+    { value: 'ongoing', label: t('statusOptions.ongoing') },
+    { value: 'completed', label: t('statusOptions.completed') },
+    { value: 'hiatus', label: t('statusOptions.hiatus') }
+  ];
+
+  // Sort options with translations
+  const SORT_OPTIONS = [
+    { value: 'latest', label: t('sortOptions.latest') },
+    { value: 'newest', label: t('sortOptions.newest') },
+    { value: 'popular', label: t('sortOptions.popular') },
+    { value: 'rating', label: t('sortOptions.rating') }
+  ];
 
   // Get current filter values from URL
   const currentSort = searchParams.get('sort') || 'latest';
@@ -168,7 +172,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
             <Button variant="outline" className="w-full justify-between">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="h-4 w-4" />
-                <span>Sort: {SORT_OPTIONS.find(option => option.value === sort)?.label}</span>
+                <span>{t('sort')}: {SORT_OPTIONS.find(option => option.value === sort)?.label}</span>
               </div>
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
@@ -195,7 +199,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
         <SheetTrigger asChild>
           <Button variant="outline" className="gap-2">
             <Filter className="h-4 w-4" />
-            <span>Filter</span>
+            <span>{t('filter')}</span>
             {activeFilterCount > 0 && (
               <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center">
                 {activeFilterCount}
@@ -205,19 +209,19 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>Filter Manga</SheetTitle>
+            <SheetTitle>{t('filterManga')}</SheetTitle>
             <SheetDescription>
-              Apply filters to find specific manga
+              {t('applyFilters')}
             </SheetDescription>
           </SheetHeader>
 
           <div className="py-4 flex flex-col gap-6">
             {/* Status Filter */}
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">{t('status')}</Label>
               <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger id="status">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t('selectStatus')} />
                 </SelectTrigger>
                 <SelectContent>
                   {STATUS_OPTIONS.map(option => (
@@ -231,9 +235,9 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
 
             {/* Genres Filter */}
             <div className="space-y-2">
-              <Label>Genres</Label>
+              <Label>{t('genres')}</Label>
               {isLoading ? (
-                <div className="text-sm text-muted-foreground">Loading genres...</div>
+                <div className="text-sm text-muted-foreground">{t('loadingGenres')}...</div>
               ) : (
                 <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-2">
                   {genres.map(genre => (
@@ -263,10 +267,10 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
 
           <SheetFooter>
             <Button variant="outline" onClick={resetFilters}>
-              Reset
+              {t('reset')}
             </Button>
             <SheetClose asChild>
-              <Button onClick={applyFilters}>Apply Filters</Button>
+              <Button onClick={applyFilters}>{t('applyFilters')}</Button>
             </SheetClose>
           </SheetFooter>
         </SheetContent>

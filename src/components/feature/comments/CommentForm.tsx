@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -16,14 +17,15 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { Loader2, Send } from 'lucide-react'
 import { toast } from 'sonner'
-import { Comment, commentCreateSchema, commentUpdateSchema } from '@/types/comment'
+import { Comment } from '@/types/comment'
 import { commentApi } from '@/lib/api/client'
 
-const formSchema = z.object({
+// Create schema with dynamic validation messages
+const createFormSchema = (t: any) => z.object({
   content: z.string()
-    .min(1, 'Comment cannot be empty')
-    .max(2000, 'Comment cannot exceed 2000 characters')
-    .refine(content => content.trim().length > 0, 'Comment cannot be only whitespace'),
+    .min(1, t('form.validation.required'))
+    .max(2000, t('form.validation.maxLength', { max: 2000 }))
+    .refine(content => content.trim().length > 0, t('form.validation.whitespace')),
 })
 
 interface CommentFormProps {
@@ -48,6 +50,8 @@ export default function CommentForm({
   isEditing = false
 }: CommentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const t = useTranslations('comments')
+  const formSchema = createFormSchema(t)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -78,15 +82,15 @@ export default function CommentForm({
 
         // Show appropriate message based on comment status
         if (data.comment.status === 'PENDING') {
-          toast.info('Comment submitted for review')
+          toast.info(t('messages.commentPending'))
         } else {
-          toast.success('Comment posted successfully!')
+          toast.success(t('messages.commentPosted'))
         }
       }
 
       form.reset()
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to submit comment')
+      toast.error(error instanceof Error ? error.message : t('messages.failedToPost'))
     } finally {
       setIsSubmitting(false)
     }
@@ -109,8 +113,8 @@ export default function CommentForm({
                     <Textarea
                       placeholder={
                         parentCommentId
-                          ? "Write a reply..."
-                          : "Share your thoughts about this manga..."
+                          ? t('form.placeholder.reply')
+                          : t('form.placeholder.comment')
                       }
                       className="min-h-[100px] resize-none"
                       {...field}
@@ -119,7 +123,7 @@ export default function CommentForm({
                   <div className="flex justify-between items-center text-xs text-muted-foreground">
                     <FormMessage />
                     <span className={characterCount > maxCharacters * 0.9 ? 'text-orange-500' : ''}>
-                      {characterCount}/{maxCharacters}
+                      {t('form.characterCount', { current: characterCount, max: maxCharacters })}
                     </span>
                   </div>
                 </FormItem>
@@ -133,7 +137,7 @@ export default function CommentForm({
                 onClick={onCancel}
                 disabled={isSubmitting}
               >
-                Cancel
+                {t('actions.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -142,12 +146,12 @@ export default function CommentForm({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    {isEditing ? 'Updating...' : 'Posting...'}
+                    {isEditing ? t('actions.updating') : t('actions.posting')}
                   </>
                 ) : (
                   <>
                     <Send className="h-4 w-4 mr-2" />
-                    {isEditing ? 'Update' : 'Post Comment'}
+                    {isEditing ? t('actions.update') : t('actions.postComment')}
                   </>
                 )}
               </Button>
@@ -157,12 +161,12 @@ export default function CommentForm({
 
         {/* Guidelines */}
         <div className="mt-4 p-3 bg-muted rounded-lg">
-          <h4 className="text-sm font-medium mb-2">Community Guidelines</h4>
+          <h4 className="text-sm font-medium mb-2">{t('form.guidelines.title')}</h4>
           <ul className="text-xs text-muted-foreground space-y-1">
-            <li>• Be respectful and constructive in your comments</li>
-            <li>• Avoid spoilers without proper warnings</li>
-            <li>• No spam, harassment, or inappropriate content</li>
-            <li>• Stay on topic and relevant to the manga/chapter</li>
+            <li>• {t('form.guidelines.respectful')}</li>
+            <li>• {t('form.guidelines.spoilers')}</li>
+            <li>• {t('form.guidelines.noSpam')}</li>
+            <li>• {t('form.guidelines.stayOnTopic')}</li>
           </ul>
         </div>
       </CardContent>

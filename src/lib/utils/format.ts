@@ -1,5 +1,9 @@
 /**
  * Các hàm tiện ích để định dạng dữ liệu
+ *
+ * NOTE: Đây là phiên bản legacy. Để sử dụng i18n, hãy dùng:
+ * - import { useFormat } from '@/hooks/useFormat' (trong React components)
+ * - import { formatViewsI18n, formatDateI18n } from '@/lib/utils/format-i18n' (trong utility functions)
  */
 
 /**

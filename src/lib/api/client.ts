@@ -496,22 +496,61 @@ export const favoritesApi = {
   },
 };
 
+// Helper function for retry logic with exponential backoff
+async function retryApiCall<T>(
+  apiCall: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: Error;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await apiCall();
+    } catch (error: any) {
+      lastError = error;
+
+      // Don't retry on certain error types
+      if (error.message?.includes('401') || error.message?.includes('403') || error.message?.includes('404')) {
+        throw error;
+      }
+
+      // If this is the last attempt, throw the error
+      if (attempt === maxRetries) {
+        throw error;
+      }
+
+      // Wait before retrying (exponential backoff)
+      const delay = baseDelay * Math.pow(2, attempt);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError!;
+}
+
 // Reading Progress API functions
 export const readingProgressApi = {
   // Get reading progress list
   getList: async () => {
-    return apiClient(API_ENDPOINTS.readingProgress.list, {
-      cache: 'no-store',
-    });
+    return retryApiCall(() =>
+      apiClient(API_ENDPOINTS.readingProgress.list, {
+        cache: 'no-store',
+      })
+    );
   },
 
-  // Create/update reading progress
+  // Create/update reading progress with retry logic
   create: async (data: { comicId: number; chapterId?: number }) => {
-    return apiClient(API_ENDPOINTS.readingProgress.create, {
-      method: 'POST',
-      body: data,
-      cache: 'no-store',
-    });
+    return retryApiCall(() =>
+      apiClient(API_ENDPOINTS.readingProgress.create, {
+        method: 'POST',
+        body: data,
+        cache: 'no-store',
+      }),
+      3, // maxRetries
+      500 // baseDelay in ms
+    );
   },
 
   // Sync reading progress
@@ -520,11 +559,13 @@ export const readingProgressApi = {
     last_read_chapter_id?: number;
     updated_at: string;
   }>) => {
-    return apiClient(API_ENDPOINTS.readingProgress.sync, {
-      method: 'POST',
-      body: { progressItems },
-      cache: 'no-store',
-    });
+    return retryApiCall(() =>
+      apiClient(API_ENDPOINTS.readingProgress.sync, {
+        method: 'POST',
+        body: { progressItems },
+        cache: 'no-store',
+      })
+    );
   },
 
   // Delete specific reading progress

@@ -135,57 +135,126 @@ export async function POST(request: Request) {
       }
     }
 
-    // Upsert reading progress
-    const readingProgress = await prisma.reading_Progress.upsert({
-      where: {
-        user_id_comic_id: {
-          user_id: userId,
-          comic_id: comicId,
-        }
-      },
-      update: {
-        last_read_chapter_id: chapterId,
-        last_read_page_number: pageNumber,
-        progress_percentage: progressPercentage,
-        updated_at: new Date(),
-      },
-      create: {
-        user_id: userId,
-        comic_id: comicId,
-        last_read_chapter_id: chapterId,
-        last_read_page_number: pageNumber,
-        progress_percentage: progressPercentage,
-        updated_at: new Date(),
-      },
-      include: {
-        Comics: {
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            cover_image_url: true,
+    // Use transaction with retry logic to handle race conditions
+    const maxRetries = 3
+    let retryCount = 0
+    let readingProgress
+
+    while (retryCount < maxRetries) {
+      try {
+        readingProgress = await prisma.$transaction(async (tx) => {
+          // First, try to find existing record
+          const existing = await tx.reading_Progress.findUnique({
+            where: {
+              user_id_comic_id: {
+                user_id: userId,
+                comic_id: comicId,
+              }
+            }
+          })
+
+          if (existing) {
+            // Update existing record
+            return await tx.reading_Progress.update({
+              where: {
+                user_id_comic_id: {
+                  user_id: userId,
+                  comic_id: comicId,
+                }
+              },
+              data: {
+                last_read_chapter_id: chapterId,
+                last_read_page_number: pageNumber,
+                progress_percentage: progressPercentage,
+                updated_at: new Date(),
+              },
+              include: {
+                Comics: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    cover_image_url: true,
+                  }
+                },
+                Chapters: {
+                  select: {
+                    id: true,
+                    title: true,
+                    chapter_number: true,
+                    slug: true,
+                  }
+                }
+              }
+            })
+          } else {
+            // Create new record
+            return await tx.reading_Progress.create({
+              data: {
+                user_id: userId,
+                comic_id: comicId,
+                last_read_chapter_id: chapterId,
+                last_read_page_number: pageNumber,
+                progress_percentage: progressPercentage,
+                updated_at: new Date(),
+              },
+              include: {
+                Comics: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    cover_image_url: true,
+                  }
+                },
+                Chapters: {
+                  select: {
+                    id: true,
+                    title: true,
+                    chapter_number: true,
+                    slug: true,
+                  }
+                }
+              }
+            })
           }
-        },
-        Chapters: {
-          select: {
-            id: true,
-            title: true,
-            chapter_number: true,
-            slug: true,
-          }
+        })
+
+        // If we get here, the transaction succeeded
+        break
+
+      } catch (transactionError: any) {
+        retryCount++
+
+        // If it's a unique constraint violation and we haven't exceeded retries, try again
+        if (transactionError.code === 'P2002' && retryCount < maxRetries) {
+          // Wait a bit before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 100))
+          continue
         }
+
+        // If it's not a constraint violation or we've exceeded retries, throw the error
+        throw transactionError
       }
-    })
+    }
 
     return NextResponse.json({
       success: true,
       progress: readingProgress,
     })
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
+      )
+    }
+
+    // Handle specific Prisma errors
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Reading progress already exists for this manga. Please try again.' },
+        { status: 409 }
       )
     }
 

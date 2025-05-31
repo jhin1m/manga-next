@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Loader2, MessageCircle } from 'lucide-react'
 import { toast } from 'sonner'
@@ -27,6 +28,7 @@ export default function LoadMoreComments({
   disabled = false
 }: LoadMoreCommentsProps) {
   const [loading, setLoading] = useState(false)
+  const t = useTranslations('comments')
 
   const loadMoreComments = async () => {
     if (!lastCommentId || loading || disabled) return
@@ -52,7 +54,7 @@ export default function LoadMoreComments({
       onCommentsLoaded(data.comments, hasMore)
     } catch (error) {
       console.error('Error loading more comments:', error)
-      toast.error('Failed to load more comments')
+      toast.error(t('messages.failedToLoadMore'))
     } finally {
       setLoading(false)
     }
@@ -73,12 +75,12 @@ export default function LoadMoreComments({
         {loading ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Loading more comments...
+            {t('actions.loadingMore')}
           </>
         ) : (
           <>
             <MessageCircle className="h-4 w-4 mr-2" />
-            Load More Comments
+            {t('actions.loadMore')}
           </>
         )}
       </Button>

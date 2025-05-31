@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { genreApi } from '@/lib/api/client';
+import { useTranslations } from 'next-intl';
 
 interface Genre {
   id: number;
@@ -23,6 +24,7 @@ interface Genre {
 export function GenreDropdown() {
   const [genres, setGenres] = React.useState<Genre[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const t = useTranslations('navigation');
 
   React.useEffect(() => {
     const fetchGenres = async () => {
@@ -50,14 +52,14 @@ export function GenreDropdown() {
           variant="ghost" 
           className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1"
         >
-          Genres
+          {t('genres')}
           <ChevronDown className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
         {isLoading ? (
           <DropdownMenuItem disabled>
-            Loading genres...
+            {t('loading')}...
           </DropdownMenuItem>
         ) : (
           <>
@@ -83,7 +85,7 @@ export function GenreDropdown() {
                 className="flex items-center gap-2 font-medium text-primary"
               >
                 <LayoutGrid className="h-4 w-4" />
-                View All Genres
+                {t('viewAllGenres')}
               </Link>
             </DropdownMenuItem>
           </>
@@ -98,6 +100,7 @@ export function MobileGenreDropdown() {
   const [genres, setGenres] = React.useState<Genre[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const t = useTranslations('navigation');
 
   React.useEffect(() => {
     const fetchGenres = async () => {
@@ -126,7 +129,7 @@ export function MobileGenreDropdown() {
       >
         <div className="flex items-center">
           <LayoutGrid className="mr-3 h-5 w-5" />
-          Genres
+          {t('genres')}
         </div>
         <ChevronDown 
           className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
@@ -137,7 +140,7 @@ export function MobileGenreDropdown() {
         <div className="ml-8 space-y-1">
           {isLoading ? (
             <div className="py-2 px-4 text-sm text-muted-foreground">
-              Loading genres...
+              {t('loading')}...
             </div>
           ) : (
             <>
@@ -159,7 +162,7 @@ export function MobileGenreDropdown() {
                 href="/genres"
                 className="flex items-center gap-2 py-2 px-4 -mx-4 text-sm font-medium text-primary transition-colors hover:bg-accent rounded-lg"
               >
-                View All Genres
+                {t('viewAllGenres')}
               </Link>
             </>
           )}

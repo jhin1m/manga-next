@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslations } from 'next-intl';
 
 interface DescriptionProps {
   description: string;
@@ -10,13 +11,14 @@ interface DescriptionProps {
 export default function Description({ description }: DescriptionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
+  const t = useTranslations('manga');
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
   };
 
   useEffect(() => {
-    if (description.length > 300) {
+    if (description.length > 150) {
       setIsTruncated(true);
     }
   }, [description]);
@@ -24,12 +26,12 @@ export default function Description({ description }: DescriptionProps) {
   return (
     <Card>
       <CardHeader className="pt-4">
-        <CardTitle className="text-xl">Synopsis</CardTitle>
+        <CardTitle className="text-xl">{t('synopsis')}</CardTitle>
       </CardHeader>
       <CardContent className="pt-2">
         <div className="text-sm text-muted-foreground whitespace-pre-line pb-2">
           {isTruncated && !isExpanded ? (
-            <span>{description.slice(0, 300)}...</span>
+            <span>{description.slice(0, 150)}...</span>
           ) : ( 
             <span>{description}</span>
           )}
@@ -38,7 +40,7 @@ export default function Description({ description }: DescriptionProps) {
               className="text-primary underline underline-offset-4 ml-1"
               onClick={handleToggle}
             >
-              {isExpanded ? 'Show less' : 'Show more'}
+              {isExpanded ? '🔫' : '✨'}
             </button>
           )}
         </div>

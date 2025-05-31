@@ -4,8 +4,9 @@ import { mangaApi } from '@/lib/api/client';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import MangaCard from './MangaCard';
 import { useEffect, useState } from 'react';
-import { formatDate } from '@/lib/utils/format';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslations } from 'next-intl';
+// Removed useFormat import since MangaCard will handle formatting
 
 export type HotManga = {
   id: string;
@@ -25,6 +26,9 @@ export default function HotMangaSlider() {
   const [hotManga, setHotManga] = useState<HotManga[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations('manga');
+  const tErrors = useTranslations('errors');
+  // Removed formatDate from useFormat since MangaCard will handle formatting
 
   // Fetch data on client side
   useEffect(() => {
@@ -51,13 +55,13 @@ export default function HotMangaSlider() {
           latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
             ? comic.Chapters[0].slug
             : undefined,
-          updatedAt: comic.last_chapter_uploaded_at ? formatDate(comic.last_chapter_uploaded_at) : 'Recently',
+          updatedAt: comic.last_chapter_uploaded_at || undefined,
         }));
 
         setHotManga(transformedData);
       } catch (error) {
         console.error('Error fetching hot manga data:', error);
-        setError('Failed to load hot manga');
+        setError(tErrors('failedToLoad') + ' hot manga');
       } finally {
         setIsLoading(false);
       }
@@ -138,10 +142,10 @@ export default function HotMangaSlider() {
     return (
       <div className="relative w-full overflow-hidden rounded-lg">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Hot Manga</h2>
+          <h2 className="text-2xl font-bold">{t('hotManga')}</h2>
         </div>
         <div className="w-full h-[300px] bg-muted rounded-lg flex items-center justify-center">
-          <p className="text-muted-foreground">{error || 'Failed to load hot manga. Please try again later.'}</p>
+          <p className="text-muted-foreground">{error || tErrors('failedToLoad') + ' hot manga. ' + tErrors('tryAgainLater')}</p>
         </div>
       </div>
     );
@@ -151,7 +155,7 @@ export default function HotMangaSlider() {
   return (
     <div className="relative w-full overflow-hidden rounded-lg">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Hot Manga</h2>
+        <h2 className="text-2xl font-bold">{t('hotManga')}</h2>
         {/* Navigation buttons aligned with title */}
         <div className="flex gap-2">
           <button

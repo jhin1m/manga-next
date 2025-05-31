@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, Eye, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatViews, formatDate } from "@/lib/utils/format";
+import { formatViews } from "@/lib/utils/format";
 import { mangaApi } from '@/lib/api/client';
 
 type RecommendedMangaType = {

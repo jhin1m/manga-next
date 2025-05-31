@@ -1,20 +1,13 @@
 import { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Eye, BookOpen, Heart } from "lucide-react";
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
 import Description from "@/components/manga/Description";
-import { FavoriteButton } from "@/components/manga/FavoriteButton";
-import { StarRating } from "@/components/manga/StarRating";
 import CommentSection from "@/components/feature/comments/CommentSection";
+import { MangaDetailInfo } from "@/components/manga/MangaDetailInfo";
 import { notFound } from "next/navigation";
 import { constructMangaMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateMangaJsonLd } from "@/lib/seo/jsonld";
-import { formatDate, formatViews } from "@/lib/utils/format";
 import { mangaApi } from '@/lib/api/client';
 
 // Fetch manga data from API using centralized API client
@@ -42,8 +35,7 @@ async function getMangaBySlug(slug: string) {
       views: data.manga.total_views || 0,
       favorites: data.manga.total_favorites || 0,
       chapterCount: 0, // Will be updated when we fetch chapters
-      updatedAt: data.manga.last_chapter_uploaded_at ?
-        formatDate(data.manga.last_chapter_uploaded_at) : 'Unknown',
+      updatedAt: data.manga.last_chapter_uploaded_at || null,
       publishedYear: data.manga.release_date ?
         new Date(data.manga.release_date).getFullYear() : 'Unknown',
       serialization: data.manga.Comic_Publishers?.map((cp: any) => cp.Publishers.name).join(', ') || 'Unknown',
@@ -100,8 +92,7 @@ async function getRelatedManga(slug: string, genres: { name: string; slug: strin
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
         views: comic.total_views || 0,
         chapterCount: comic.Chapters?.length || 0,
-        updatedAt: comic.last_chapter_uploaded_at ?
-          formatDate(comic.last_chapter_uploaded_at) : 'Recently',
+        updatedAt: comic.last_chapter_uploaded_at || null,
         status: comic.status || 'Ongoing',
       }));
   } catch (error) {
@@ -180,114 +171,7 @@ export default async function MangaDetailPage({
     <div className="space-y-8">
       <JsonLdScript id="manga-jsonld" jsonLd={jsonLd} />
       {/* Manga Information Section */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-14">
-        {/* Cover Image */}
-        <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg">
-          <Image
-            src={manga.coverImage}
-            alt={manga.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover"
-            priority
-          />
-        </div>
-
-        {/* Manga Details */}
-        <div className="md:col-span-3 space-y-4">
-          <h1 className="text-3xl font-bold">{manga.title}</h1>
-
-          {manga.alternativeTitles && manga.alternativeTitles.length > 0 && (
-            <p className="text-sm text-muted-foreground">
-              Alternative Titles: {manga.alternativeTitles.join(", ")}
-            </p>
-          )}
-
-          <div className="flex flex-wrap gap-2">
-            {manga.genres.map((genre: { name: string; slug: string }) => (
-              <Badge key={genre.slug} variant="secondary" asChild>
-                <Link
-                  href={`/genres/${genre.slug}`}
-                  className="cursor-pointer transition-colors hover:bg-secondary/80"
-                >
-                  {genre.name}
-                </Link>
-              </Badge>
-            ))}
-          </div>
-
-          {/* Interactive Star Rating */}
-          <div className="py-2">
-            <StarRating
-              mangaId={manga.id}
-              mangaSlug={manga.slug}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div className="flex items-center gap-1">
-              <Eye className="h-4 w-4" />
-              <span>{formatViews(manga.views)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <BookOpen className="h-4 w-4" />
-              <span>{manga.chapterCount} chapters</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Heart className="h-4 w-4" />
-              <span>{formatViews(manga.favorites)}</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-muted-foreground">Status:</span>{" "}
-              <span className="font-medium">{manga.status}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Author:</span>{" "}
-              <span className="font-medium">{manga.author}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Artist:</span>{" "}
-              <span className="font-medium">{manga.artist}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Published:</span>{" "}
-              <span className="font-medium">{manga.publishedYear}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Serialization:</span>{" "}
-              <span className="font-medium">{manga.serialization}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Updated:</span>{" "}
-              <span className="font-medium">{manga.updatedAt}</span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Button asChild>
-              <Link href={`/manga/${manga.slug}/${chapters.length > 0 ? chapters[chapters.length - 1].slug : '#'}`}>
-                Read First Chapter
-              </Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link href={`/manga/${manga.slug}/${chapters.length > 0 ? chapters[0].slug : '#'}`}>
-                Read Latest Chapter
-              </Link>
-            </Button>
-            <FavoriteButton
-              comicId={manga.id}
-              variant="outline"
-              size="default"
-              showText={true}
-            />
-          </div>
-
-
-        </div>
-      </section>
+      <MangaDetailInfo manga={manga} chapters={chapters} />
 
       {/* Description here */}
       <Description description={manga.description} />

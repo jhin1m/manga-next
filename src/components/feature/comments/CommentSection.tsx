@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -43,6 +44,7 @@ export default function CommentSection({
   paginationType = 'offset'
 }: CommentSectionProps) {
   const { data: session } = useSession()
+  const t = useTranslations('comments')
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -92,8 +94,8 @@ export default function CommentSection({
 
       setPagination(data.pagination)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load comments')
-      toast.error('Failed to load comments')
+      setError(err instanceof Error ? err.message : t('messages.failedToLoad'))
+      toast.error(t('messages.failedToLoad'))
     } finally {
       setLoading(false)
     }
@@ -141,7 +143,7 @@ export default function CommentSection({
         comment.id === updatedComment.id ? updatedComment : comment
       )
     )
-    toast.success('Comment updated successfully!')
+    toast.success(t('messages.commentUpdated'))
   }
 
   // Handle comment deletion
@@ -150,7 +152,7 @@ export default function CommentSection({
       prevComments.filter(comment => comment.id !== commentId)
     )
     setPagination(prev => ({ ...prev, total: Math.max((prev.total || 0) - 1, 0) }))
-    toast.success('Comment deleted successfully!')
+    toast.success(t('messages.commentDeleted'))
   }
 
   // Handle like/dislike
@@ -227,7 +229,7 @@ export default function CommentSection({
             onClick={() => fetchComments()}
             className="mt-4"
           >
-            Try Again
+            {t('messages.tryAgain')}
           </Button>
         </CardContent>
       </Card>
@@ -240,8 +242,8 @@ export default function CommentSection({
       {mangaId && chapterId && !hideToggle && (
         <Tabs value={viewMode} onValueChange={handleViewModeChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="chapter">Chapter Comments</TabsTrigger>
-            <TabsTrigger value="all">All Comments</TabsTrigger>
+            <TabsTrigger value="chapter">{t('chapterComments')}</TabsTrigger>
+            <TabsTrigger value="all">{t('allComments')}</TabsTrigger>
           </TabsList>
         </Tabs>
       )}
@@ -252,7 +254,7 @@ export default function CommentSection({
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
-              Comments ({pagination.total ?? comments.length})
+              {t('title')} ({pagination.total ?? comments.length})
             </CardTitle>
 
             {/* Sort Options */}
@@ -264,21 +266,21 @@ export default function CommentSection({
                   size="sm"
                   onClick={() => handleSortChange('newest')}
                 >
-                  Newest
+                  {t('sortBy.newest')}
                 </Button>
                 <Button
                   variant={sortBy === 'oldest' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleSortChange('oldest')}
                 >
-                  Oldest
+                  {t('sortBy.oldest')}
                 </Button>
                 <Button
                   variant={sortBy === 'most_liked' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleSortChange('most_liked')}
                 >
-                  Most Liked
+                  {t('sortBy.mostLiked')}
                 </Button>
               </div>
 
@@ -287,20 +289,20 @@ export default function CommentSection({
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="w-full">
-                      {sortBy === 'newest' ? 'Newest' :
-                       sortBy === 'oldest' ? 'Oldest' : 'Most Liked'}
+                      {sortBy === 'newest' ? t('sortBy.newest') :
+                       sortBy === 'oldest' ? t('sortBy.oldest') : t('sortBy.mostLiked')}
                       <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => handleSortChange('newest')}>
-                      Newest
+                      {t('sortBy.newest')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleSortChange('oldest')}>
-                      Oldest
+                      {t('sortBy.oldest')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleSortChange('most_liked')}>
-                      Most Liked
+                      {t('sortBy.mostLiked')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -318,7 +320,7 @@ export default function CommentSection({
                   onClick={() => setShowForm(true)}
                   className="w-full"
                 >
-                  Write a comment...
+                  {t('writeComment')}
                 </Button>
               ) : (
                 <CommentForm
@@ -336,7 +338,7 @@ export default function CommentSection({
           ) : (
             <div className="mb-6 p-4 bg-muted rounded-lg text-center">
               <p className="text-muted-foreground">
-                Please <a href="/auth/login" className="text-primary hover:underline">sign in</a> to post comments.
+                Please <a href="/auth/login" className="text-primary hover:underline">{t('signIn')}</a> to post comments.
               </p>
             </div>
           )}
@@ -377,7 +379,7 @@ export default function CommentSection({
             <div className="text-center py-8">
               <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <p className="text-muted-foreground">
-                No comments yet. Be the first to share your thoughts!
+                {t('noCommentsYet')}
               </p>
             </div>
           )}

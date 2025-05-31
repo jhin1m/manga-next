@@ -1,6 +1,7 @@
 import MangaCard from '@/components/feature/MangaCard';
-import { formatDate } from '@/lib/utils/format';
+// Removed formatDate import since MangaCard will handle formatting
 import { mangaApi } from '@/lib/api/client';
+import { getTranslations } from 'next-intl/server';
 
 // Define manga type for this component
 
@@ -44,9 +45,7 @@ async function fetchLatestManga(page: number = 1, limit: number = 12) {
         rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
         views: comic.total_views || 0,
         chapterCount: comic._chapterCount || 0,
-        updatedAt: comic.last_chapter_uploaded_at
-          ? formatDate(comic.last_chapter_uploaded_at)
-          : 'Recently',
+        updatedAt: comic.last_chapter_uploaded_at || undefined,
         status: comic.status || 'Ongoing',
       })),
       totalPages: Math.ceil(data.total / limit) || 1,
@@ -66,11 +65,12 @@ export default async function LatestUpdateMangaList({
   limit?: number;
 }) {
   const { manga, totalPages } = await fetchLatestManga(page, limit);
+  const t = await getTranslations('manga');
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight">Latest Updates</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('latestUpdates')}</h2>
       </div>
 
       {manga.length > 0 ? (

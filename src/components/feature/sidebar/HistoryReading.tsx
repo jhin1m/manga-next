@@ -93,9 +93,9 @@ export default function HistoryReading() {
           </>
         ) : (
           <div className="text-center py-2">
-            <p className="text-sm text-muted-foreground">Chưa có lịch sử đọc truyện.</p>
+            <p className="text-sm text-muted-foreground">Chưa có đọc truyện nào.</p>
             <Link href="/manga" className="text-xs text-primary hover:underline">
-              Khám phá truyện để đọc
+              Khám phá truyện để đọc bạn nhé!
             </Link>
           </div>
         )}

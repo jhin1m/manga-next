@@ -75,8 +75,11 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
         skippedCount: result.skippedCount,
       }));
 
-    } catch (error) {
-      console.error('Error syncing to database:', error);
+    } catch (error: any) {
+      // Only log unexpected errors, not conflicts
+      if (!error.message?.includes('409') && !error.message?.includes('already exists')) {
+        console.error('Error syncing to database:', error);
+      }
       setSyncStatus(prev => ({
         ...prev,
         isLoading: false,
@@ -111,8 +114,11 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
         lastSyncAt: new Date().toISOString(),
       }));
 
-    } catch (error) {
-      console.error('Error syncing from database:', error);
+    } catch (error: any) {
+      // Only log unexpected errors, not conflicts
+      if (!error.message?.includes('409') && !error.message?.includes('already exists')) {
+        console.error('Error syncing from database:', error);
+      }
       setSyncStatus(prev => ({
         ...prev,
         isLoading: false,
@@ -132,8 +138,11 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
       await syncFromDatabase();
       // Then sync any unsynced local items to database
       await syncToDatabase();
-    } catch (error) {
-      console.error('Error during full sync:', error);
+    } catch (error: any) {
+      // Only log unexpected errors, not conflicts
+      if (!error.message?.includes('409') && !error.message?.includes('already exists')) {
+        console.error('Error during full sync:', error);
+      }
     }
   }, [status, syncFromDatabase, syncToDatabase]);
 
@@ -169,13 +178,13 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
     loadLocalHistory();
   }, [loadLocalHistory]);
 
-  // Auto-sync on login
+  // Auto-sync on login with longer delay to avoid conflicts
   useEffect(() => {
     if (status === 'authenticated') {
-      // Delay to ensure session is fully loaded
+      // Longer delay to ensure session is fully loaded and avoid race conditions
       const timer = setTimeout(() => {
         fullSync();
-      }, 1000);
+      }, 3000); // Increased from 1000ms to 3000ms
 
       return () => clearTimeout(timer);
     }
