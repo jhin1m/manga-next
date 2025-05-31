@@ -1,46 +1,46 @@
 {
   "common": {
-    "loading": "Đang tải...",
-    "error": "Lỗi",
-    "tryAgain": "Thử lại",
+    "loading": "Đang tải, chờ chút nha...",
+    "error": "Oops! Có lỗi rồi.",
+    "tryAgain": "Thử lại lần nữa",
     "search": "Tìm kiếm",
     "home": "Trang chủ",
-    "latest": "Truyện mới",
+    "latest": "Mới nhất",
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
-    "cancel": "Hủy",
-    "submit": "Gửi",
-    "save": "Lưu"
+    "cancel": "Hủy bỏ",
+    "submit": "Gửi đi",
+    "save": "Lưu lại"
   },
   "navigation": {
     "home": "Trang chủ",
-    "latest": "Truyện mới",
+    "latest": "Mới nhất",
     "search": "Tìm kiếm",
-    "searchManga": "Tìm kiếm truyện",
-    "profile": "Hồ sơ",
-    "myFavorites": "Yêu thích của tôi",
+    "searchManga": "Tìm truyện gì nè?",
+    "profile": "Hồ sơ của bạn",
+    "myFavorites": "Truyện yêu thích của bạn",
     "genres": "Thể loại",
     "viewAllGenres": "Xem tất cả thể loại",
     "loading": "Đang tải"
   },
   "manga": {
     "hotManga": "Truyện Hot",
-    "latestManga": "Truyện Mới Nhất",
-    "latestUpdates": "Truyện mới cập nhật",
-    "recommendedManga": "Truyện Đề Xuất",
+    "latestManga": "Truyện mới nhất",
+    "latestUpdates": "Cập nhật mới nhất",
+    "recommendedManga": "Truyện đề xuất cho bạn",
     "rating": "Đánh giá",
     "views": "Lượt xem",
-    "favorites": "Người theo dõi",
+    "favorites": "Lượt yêu thích",
     "status": "Trạng thái",
     "ongoing": "Đang tiến hành",
-    "completed": "Hoàn thành",
+    "completed": "Đã hoàn thành",
     "readNow": "Đọc ngay",
     "addToFavorites": "Thêm vào yêu thích",
-    "removeFromFavorites": "Xóa khỏi yêu thích",
+    "removeFromFavorites": "Bỏ khỏi yêu thích",
     "updating": "Đang cập nhật",
     "chapters": "chương",
     "chaptersCount": "{count} chương",
-    "noChaptersFound": "Không tìm thấy chương nào phù hợp với \"{searchTerm}\"",
+    "noChaptersFound": "Không tìm thấy chương nào phù hợp với \"{searchTerm}\" đâu.",
     "chaptersList": "Danh sách chương",
     "alternativeTitles": "Tên khác",
     "author": "Tác giả",
@@ -48,22 +48,22 @@
     "published": "Xuất bản",
     "serialization": "Nhà xuất bản",
     "updated": "Cập nhật",
-    "readFirstChapter": "Đọc chương đầu",
+    "readFirstChapter": "Đọc chương đầu tiên",
     "readLatestChapter": "Đọc chương mới nhất",
     "searchChapters": "Tìm kiếm chương",
     "newestFirst": "Mới nhất",
     "oldestFirst": "Cũ nhất",
-    "synopsis": "Mô tả"
+    "synopsis": "Tóm tắt nội dung"
   },
   "search": {
     "placeholder": "Tìm kiếm truyện...",
     "searching": "Đang tìm kiếm...",
-    "noResults": "Không tìm thấy kết quả",
-    "searchFor": "Tìm kiếm",
-    "recentSearches": "Tìm kiếm gần đây",
+    "noResults": "Không tìm thấy kết quả nào.",
+    "searchFor": "Tìm kiếm cho",
+    "recentSearches": "Tìm kiếm gần đây của bạn",
     "popularSearches": "Tìm kiếm phổ biến",
     "popularManga": "Truyện phổ biến",
-    "suggestions": "Gợi ý"
+    "suggestions": "Gợi ý cho bạn"
   },
   "filterSort": {
     "sort": "Sắp xếp",
@@ -72,17 +72,17 @@
     "applyFilters": "Áp dụng bộ lọc",
     "status": "Trạng thái",
     "genres": "Thể loại",
-    "loadingGenres": "Đang tải thể loại",
+    "loadingGenres": "Đang tải thể loại...",
     "reset": "Đặt lại bộ lọc",
     "selectStatus": "Chọn trạng thái",
     "statusOptions": {
       "all": "Tất cả",
       "ongoing": "Đang tiến hành",
-      "completed": "Hoàn thành",
+      "completed": "Đã hoàn thành",
       "hiatus": "Tạm dừng"
     },
     "sortOptions": {
-      "latest": "Truyện mới cập nhật",
+      "latest": "Cập nhật mới nhất",
       "newest": "Mới thêm",
       "popular": "Phổ biến nhất",
       "rating": "Đánh giá cao nhất"
@@ -94,31 +94,31 @@
     "email": "Email",
     "password": "Mật khẩu",
     "confirmPassword": "Xác nhận mật khẩu",
-    "loginSuccess": "Đăng nhập thành công",
-    "loginError": "Email hoặc mật khẩu không đúng",
+    "loginSuccess": "Đăng nhập thành công rồi đó!",
+    "loginError": "Email hoặc mật khẩu không đúng rồi.",
     "loggingIn": "Đang đăng nhập...",
-    "enterCredentials": "Nhập thông tin đăng nhập của bạn"
+    "enterCredentials": "Vui lòng nhập thông tin đăng nhập của bạn."
   },
   "errors": {
-    "failedToLoad": "Không thể tải",
-    "tryAgainLater": "Vui lòng thử lại sau",
-    "somethingWentWrong": "Đã có lỗi xảy ra",
-    "networkError": "Lỗi mạng",
-    "invalidEmail": "Vui lòng nhập địa chỉ email hợp lệ",
-    "passwordRequired": "Mật khẩu là bắt buộc"
+    "failedToLoad": "Không thể tải được rồi.",
+    "tryAgainLater": "Vui lòng thử lại sau nhé.",
+    "somethingWentWrong": "Đã xảy ra lỗi gì đó rồi.",
+    "networkError": "Lỗi mạng rồi.",
+    "invalidEmail": "Vui lòng nhập địa chỉ email hợp lệ nha.",
+    "passwordRequired": "Mật khẩu là bắt buộc."
   },
   "notFound": {
-    "title": "Không Tìm Thấy Trang",
-    "heading": "404 - Không Tìm Thấy Truyện",
-    "description": "Ôi không! Trang truyện bạn đang tìm kiếm dường như đã biến mất vào một chiều không gian khác.",
-    "subDescription": "Đừng lo lắng, ngay cả siêu nhân giỏi nhất cũng có lúc bị lạc đường. Hãy để chúng tớ đưa bạn trở lại đúng hướng!",
-    "homeButton": "Về Trang Chủ",
-    "browseButton": "Xem các truyện khác",
-    "suggestions": "Đây là một số gợi ý:",
-    "checkLatest": "Xem các bộ truyện mới nhất",
-    "exploreGenres": "Khám phá các thể loại truyện khác nhau",
+    "title": "Không tìm thấy trang",
+    "heading": "404 - Không tìm thấy truyện",
+    "description": "Trang truyện bạn đang tìm có thể không tồn tại hoặc đã bị gỡ rồi.",
+    "subDescription": "Đừng lo lắng, chúng tôi sẽ giúp bạn quay lại đúng hướng ngay!",
+    "homeButton": "Về trang chủ",
+    "browseButton": "Duyệt truyện",
+    "suggestions": "Gợi ý cho bạn nè:",
+    "checkLatest": "Xem các truyện mới nhất",
+    "exploreGenres": "Khám phá các thể loại truyện",
     "viewFavorites": "Xem truyện yêu thích của bạn",
-    "contactSupport": "Liên hệ hỗ trợ nếu bạn nghĩ đây là lỗi"
+    "contactSupport": "Liên hệ hỗ trợ nếu bạn nghĩ đây là lỗi."
   },
   "footer": {
     "home": "Trang chủ",
@@ -147,7 +147,7 @@
     },
     "social": {
       "title": "Kết nối",
-      "followUs": "Theo dõi chúng tôi trên mạng xã hội"
+      "followUs": "Theo dõi chúng tôi"
     },
     "stats": {
       "title": "Thống kê",
@@ -205,21 +205,21 @@
     }
   },
   "comments": {
-    "noRecentComments": "Chưa có bình luận.",
-    "chapter": "Ch.",
+    "noRecentComments": "Chưa có bình luận nào đâu.",
+    "chapter": "Chương",
     "title": "Bình luận",
-    "chapterComments": "Bình luận Chapter",
+    "chapterComments": "Bình luận chương",
     "allComments": "Tất cả bình luận",
     "writeComment": "Viết bình luận...",
     "writeReply": "Viết phản hồi...",
-    "shareThoughts": "Chia sẻ suy nghĩ của bạn về manga này...",
-    "noCommentsYet": "Chưa có bình luận nào. Hãy là người đầu tiên chia sẻ suy nghĩ của bạn!",
-    "signInToComment": "Vui lòng {signInLink} để đăng bình luận.",
+    "shareThoughts": "Chia sẻ suy nghĩ của bạn về truyện này nhé...",
+    "noCommentsYet": "Chưa có bình luận nào. Hãy là người đầu tiên để lại bình luận nha!",
+    "signInToComment": "Vui lòng {signInLink} để bình luận.",
     "signIn": "đăng nhập",
     "sortBy": {
       "newest": "Mới nhất",
       "oldest": "Cũ nhất",
-      "mostLiked": "Nhiều like nhất"
+      "mostLiked": "Nhiều lượt thích nhất"
     },
     "actions": {
       "reply": "Phản hồi",
@@ -236,12 +236,12 @@
       "updating": "Đang cập nhật...",
       "loadMore": "Tải thêm bình luận",
       "loadingMore": "Đang tải thêm bình luận...",
-      "showReplies": "Hiện {count} phản hồi khác",
-      "hideReplies": "Ẩn {count} phản hồi khác"
+      "showReplies": "Hiện {count} phản hồi",
+      "hideReplies": "Ẩn {count} phản hồi"
     },
     "form": {
       "placeholder": {
-        "comment": "Chia sẻ suy nghĩ của bạn về manga này...",
+        "comment": "Chia sẻ suy nghĩ của bạn về truyện này nhé...",
         "reply": "Viết phản hồi..."
       },
       "validation": {
@@ -252,61 +252,61 @@
       "characterCount": "{current}/{max}",
       "guidelines": {
         "title": "Quy tắc cộng đồng",
-        "respectful": "Hãy tôn trọng và xây dựng trong bình luận của bạn",
-        "spoilers": "Tránh spoiler mà không có cảnh báo phù hợp",
-        "noSpam": "Không spam, quấy rối hoặc nội dung không phù hợp",
-        "stayOnTopic": "Giữ đúng chủ đề và liên quan đến manga/chapter"
+        "respectful": "Vui lòng giữ thái độ tôn trọng và xây dựng trong các bình luận.",
+        "spoilers": "Tránh tiết lộ nội dung (spoilers) mà không cảnh báo trước nhé.",
+        "noSpam": "Không spam hoặc quảng cáo.",
+        "stayOnTopic": "Giữ bình luận đúng chủ đề."
       }
     },
     "status": {
-      "pending": "Đang chờ",
-      "flagged": "Bị báo cáo",
+      "pending": "Đang chờ duyệt",
+      "flagged": "Bị gắn cờ",
       "edited": "(đã chỉnh sửa)"
     },
     "badges": {
-      "admin": "Quản trị",
-      "moderator": "Điều hành",
-      "chapter": "Chapter {number}"
+      "admin": "Quản trị viên",
+      "moderator": "Điều hành viên",
+      "chapter": "Chương {number}"
     },
     "messages": {
-      "commentPosted": "Đăng bình luận thành công!",
-      "commentUpdated": "Cập nhật bình luận thành công!",
-      "commentDeleted": "Xóa bình luận thành công!",
-      "commentPending": "Bình luận đã được gửi để xem xét",
-      "signInToLike": "Vui lòng đăng nhập để thích bình luận",
-      "failedToLoad": "Không thể tải bình luận",
-      "failedToPost": "Không thể đăng bình luận",
-      "failedToUpdate": "Không thể cập nhật bình luận",
-      "failedToDelete": "Không thể xóa bình luận",
-      "failedToLike": "Không thể thích bình luận",
-      "failedToLoadMore": "Không thể tải thêm bình luận",
-      "tryAgain": "Thử lại"
+      "commentPosted": "Bình luận của bạn đã được đăng thành công!",
+      "commentUpdated": "Bình luận đã được cập nhật rồi đó!",
+      "commentDeleted": "Bình luận đã được xóa.",
+      "commentPending": "Bình luận đang chờ được duyệt nhé.",
+      "signInToLike": "Vui lòng đăng nhập để thích bình luận.",
+      "failedToLoad": "Không thể tải bình luận.",
+      "failedToPost": "Không thể đăng bình luận. Vui lòng thử lại.",
+      "failedToUpdate": "Không thể cập nhật bình luận. Vui lòng thử lại.",
+      "failedToDelete": "Không thể xóa bình luận. Vui lòng thử lại.",
+      "failedToLike": "Không thể thích bình luận. Vui lòng thử lại.",
+      "failedToLoadMore": "Không thể tải thêm bình luận. Vui lòng thử lại.",
+      "tryAgain": "Vui lòng thử lại."
     },
     "deleteDialog": {
       "title": "Xóa bình luận",
-      "description": "Bạn có chắc chắn muốn xóa bình luận này? Hành động này không thể hoàn tác.",
+      "description": "Bạn có chắc chắn muốn xóa bình luận này không? Hành động này không thể hoàn tác đâu nhé.",
       "cancel": "Hủy",
       "delete": "Xóa"
     },
     "reportDialog": {
       "title": "Báo cáo bình luận",
-      "description": "Giúp chúng tôi duy trì một cộng đồng an toàn và tôn trọng bằng cách báo cáo nội dung không phù hợp.",
+      "description": "Giúp chúng tôi duy trì một cộng đồng an toàn và tôn trọng bằng cách báo cáo nội dung không phù hợp nhé.",
       "reasonLabel": "Lý do báo cáo",
       "detailsLabel": "Chi tiết bổ sung",
-      "detailsPlaceholder": "Vui lòng cung cấp thêm chi tiết về lý do bạn báo cáo bình luận này...",
+      "detailsPlaceholder": "Vui lòng cung cấp thêm chi tiết về lý do báo cáo bình luận này...",
       "cancel": "Hủy",
-      "submit": "Báo cáo bình luận",
-      "submitting": "Đang báo cáo...",
+      "submit": "Gửi báo cáo",
+      "submitting": "Đang gửi báo cáo...",
       "reasons": {
-        "spam": "Spam hoặc nội dung không mong muốn",
-        "harassment": "Quấy rối hoặc bắt nạt",
-        "inappropriate_content": "Nội dung không phù hợp hoặc xúc phạm",
-        "spoilers": "Spoiler mà không có cảnh báo",
-        "off_topic": "Ngoài chủ đề hoặc không liên quan",
-        "other": "Khác (vui lòng nêu rõ)"
+        "spam": "Spam hoặc quảng cáo",
+        "harassment": "Quấy rối",
+        "inappropriate_content": "Nội dung không phù hợp",
+        "spoilers": "Tiết lộ nội dung (spoilers)",
+        "off_topic": "Lạc đề",
+        "other": "Lý do khác (vui lòng nêu rõ)"
       },
-      "note": "Báo cáo sai có thể dẫn đến hạn chế tài khoản của bạn. Vui lòng chỉ báo cáo nội dung thực sự vi phạm quy tắc cộng đồng của chúng tôi.",
-      "success": "Báo cáo bình luận thành công. Cảm ơn bạn đã giúp giữ an toàn cho cộng đồng của chúng tôi.",
+      "note": "Việc báo cáo không đúng có thể dẫn đến các hạn chế tài khoản. Vui lòng chỉ báo cáo nội dung vi phạm nguyên tắc cộng đồng của chúng tôi nhé.",
+      "success": "Bình luận đã được báo cáo thành công. Cảm ơn bạn đã giúp chúng tôi duy trì một cộng đồng an toàn và tôn trọng.",
       "error": "Không thể báo cáo bình luận"
     }
   },
@@ -316,35 +316,35 @@
     "recommendedManga": "Truyện đề xuất"
   },
   "chapterReport": {
-    "reportIssue": "Báo lỗi",
-    "reportChapterIssue": "Báo lỗi chương",
-    "reportChapterIssueTitle": "Báo lỗi chương",
-    "reportChapterIssueDescription": "Báo cáo lỗi với chương này. Phản hồi của bạn giúp chúng tôi duy trì chất lượng nội dung. 😇",
-    "issueType": "Vấn đề",
-    "issueTypeRequired": "Vấn đề *",
-    "selectIssueType": "Chọn vấn đề",
+    "reportIssue": "Báo cáo vấn đề",
+    "reportChapterIssue": "Báo cáo lỗi chương",
+    "reportChapterIssueTitle": "Báo cáo lỗi chương",
+    "reportChapterIssueDescription": "Báo cáo các vấn đề kỹ thuật với chương này. Phản hồi của bạn sẽ giúp chúng tôi duy trì chất lượng nội dung.",
+    "issueType": "Loại vấn đề",
+    "issueTypeRequired": "Loại vấn đề *",
+    "selectIssueType": "Chọn loại vấn đề",
     "additionalDetails": "Chi tiết bổ sung",
     "additionalDetailsRequired": "Chi tiết bổ sung *",
-    "additionalDetailsOptional": "Cung cấp thêm thông tin về vấn đề trên chap này 🧑‍💻 (tùy chọn)...",
+    "additionalDetailsOptional": "Cung cấp thêm ngữ cảnh về vấn đề (không bắt buộc)...",
     "additionalDetailsPlaceholder": "Vui lòng mô tả chi tiết vấn đề...",
     "cancel": "Hủy",
     "submitReport": "Gửi báo cáo",
     "submitting": "Đang gửi...",
-    "reportSuccess": "Đã báo cáo thành công. Cảm ơn bạn đã giúp chúng tôi cải thiện chất lượng nội dung.",
-    "reportError": "Không thể báo cáo chương",
-    "loginRequired": "Vui lòng đăng nhập để báo cáo vấn đề chương",
-    "wordLimitExceeded": "Chi tiết không được vượt quá 50 từ",
-    "characterLimitExceeded": "Chi tiết không được vượt quá 50 từ (khoảng 300 ký tự)",
+    "reportSuccess": "Chương đã được báo cáo thành công. Cảm ơn bạn đã giúp chúng tôi cải thiện chất lượng nội dung nhé.",
+    "reportError": "Không thể báo cáo chương. Vui lòng thử lại.",
+    "loginRequired": "Vui lòng đăng nhập để báo cáo lỗi chương.",
+    "wordLimitExceeded": "Chi tiết không được vượt quá 50 từ.",
+    "characterLimitExceeded": "Chi tiết không được vượt quá 50 từ (khoảng 300 ký tự).",
     "words": "từ",
     "reasons": {
-      "broken_images": "Hình ảnh bị hỏng hoặc thiếu 💔",
-      "missing_pages": "Thiếu trang 🔍",
-      "wrong_order": "Trang sai thứ tự 📑",
-      "duplicate_pages": "Trang trùng lặp 📝",
-      "poor_quality": "Chất lượng hình ảnh kém 〽️",
-      "wrong_chapter": "Nội dung chapter sai 🤦",
-      "corrupted_content": "Nội dung bị hỏng hoặc không đọc được ❤️‍🩹",
-      "other": "Vấn đề khác 🧩"
+      "broken_images": "Hình ảnh bị hỏng hoặc thiếu",
+      "missing_pages": "Thiếu trang",
+      "wrong_order": "Trang sai thứ tự",
+      "duplicate_pages": "Trang bị trùng",
+      "poor_quality": "Chất lượng hình ảnh kém",
+      "wrong_chapter": "Nội dung chương không đúng",
+      "corrupted_content": "Nội dung bị lỗi hoặc không đọc được",
+      "other": "Vấn đề khác"
     }
   }
 }

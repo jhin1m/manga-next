@@ -1,85 +1,85 @@
 {
   "common": {
-    "loading": "Loading...",
-    "error": "Error",
-    "tryAgain": "Try Again",
-    "search": "Search",
-    "home": "Home",
-    "latest": "Latest",
-    "login": "Login",
-    "logout": "Logout",
+    "loading": "Just a moment, loading...",
+    "error": "Oops! Something went wrong.",
+    "tryAgain": "Please try again",
+    "search": "Find Anything",
+    "home": "Your Home",
+    "latest": "What's New",
+    "login": "Sign In",
+    "logout": "Sign Out",
     "cancel": "Cancel",
     "submit": "Submit",
     "save": "Save"
   },
   "navigation": {
     "home": "Home",
-    "latest": "Latest",
+    "latest": "Latest Releases",
     "search": "Search",
-    "searchManga": "Search manga",
-    "profile": "Profile",
-    "myFavorites": "My Favorites",
+    "searchManga": "Looking for manga?",
+    "profile": "Your Profile",
+    "myFavorites": "Your Favorites",
     "genres": "Genres",
-    "viewAllGenres": "View All Genres",
-    "loading": "Loading"
+    "viewAllGenres": "See All Genres",
+    "loading": "Loading..."
   },
   "manga": {
-    "hotManga": "Hot Manga",
-    "latestManga": "Latest Manga",
+    "hotManga": "Popular Right Now",
+    "latestManga": "Freshly Added Manga",
     "latestUpdates": "Latest Updates",
-    "recommendedManga": "Recommended Manga",
+    "recommendedManga": "Manga We Think You'll Love",
     "rating": "Rating",
     "views": "Views",
     "favorites": "Favorites",
     "status": "Status",
     "ongoing": "Ongoing",
     "completed": "Completed",
-    "readNow": "Read Now",
-    "addToFavorites": "Add to Favorites",
+    "readNow": "Start Reading",
+    "addToFavorites": "Add to Your Favorites",
     "removeFromFavorites": "Remove from Favorites",
-    "updating": "Updating",
+    "updating": "Updating...",
     "chapters": "chapters",
     "chaptersCount": "{count} chapters",
-    "noChaptersFound": "No chapters found matching \"{searchTerm}\"",
-    "chaptersList": "Chapters List",
-    "alternativeTitles": "Alternative Titles",
+    "noChaptersFound": "No chapters found matching \"{searchTerm}\". Sorry about that!",
+    "chaptersList": "Chapter List",
+    "alternativeTitles": "Other Titles",
     "author": "Author",
     "artist": "Artist",
     "published": "Published",
     "serialization": "Serialization",
-    "updated": "Updated",
-    "readFirstChapter": "Read First Chapter",
-    "readLatestChapter": "Read Latest Chapter",
+    "updated": "Last Updated",
+    "readFirstChapter": "Read the First Chapter",
+    "readLatestChapter": "Read the Latest Chapter",
     "searchChapters": "Search chapters",
     "newestFirst": "Newest First",
     "oldestFirst": "Oldest First",
     "synopsis": "Synopsis"
   },
   "search": {
-    "placeholder": "Search manga...",
-    "searching": "Searching...",
-    "noResults": "No results found",
-    "searchFor": "Search for",
-    "recentSearches": "Recent Searches",
+    "placeholder": "Search for your next manga...",
+    "searching": "Searching for you...",
+    "noResults": "No results found. Maybe try a different search?",
+    "searchFor": "Searching for",
+    "recentSearches": "Your Recent Searches",
     "popularSearches": "Popular Searches",
     "popularManga": "Popular Manga",
-    "suggestions": "Suggestions"
+    "suggestions": "Suggestions for you:"
   },
   "filterSort": {
-    "sort": "Sort",
+    "sort": "Sort By",
     "filter": "Filter",
     "filterManga": "Filter Manga",
     "applyFilters": "Apply Filters",
     "status": "Status",
     "genres": "Genres",
-    "loadingGenres": "Loading genres",
+    "loadingGenres": "Loading genres...",
     "reset": "Reset Filters",
-    "selectStatus": "Select status",
+    "selectStatus": "Select a status",
     "statusOptions": {
       "all": "All",
       "ongoing": "Ongoing",
       "completed": "Completed",
-      "hiatus": "Hiatus"
+      "hiatus": "On Hiatus"
     },
     "sortOptions": {
       "latest": "Latest Update",
@@ -94,31 +94,31 @@
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
-    "loginSuccess": "Logged in successfully",
-    "loginError": "Invalid email or password",
-    "loggingIn": "Logging in...",
-    "enterCredentials": "Enter your credentials to access your account"
+    "loginSuccess": "You're all logged in! Welcome back!",
+    "loginError": "Hmm, looks like your email or password isn't quite right.",
+    "loggingIn": "Logging you in...",
+    "enterCredentials": "Please enter your details to access your account."
   },
   "errors": {
-    "failedToLoad": "Failed to load",
-    "tryAgainLater": "Please try again later",
-    "somethingWentWrong": "Something went wrong",
-    "networkError": "Network error",
-    "invalidEmail": "Please enter a valid email address",
-    "passwordRequired": "Password is required"
+    "failedToLoad": "Couldn't load that for you.",
+    "tryAgainLater": "Please try again a little later.",
+    "somethingWentWrong": "Something went wrong on our end.",
+    "networkError": "Looks like a network hiccup.",
+    "invalidEmail": "Please enter a valid email address.",
+    "passwordRequired": "Don't forget your password!"
   },
   "notFound": {
     "title": "Page Not Found",
     "heading": "404 - Manga Not Found",
-    "description": "Oops! The manga page you're looking for seems to have vanished into another dimension.",
+    "description": "Oops! The manga page you're looking for seems to have vanished into another dimension. So sorry!",
     "subDescription": "Don't worry, even the best manga readers get lost sometimes. Let's get you back on track!",
     "homeButton": "Back to Home",
     "browseButton": "Browse Manga",
-    "suggestions": "Here are some suggestions:",
+    "suggestions": "Here are some suggestions for you:",
     "checkLatest": "Check out the latest manga releases",
     "exploreGenres": "Explore different manga genres",
     "viewFavorites": "View your favorite manga",
-    "contactSupport": "Contact support if you think this is an error"
+    "contactSupport": "Contact support if you think this is an error."
   },
   "footer": {
     "home": "Home",
@@ -253,7 +253,9 @@
       "guidelines": {
         "title": "Community Guidelines",
         "respectful": "Please be respectful and constructive in your comments",
-        "spoilers": "Avoid spoilers without proper warnings"
+        "spoilers": "Avoid spoilers without proper warnings",
+        "noSpam": "No spam or advertisements",
+        "stayOnTopic": "Stay on topic with your comments"
       }
     },
     "status": {
@@ -264,7 +266,7 @@
     "badges": {
       "admin": "Admin",
       "moderator": "Moderator",
-      "chapter": "Chapter {number}" 
+      "chapter": "Chapter {number}"
     },
     "messages": {
       "commentPosted": "Comment posted successfully!",
@@ -296,6 +298,11 @@
       "submit": "Report Comment",
       "submitting": "Reporting...",
       "reasons": {
+        "spam": "Spam or advertisement",
+        "harassment": "Harassment",
+        "inappropriate_content": "Inappropriate or offensive content",
+        "spoilers": "Spoilers without warning",
+        "off_topic": "Off-topic comment",
         "other": "Other (please specify)"
       },
       "note": "Reporting inappropriately can result in account restrictions. Please only report content that actually violates our community guidelines.",

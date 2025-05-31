@@ -10,7 +10,7 @@ import { getTranslations } from 'next-intl/server';
 export const metadata: Metadata = constructMetadata({
   title: '404 - Page Not Found | Manga Next',
   description: 'The page you are looking for could not be found. Return to our manga collection and discover amazing stories.',
-  robots: { index: false, follow: false },
+  noIndex: true
 });
 
 export default async function NotFound() {

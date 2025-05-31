@@ -2,9 +2,12 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import {
+  ArrowUp,
   Home,
   Search,
   TrendingUp,
@@ -19,8 +22,13 @@ import {
 import { seoConfig } from '@/config/seo.config';
 
 export default function Footer() {
+  const [mounted, setMounted] = useState(false);
   const currentYear = new Date().getFullYear();
   const t = useTranslations('footer');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Scroll to top function
   const scrollToTop = () => {
@@ -55,6 +63,21 @@ export default function Footer() {
               <span className='text-sm text-muted-foreground'>Language:</span>
               <LanguageSwitcher />
             </div>
+
+            {/* Back to Top Button */}
+            {mounted && (
+              <div className='pt-2'>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={scrollToTop}
+                  className='w-full sm:w-auto'
+                >
+                  <ArrowUp className='h-4 w-4 mr-2' />
+                  {t('backToTop')}
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Navigation Links */}
@@ -157,13 +180,19 @@ export default function Footer() {
           </div>
 
           <div className='text-center sm:text-right'>
-            <p className='text-xs text-muted-foreground'>
-              {t('copyright', {
-                year: currentYear,
-                siteName: seoConfig.site.name,
-                allRightsReserved: t('allRightsReserved')
-              })}
-            </p>
+            {mounted ? (
+              <p className='text-xs text-muted-foreground'>
+                {t('copyright', {
+                  year: currentYear,
+                  siteName: seoConfig.site.name,
+                  allRightsReserved: t('allRightsReserved')
+                })}
+              </p>
+            ) : (
+              <p className='text-xs text-muted-foreground'>
+                © {seoConfig.site.name}. {t('allRightsReserved')}
+              </p>
+            )}
           </div>
         </div>
       </div>
