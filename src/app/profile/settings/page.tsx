@@ -6,6 +6,7 @@ import { prisma } from '@/lib/db'
 import { Separator } from '@/components/ui/separator'
 import { ProfileForm } from '@/components/profile/profile-form'
 import { PasswordForm } from '@/components/profile/password-form'
+import { NotificationSettings } from '@/components/notifications/NotificationSettings'
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -49,6 +50,8 @@ export default async function SettingsPage() {
           <ProfileForm user={user} />
           <Separator />
           <PasswordForm />
+          <Separator />
+          <NotificationSettings />
         </div>
       </div>
     </div>

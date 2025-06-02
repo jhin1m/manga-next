@@ -11,6 +11,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import FavoritesGrid from '@/components/profile/favorites-grid'
 import ReadingHistoryList from '@/components/profile/reading-history-list'
+import NotificationsList from '@/components/profile/notifications-list'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -123,6 +124,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
           <TabsList>
             <TabsTrigger value="favorites">Favorites</TabsTrigger>
             <TabsTrigger value="history">Reading History</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
           </TabsList>
           <TabsContent value="favorites" className="mt-4">
             {user.Favorites.length === 0 ? (
@@ -140,6 +142,9 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
           </TabsContent>
           <TabsContent value="history" className="mt-4">
             <ReadingHistoryList initialProgress={user.Reading_Progress} />
+          </TabsContent>
+          <TabsContent value="notifications" className="mt-4">
+            <NotificationsList />
           </TabsContent>
         </Tabs>
       </div>

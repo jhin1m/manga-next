@@ -88,6 +88,14 @@ export const API_ENDPOINTS = {
     submit: '/api/ratings',
     get: (mangaId: number) => `/api/ratings/${mangaId}`,
   },
+  // Notification endpoints
+  notifications: {
+    list: '/api/notifications',
+    markRead: '/api/notifications/mark-read',
+    settings: '/api/notifications/settings',
+    trigger: '/api/notifications/trigger',
+    test: '/api/notifications/test',
+  },
   // Utility endpoints
   health: '/api/health',
   revalidate: '/api/revalidate',
@@ -179,9 +187,6 @@ export async function apiClient<T = any>(
 
     return await response.json();
   } catch (error) {
-    console.error(`API Client Error for ${url}:`, error);
-    console.error(`[API Client] Base URL was: ${API_CONFIG.baseUrl}`);
-    console.error(`[API Client] Full URL was: ${url}`);
     throw error;
   }
 }
@@ -631,6 +636,90 @@ export const userApi = {
     return apiClient(API_ENDPOINTS.users.password, {
       method: 'POST',
       body: data,
+      cache: 'no-store',
+    });
+  },
+};
+
+// Notification API functions
+export const notificationApi = {
+  // Get notifications list
+  getList: async (params: {
+    page?: number;
+    limit?: number;
+    unread_only?: boolean;
+  } = {}) => {
+    return apiClient(API_ENDPOINTS.notifications.list, {
+      params,
+      cache: 'no-store',
+    });
+  },
+
+  // Mark notifications as read
+  markRead: async (data: {
+    notification_ids?: number[];
+    mark_all?: boolean;
+  }) => {
+    return apiClient(API_ENDPOINTS.notifications.markRead, {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+
+  // Get notification settings
+  getSettings: async () => {
+    return apiClient(API_ENDPOINTS.notifications.settings, {
+      cache: 'no-store',
+    });
+  },
+
+  // Update notification settings
+  updateSettings: async (data: {
+    in_app_notifications?: boolean;
+    new_chapter_alerts?: boolean;
+  }) => {
+    return apiClient(API_ENDPOINTS.notifications.settings, {
+      method: 'PATCH',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+
+  // Trigger notifications (admin only)
+  trigger: async (data: {
+    comic_id: number;
+    chapter_id: number;
+    chapter_slug: string;
+    chapter_number: number;
+    chapter_title?: string;
+  }) => {
+    return apiClient(API_ENDPOINTS.notifications.trigger, {
+      method: 'POST',
+      body: data,
+      cache: 'no-store',
+    });
+  },
+
+  // Get notification statistics (admin only)
+  getStatistics: async () => {
+    return apiClient(API_ENDPOINTS.notifications.trigger, {
+      cache: 'no-store',
+    });
+  },
+
+  // Test notifications (development only)
+  createTest: async (type: 'test' | 'new_chapter' = 'test') => {
+    return apiClient(API_ENDPOINTS.notifications.test, {
+      method: 'POST',
+      body: { type },
+      cache: 'no-store',
+    });
+  },
+
+  // Get test info
+  getTestInfo: async () => {
+    return apiClient(API_ENDPOINTS.notifications.test, {
       cache: 'no-store',
     });
   },

@@ -350,5 +350,28 @@
       "corrupted_content": "Nội dung bị lỗi hoặc không đọc được",
       "other": "Vấn đề khác"
     }
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "noNotifications": "Chưa có thông báo nào",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "markAsRead": "Đánh dấu đã đọc",
+    "newChapter": "Chương mới",
+    "settings": "Cài đặt thông báo",
+    "inAppNotifications": "Thông báo trong ứng dụng",
+    "newChapterAlerts": "Thông báo chương mới",
+    "saveSettings": "Lưu cài đặt",
+    "settingsUpdated": "Cài đặt thông báo đã được cập nhật",
+    "failedToLoad": "Không thể tải thông báo",
+    "failedToUpdate": "Không thể cập nhật cài đặt",
+    "loginRequired": "Vui lòng đăng nhập để xem thông báo",
+    "types": {
+      "new_chapter": "Chương mới",
+      "system": "Hệ thống"
+    },
+    "messages": {
+      "newChapterAvailable": "Chương mới đã có sẵn!",
+      "chapterReleased": "Chương {number} của \"{title}\" đã được phát hành."
+    }
   }
 }

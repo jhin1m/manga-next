@@ -350,5 +350,28 @@
       "corrupted_content": "Corrupted or unreadable content",
       "other": "Other issue"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications yet",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "newChapter": "New Chapter",
+    "settings": "Notification Settings",
+    "inAppNotifications": "In-app notifications",
+    "newChapterAlerts": "New chapter alerts",
+    "saveSettings": "Save Settings",
+    "settingsUpdated": "Notification settings updated successfully",
+    "failedToLoad": "Failed to load notifications",
+    "failedToUpdate": "Failed to update settings",
+    "loginRequired": "Please log in to view notifications",
+    "types": {
+      "new_chapter": "New Chapter",
+      "system": "System"
+    },
+    "messages": {
+      "newChapterAvailable": "New Chapter Available!",
+      "chapterReleased": "Chapter {number} of \"{title}\" has been released."
+    }
   }
 }

@@ -18,6 +18,7 @@ import { useSession } from 'next-auth/react';
 import { GenreDropdown, MobileGenreDropdown } from '@/components/feature/GenreDropdown';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useTranslations } from 'next-intl';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -50,7 +51,10 @@ export default function Header() {
             <GenreDropdown />
             <DesktopSearchButton />
             {isAuthenticated && session?.user ? (
-              <UserMenu />
+              <>
+                <NotificationBell />
+                <UserMenu />
+              </>
             ) : (
               <Button variant="ghost" size="icon" className="text-foreground" asChild>
                 <Link href="/auth/login">
@@ -65,6 +69,7 @@ export default function Header() {
           {/* Mobile Navigation */}
           <div className='md:hidden flex items-center gap-2'>
             <SearchButton />
+            {isAuthenticated && <NotificationBell />}
             <LanguageSwitcher />
             <ThemeToggle />
             <Sheet>
