@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useRating } from '@/hooks/useRating'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface StarRatingProps {
   mangaId: number
@@ -29,6 +30,10 @@ export function StarRating({
   const [hoveredRating, setHoveredRating] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // i18n translations
+  const t = useTranslations('manga')
+  const tCommon = useTranslations('common')
+
   const { ratingData, isLoading, isAuthenticated, submitRating } = useRating({
     mangaId,
     initialRating,
@@ -40,7 +45,7 @@ export function StarRating({
     if (!isAuthenticated) {
       toast.error('Please login to rate this manga', {
         action: {
-          label: 'Login',
+          label: tCommon('login'),
           onClick: () => router.push(`/auth/login?callbackUrl=/manga/${mangaSlug}`)
         }
       })
@@ -103,7 +108,8 @@ export function StarRating({
   const getDisplayRating = () => {
     // Convert 5-star rating to 10-point scale
     const scaledRating = (ratingData.averageRating * 2).toFixed(1)
-    return ratingData.averageRating > 0 ? scaledRating : '0.0'
+    // Show default rating of 8.0 when no ratings exist (as per user preference)
+    return ratingData.averageRating > 0 ? scaledRating : '8.0'
   }
 
   const formatRatingCount = (count: number) => {
@@ -114,18 +120,22 @@ export function StarRating({
   }
 
   // Determine which rating to show for star fill (hover takes priority, then user rating, then average)
-  const displayRatingForStars = hoveredRating || (isAuthenticated ? ratingData.userRating : ratingData.averageRating) || 0
+  // Show default rating of 4 stars (8/10) when no ratings exist
+  const getDefaultRating = () => ratingData.averageRating > 0 ? ratingData.averageRating : 4.0
+  const displayRatingForStars = hoveredRating || (isAuthenticated ? ratingData.userRating : getDefaultRating()) || 0
 
   return (
-    <div className={cn('space-y-3', className)} ref={containerRef}>
-      {/* Unified Rating Display and Interaction */}
-      <div className="space-y-2">
-        {/* Interactive Star Rating with Inline Score */}
-        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+    <div className={cn('space-y-4', className)} ref={containerRef}>
+      {/* Enhanced Rating Display and Interaction */}
+      <div className="space-y-3">
+        {/* Interactive Star Rating */}
+        <div className="flex flex-col items-start gap-2">
           {/* Star Rating Interface */}
           <div
             className="flex items-center gap-1 flex-shrink-0"
             onMouseLeave={handleMouseLeave}
+            role="radiogroup"
+            aria-label={`${t('rating')}: ${getDisplayRating()}/10`}
           >
             {[1, 2, 3, 4, 5].map((starIndex) => {
               const fillState = getStarFillState(starIndex, displayRatingForStars)
@@ -139,7 +149,7 @@ export function StarRating({
                   disabled={isLoading}
                   onClick={(e) => handleStarClickEvent(e, starIndex)}
                   onMouseMove={(e) => handleStarHover(e, starIndex)}
-                  aria-label={`Rate ${starIndex} star${starIndex !== 1 ? 's' : ''}`}
+                  aria-label={`Rate ${starIndex} star${starIndex !== 1}`}
                 >
                   {/* Background star (empty state) */}
                   <Star
@@ -181,16 +191,24 @@ export function StarRating({
             })}
           </div>
 
-          {/* Rating Score and Count - Inline */}
+          {/* Rating Score and Count Display - Under Stars */}
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-sm font-light whitespace-nowrap">
               {getDisplayRating()}/10
             </span>
             <span className="text-sm text-muted-foreground whitespace-nowrap">
-              ({formatRatingCount(ratingData.totalRatings)} rating{ratingData.totalRatings !== 1 ? 's' : ''})
+              ({formatRatingCount(ratingData.totalRatings)} {t('rating')}{ratingData.totalRatings !== 1})
             </span>
           </div>
         </div>
+
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            <span>{tCommon('loading')}</span>
+          </div>
+        )}
       </div>
     </div>
   )

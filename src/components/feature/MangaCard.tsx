@@ -7,6 +7,7 @@ import { Star, Eye } from 'lucide-react';
 import { FavoriteButton } from '@/components/manga/FavoriteButton';
 import { useFormat } from '@/hooks/useFormat';
 import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 interface MangaCardProps {
   id: string;
@@ -42,6 +43,17 @@ export default function MangaCard({
 }: MangaCardProps) {
   const { formatViews, formatDate } = useFormat();
   const t = useTranslations('manga');
+
+  // State để xử lý hydration mismatch
+  const [isClient, setIsClient] = useState(false);
+
+  // Hiển thị rating = 8 nếu không có rating thật (0 hoặc null/undefined)
+  const displayRating = rating && rating > 0 ? rating : 8;
+
+  // Chỉ format date sau khi component mount trên client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <div className='group'>
@@ -94,7 +106,7 @@ export default function MangaCard({
           <div className='flex items-center space-x-4 text-sm text-muted-foreground'>
             <div className='flex items-center'>
               <Star className='h-4 w-4 fill-yellow-500 text-yellow-500 mr-1' />
-              <span>{rating.toFixed(1)}</span>
+              <span>{displayRating.toFixed(1)}</span>
             </div>
             <div className='flex items-center'>
               <Eye className='h-4 w-4 mr-1' />
@@ -133,8 +145,8 @@ export default function MangaCard({
                 </div>
               )}
               {updatedAt && (
-                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis' title={formatDate(updatedAt)}>
-                  {formatDate(updatedAt)}
+                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis' title={isClient ? formatDate(updatedAt) : ''}>
+                  {isClient ? formatDate(updatedAt) : '...'}
                 </span>
               )}
               {!updatedAt && (

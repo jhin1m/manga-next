@@ -42,7 +42,7 @@ async function fetchLatestManga(page: number = 1, limit: number = 12) {
           ? comic.Chapters[0].slug
           : undefined,
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
-        rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
+        rating: comic.rating,
         views: comic.total_views || 0,
         chapterCount: comic._chapterCount || 0,
         updatedAt: comic.last_chapter_uploaded_at || undefined,

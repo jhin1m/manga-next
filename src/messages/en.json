@@ -29,6 +29,7 @@
     "latestUpdates": "Latest Updates",
     "recommendedManga": "Manga We Think You'll Love",
     "rating": "Rating",
+    "ratings": "Ratings",
     "views": "Views",
     "favorites": "Favorites",
     "status": "Status",
@@ -53,7 +54,10 @@
     "searchChapters": "Search chapters",
     "newestFirst": "Newest First",
     "oldestFirst": "Oldest First",
-    "synopsis": "Synopsis"
+    "synopsis": "Synopsis",
+    "information": "Information",
+    "showMore": "Show More",
+    "showLess": "Show Less"
   },
   "search": {
     "placeholder": "Search for your next manga...",

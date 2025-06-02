@@ -74,6 +74,9 @@ model Comic_Genres {
   Genres     Genres    @relation(fields: [genre_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([comic_id, genre_id])
+  // Optimize genre filtering and counting queries
+  @@index([genre_id], map: "idx_comic_genres_genre_id")
+  @@index([comic_id], map: "idx_comic_genres_comic_id")
 }
 
 model Comic_Publishers {
@@ -128,10 +131,18 @@ model Comics {
   Reading_Progress         Reading_Progress[]
   Ratings                  Ratings[]
 
+  // Existing indexes
   @@index([last_chapter_uploaded_at(sort: Desc)], map: "idx_comics_last_chapter_uploaded_at")
   @@index([status], map: "idx_comics_status")
   @@index([title], map: "idx_comics_title")
   @@index([search_vector], map: "idx_comics_search_vector", type: Gin)
+
+  // New optimized indexes for common query patterns
+  @@index([total_views(sort: Desc)], map: "idx_comics_total_views_desc")
+  @@index([total_favorites(sort: Desc)], map: "idx_comics_total_favorites_desc")
+  @@index([status, last_chapter_uploaded_at(sort: Desc)], map: "idx_comics_status_last_chapter")
+  @@index([status, total_views(sort: Desc)], map: "idx_comics_status_total_views")
+  @@index([created_at(sort: Desc)], map: "idx_comics_created_at_desc")
 }
 
 enum CommentStatus {
@@ -166,11 +177,18 @@ model Comments {
   CommentLikes      CommentLike[]
   CommentReports    CommentReport[]
 
+  // Existing indexes
   @@index([chapter_id, created_at(sort: Desc)], map: "idx_comments_chapter_id_created_at")
   @@index([comic_id, created_at(sort: Desc)], map: "idx_comments_comic_id_created_at")
   @@index([user_id], map: "idx_comments_user_id")
   @@index([status], map: "idx_comments_status")
   @@index([parent_comment_id], map: "idx_comments_parent_id")
+
+  // New optimized indexes for comment sorting and filtering
+  @@index([comic_id, status, created_at(sort: Desc)], map: "idx_comments_comic_status_created")
+  @@index([chapter_id, status, created_at(sort: Desc)], map: "idx_comments_chapter_status_created")
+  @@index([likes_count(sort: Desc), created_at(sort: Desc)], map: "idx_comments_likes_created")
+  @@index([status, created_at(sort: Desc)], map: "idx_comments_status_created_at")
 }
 
 /// Comment likes and dislikes tracking
@@ -234,6 +252,9 @@ model Favorites {
   Users      Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([user_id, comic_id])
+  // Optimize favorites queries with pagination
+  @@index([user_id, created_at(sort: Desc)], map: "idx_favorites_user_id_created_at")
+  @@index([comic_id, created_at(sort: Desc)], map: "idx_favorites_comic_id_created_at")
 }
 
 model Genres {
@@ -283,6 +304,9 @@ model Reading_Progress {
   Users                 Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([user_id, comic_id])
+  // Optimize reading progress queries with pagination
+  @@index([user_id, updated_at(sort: Desc)], map: "idx_reading_progress_user_updated")
+  @@index([comic_id, updated_at(sort: Desc)], map: "idx_reading_progress_comic_updated")
 }
 
 /// Manga ratings model for star rating system

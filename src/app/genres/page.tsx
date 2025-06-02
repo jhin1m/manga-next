@@ -11,33 +11,33 @@ export const metadata: Metadata = {
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-// Fetch all genres directly from database
+// Optimized: Fetch all genres with manga count in a single query
 async function fetchGenres() {
   try {
-    // Get all genres
-    const genres = await prisma.genres.findMany({
+    // Get genres with manga count using Prisma aggregation (eliminates N+1 queries)
+    const genresWithCount = await prisma.genres.findMany({
       orderBy: {
         name: 'asc'
+      },
+      include: {
+        _count: {
+          select: {
+            Comic_Genres: true
+          }
+        }
       }
     });
 
-    // For each genre, get the count of manga
-    const genresWithCount = await Promise.all(
-      genres.map(async (genre: any) => {
-        const count = await prisma.comic_Genres.count({
-          where: {
-            genre_id: genre.id
-          }
-        });
-
-        return {
-          ...genre,
-          mangaCount: count
-        };
-      })
-    );
-
-    return genresWithCount;
+    // Transform the result to match the expected format
+    return genresWithCount.map(genre => ({
+      id: genre.id,
+      name: genre.name,
+      slug: genre.slug,
+      description: genre.description,
+      created_at: genre.created_at,
+      updated_at: genre.updated_at,
+      mangaCount: genre._count.Comic_Genres
+    }));
   } catch (error) {
     console.error('Error fetching genres:', error);
     return [];

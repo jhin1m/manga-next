@@ -42,7 +42,7 @@ export default async function RootLayout({
           >
             <AuthProvider>
               <Header />
-              <main className="flex-grow container mx-auto px-4 py-6 sm:px-18 2xl:px-48">
+              <main className="flex-grow container mx-auto px-4 py-6 sm:px-14 2xl:px-48">
                 {children}
               </main>
               <Footer />

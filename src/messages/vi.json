@@ -29,6 +29,7 @@
     "latestUpdates": "Cập nhật mới nhất",
     "recommendedManga": "Truyện đề xuất cho bạn",
     "rating": "Đánh giá",
+    "ratings": "Đánh giá",
     "views": "Lượt xem",
     "favorites": "Lượt yêu thích",
     "status": "Trạng thái",
@@ -53,7 +54,10 @@
     "searchChapters": "Tìm kiếm chương",
     "newestFirst": "Mới nhất",
     "oldestFirst": "Cũ nhất",
-    "synopsis": "Tóm tắt nội dung"
+    "synopsis": "Tóm tắt nội dung",
+    "information": "Thông tin",
+    "showMore": "Xem thêm",
+    "showLess": "Thu gọn"
   },
   "search": {
     "placeholder": "Tìm kiếm truyện...",

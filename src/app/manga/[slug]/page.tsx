@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
-import Description from "@/components/manga/Description";
 import CommentSection from "@/components/feature/comments/CommentSection";
 import { MangaDetailInfo } from "@/components/manga/MangaDetailInfo";
 import { notFound } from "next/navigation";
@@ -24,21 +23,21 @@ async function getMangaBySlug(slug: string) {
         Object.values(data.manga.alternative_titles as Record<string, string>) : [],
       coverImage: data.manga.cover_image_url || 'https://placehold.co/300x450/png',
       slug: data.manga.slug,
-      author: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', ') || 'Unknown',
-      artist: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', ') || 'Unknown',
-      description: data.manga.description || 'No description available.',
+      author: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', '),
+      artist: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', '),
+      description: data.manga.description,
       genres: data.manga.Comic_Genres?.map((cg: any) => ({
         name: cg.Genres.name,
         slug: cg.Genres.slug
       })) || [],
-      status: data.manga.status || 'Unknown',
+      status: data.manga.status,
       views: data.manga.total_views || 0,
       favorites: data.manga.total_favorites || 0,
       chapterCount: 0, // Will be updated when we fetch chapters
       updatedAt: data.manga.last_chapter_uploaded_at || null,
       publishedYear: data.manga.release_date ?
-        new Date(data.manga.release_date).getFullYear() : 'Unknown',
-      serialization: data.manga.Comic_Publishers?.map((cp: any) => cp.Publishers.name).join(', ') || 'Unknown',
+        new Date(data.manga.release_date).getFullYear() : null,
+      serialization: data.manga.Comic_Publishers?.map((cp: any) => cp.Publishers.name).join(', '),
     };
   } catch (error) {
     console.error('Error fetching manga:', error);
@@ -173,14 +172,10 @@ export default async function MangaDetailPage({
       {/* Manga Information Section */}
       <MangaDetailInfo manga={manga} chapters={chapters} />
 
-      {/* Description here */}
-      <Description description={manga.description} />
-
-
       {/* Chapters and Related Manga Section - 2/3 and 1/3 layout for PC */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Chapters Section - 2/3 width on PC */}
-        <section className="lg:col-span-2">
+        <section className="lg:col-span-3">
           <MangaChapterList
             mangaSlug={manga.slug}
             chapters={chapters}

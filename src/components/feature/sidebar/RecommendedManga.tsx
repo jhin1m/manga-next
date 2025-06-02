@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, Eye, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatViews } from "@/lib/utils/format";
+import { formatViews, formatDate } from "@/lib/utils/format";
 import { mangaApi } from '@/lib/api/client';
 
 type RecommendedMangaType = {
@@ -14,11 +14,6 @@ type RecommendedMangaType = {
   status: string;
   views: number;
   genres: string[];
-  latestChapter: {
-    number: number;
-    title?: string;
-    updatedAt: string;
-  } | null;
 };
 
 // Server-side data fetching
@@ -36,9 +31,9 @@ async function fetchRecommendedManga(): Promise<RecommendedMangaType[]> {
       title: comic.title,
       slug: comic.slug,
       coverImage: comic.cover_image_url || 'https://placehold.co/100x150/png',
-      rating: comic.rating || Math.floor(Math.random() * 2) + 8, // Fallback random rating between 8-10
+      rating: comic.rating || 0,
       status: comic.status || 'Updating',
-      views: comic.total_views || Math.floor(Math.random() * 10000) + 1000,
+      views: comic.total_views || 0,
       genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || ['Action', 'Adventure'],
       latestChapter: comic.Chapters && comic.Chapters.length > 0
         ? {
@@ -106,12 +101,6 @@ export default async function RecommendedManga() {
                 )}
               </div>
             )}
-            {/* {item.latestChapter && (
-              <div className="flex items-center gap-1 text-[10px] mt-1">
-                <Clock className="w-2 h-2" />
-                <span>Ch.{item.latestChapter.number} • {formatDate(item.latestChapter.updatedAt)}</span>
-              </div>
-            )} */}
           </div>
         </div>
       ))}

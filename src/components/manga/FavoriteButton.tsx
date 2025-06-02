@@ -83,7 +83,7 @@ export function FavoriteButton({
               })}
             />
             {showText && (
-              <span className="ml-2">
+              <span className="ml-2 md:hidden">
                 {isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
               </span>
             )}

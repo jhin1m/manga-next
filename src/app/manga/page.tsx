@@ -40,7 +40,7 @@ async function fetchManga(params: {
           ? comic.Chapters[0].slug
           : undefined,
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
-        rating: 8.5, // Placeholder as it's not in the API
+        rating: comic.rating,
         views: comic.total_views || 0,
         chapterCount: comic._chapterCount || 0,
         updatedAt: comic.last_chapter_uploaded_at || undefined,
@@ -81,9 +81,9 @@ export default async function MangaPage({
   const genre = typeof genreParam === 'string' ? genreParam : undefined;
 
   const pageParam = params['page'];
-  const page = typeof pageParam === 'string' ? parseInt(pageParam, 10) : 1;
+  const page = typeof pageParam === 'string' ? parseInt(pageParam, 20) : 1;
 
-  const limit = 10; // Number of manga per page
+  const limit = 20; // Number of manga per page
 
   // Fetch manga with filters
   const results = await fetchManga({ sort, status, genre, page, limit });

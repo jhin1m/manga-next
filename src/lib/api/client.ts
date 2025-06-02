@@ -14,6 +14,7 @@ const API_CONFIG = {
   },
   defaultCacheOptions: {
     manga: { revalidate: 1800, tags: ['manga-list'] as string[] }, // 30 minutes
+    hotManga: { revalidate: 86400, tags: ['hot-manga'] as string[] }, // 24 hours (1 day)
     mangaDetail: { revalidate: 3600, tags: ['manga-detail'] as string[] }, // 1 hour
     chapters: { revalidate: 3600, tags: ['chapters'] as string[] }, // 1 hour
     chapterContent: { revalidate: 21600, tags: ['chapter-content'] as string[] }, // 6 hours
@@ -195,12 +196,17 @@ export const mangaApi = {
     page?: number;
     limit?: number;
   } = {}) => {
+    // Use special cache for hot manga (popular sort)
+    const cacheOptions = params.sort === 'popular'
+      ? API_CONFIG.defaultCacheOptions.hotManga
+      : API_CONFIG.defaultCacheOptions.manga;
+
     return apiClient(API_ENDPOINTS.manga.list, {
       params,
       next: {
-        ...API_CONFIG.defaultCacheOptions.manga,
+        ...cacheOptions,
         tags: [
-          'manga-list',
+          ...(params.sort === 'popular' ? ['hot-manga'] : ['manga-list']),
           `manga-${params.sort || 'latest'}`,
           ...(params.genre ? [`manga-genre-${params.genre}`] : []),
           ...(params.status ? [`manga-status-${params.status}`] : []),
@@ -294,7 +300,7 @@ export const revalidationApi = {
     update: async (mangaSlug: string, options?: { secret?: string }) => {
       return revalidationApi.trigger({
         mangaSlug,
-        tags: ['manga-list', 'manga-latest', 'manga-popular'],
+        tags: ['manga-list', 'manga-latest', 'manga-popular', 'hot-manga'],
         paths: ['/manga', '/', `/manga/${mangaSlug}`],
         ...options,
       });
@@ -305,7 +311,7 @@ export const revalidationApi = {
       return revalidationApi.trigger({
         mangaSlug,
         chapterId,
-        tags: ['manga-list', 'manga-latest', 'chapter-content'],
+        tags: ['manga-list', 'manga-latest', 'hot-manga', 'chapter-content'],
         paths: ['/manga', '/', `/manga/${mangaSlug}`],
         ...options,
       });
@@ -314,7 +320,7 @@ export const revalidationApi = {
     // Revalidate after manga deletion
     delete: async (mangaSlug: string, options?: { secret?: string }) => {
       return revalidationApi.trigger({
-        tags: ['manga-list', 'manga-latest', 'manga-popular', `manga-${mangaSlug}`],
+        tags: ['manga-list', 'manga-latest', 'manga-popular', 'hot-manga', `manga-${mangaSlug}`],
         paths: ['/manga', '/'],
         ...options,
       });
@@ -336,7 +342,7 @@ export const revalidationApi = {
   // Revalidate everything (use sparingly)
   all: async (options?: { secret?: string }) => {
     return revalidationApi.trigger({
-      tags: ['manga-list', 'manga-detail', 'chapter-content', 'genres', 'search'],
+      tags: ['manga-list', 'manga-detail', 'chapter-content', 'genres', 'search', 'hot-manga'],
       paths: ['/manga', '/', '/genres'],
       ...options,
     });
