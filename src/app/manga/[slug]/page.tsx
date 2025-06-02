@@ -36,7 +36,7 @@ async function getMangaBySlug(slug: string) {
       chapterCount: 0, // Will be updated when we fetch chapters
       updatedAt: data.manga.last_chapter_uploaded_at || null,
       publishedYear: data.manga.release_date ?
-        new Date(data.manga.release_date).getFullYear() : null,
+        new Date(data.manga.release_date).getFullYear() : '',
       serialization: data.manga.Comic_Publishers?.map((cp: any) => cp.Publishers.name).join(', '),
     };
   } catch (error) {
