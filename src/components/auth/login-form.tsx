@@ -24,12 +24,12 @@ import { useTranslations } from 'next-intl'
 
 // Login form schema - sẽ được tạo động với translations
 const createLoginSchema = (t: any) => z.object({
-  email: z.string().email({ message: t('invalidEmail') }),
+  emailOrUsername: z.string().min(1, { message: t('emailOrUsernameRequired') }),
   password: z.string().min(1, { message: t('passwordRequired') }),
 })
 
 type LoginFormValues = {
-  email: string
+  emailOrUsername: string
   password: string
 }
 
@@ -47,7 +47,7 @@ export function LoginForm() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      emailOrUsername: '',
       password: '',
     },
   })
@@ -58,7 +58,7 @@ export function LoginForm() {
 
     try {
       const result = await signIn('credentials', {
-        email: data.email,
+        emailOrUsername: data.emailOrUsername,
         password: data.password,
         redirect: false,
       })
@@ -90,12 +90,12 @@ export function LoginForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="email"
+            name="emailOrUsername"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('email')}</FormLabel>
+                <FormLabel>{t('emailOrUsername')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="your.email@example.com" {...field} />
+                  <Input placeholder="email@example.com or username" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import { signIn } from 'next-auth/react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -54,14 +55,33 @@ export function RegisterForm() {
     setIsLoading(true)
 
     try {
+      // Step 1: Register the user
       const response = await authApi.register({
         username: data.username,
         email: data.email,
         password: data.password,
       })
 
-      toast.success('Registration successful! Please log in.')
-      router.push('/auth/login')
+      toast.success('Registration successful! Logging you in...')
+
+      // Step 2: Automatically log in the user
+      const signInResult = await signIn('credentials', {
+        emailOrUsername: data.username, // Use username for login
+        password: data.password,
+        redirect: false,
+      })
+
+      if (signInResult?.error) {
+        // If auto-login fails, redirect to login page
+        toast.error('Registration successful, but auto-login failed. Please log in manually.')
+        router.push('/auth/login')
+        return
+      }
+
+      // Step 3: Redirect to home page on successful auto-login
+      toast.success('Welcome! You have been logged in successfully.')
+      router.push('/')
+      router.refresh()
     } catch (error) {
       console.error('Registration error:', error)
 
