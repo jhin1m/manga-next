@@ -7,6 +7,11 @@ const protectedRoutes = [
   '/profile/settings',
 ]
 
+// List of admin routes that require admin privileges
+const adminRoutes = [
+  '/admin',
+]
+
 // List of routes that should redirect to home if user is already authenticated
 const authRoutes = [
   '/auth/login',
@@ -31,8 +36,18 @@ export async function middleware(req: NextRequest) {
   }
 
   // Check for admin routes
-  if (path.startsWith('/admin') && (!isLoggedIn || token?.role !== 'admin')) {
-    return NextResponse.redirect(new URL('/', req.nextUrl.origin))
+  if (adminRoutes.some(route => path.startsWith(route))) {
+    if (!isLoggedIn) {
+      const loginUrl = new URL('/auth/login', req.nextUrl.origin)
+      loginUrl.searchParams.set('callbackUrl', req.nextUrl.pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    // Check if user has admin role (admin, moderator, editor, super_admin)
+    const adminRoles = ['admin', 'moderator', 'editor', 'super_admin']
+    if (!adminRoles.includes(token?.role)) {
+      return NextResponse.redirect(new URL('/', req.nextUrl.origin))
+    }
   }
 
   return NextResponse.next()

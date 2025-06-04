@@ -89,6 +89,80 @@ export const API_ENDPOINTS = {
   },
   // Admin endpoints
   admin: {
+    // Authentication
+    login: '/api/admin/auth/login',
+    logout: '/api/admin/auth/logout',
+    session: '/api/admin/auth/session',
+
+    // Dashboard & Analytics
+    dashboard: '/api/admin/dashboard',
+    analytics: '/api/admin/analytics',
+
+    // Manga Management
+    manga: {
+      list: '/api/admin/manga',
+      detail: (id: number) => `/api/admin/manga/${id}`,
+      create: '/api/admin/manga',
+      update: (id: number) => `/api/admin/manga/${id}`,
+      delete: (id: number) => `/api/admin/manga/${id}`,
+      bulk: '/api/admin/manga/bulk',
+      approve: (id: number) => `/api/admin/manga/${id}/approve`,
+      reject: (id: number) => `/api/admin/manga/${id}/reject`,
+    },
+
+    // Chapter Management
+    chapters: {
+      list: '/api/admin/chapters',
+      detail: (id: number) => `/api/admin/chapters/${id}`,
+      create: '/api/admin/chapters',
+      update: (id: number) => `/api/admin/chapters/${id}`,
+      delete: (id: number) => `/api/admin/chapters/${id}`,
+      bulk: '/api/admin/chapters/bulk',
+      reorder: '/api/admin/chapters/reorder',
+    },
+
+    // User Management
+    users: {
+      list: '/api/admin/users',
+      detail: (id: number) => `/api/admin/users/${id}`,
+      create: '/api/admin/users',
+      update: (id: number) => `/api/admin/users/${id}`,
+      delete: (id: number) => `/api/admin/users/${id}`,
+      bulk: '/api/admin/users/bulk',
+      ban: (id: number) => `/api/admin/users/${id}/ban`,
+      unban: (id: number) => `/api/admin/users/${id}/unban`,
+      stats: (id: number) => `/api/admin/users/${id}/stats`,
+    },
+
+    // Content Moderation (existing + enhanced)
+    comments: {
+      list: '/api/admin/comments',
+      detail: (id: number) => `/api/admin/comments/${id}`,
+      moderate: (id: number) => `/api/admin/comments/${id}`,
+      bulk: '/api/admin/comments/bulk',
+    },
+    reports: {
+      chapters: '/api/admin/chapter-reports',
+      comments: '/api/admin/comment-reports',
+      users: '/api/admin/user-reports',
+    },
+
+    // System Management
+    system: {
+      settings: '/api/admin/system/settings',
+      cache: '/api/admin/system/cache',
+      maintenance: '/api/admin/system/maintenance',
+      backup: '/api/admin/system/backup',
+    },
+
+    // File Management
+    uploads: {
+      manga: '/api/admin/uploads/manga',
+      chapters: '/api/admin/uploads/chapters',
+      avatars: '/api/admin/uploads/avatars',
+    },
+
+    // Legacy
     crawler: '/api/admin/crawler',
   },
   // Rating endpoints
@@ -388,6 +462,202 @@ export const healthApi = {
     return apiClient(API_ENDPOINTS.health, {
       cache: 'no-store', // Always fresh for health checks
     });
+  },
+};
+
+// Admin API functions
+export const adminApi = {
+  // Authentication
+  auth: {
+    login: async (credentials: { email: string; password: string; remember?: boolean }) => {
+      return apiClient(API_ENDPOINTS.admin.login, {
+        method: 'POST',
+        body: credentials,
+        cache: 'no-store',
+      });
+    },
+    logout: async () => {
+      return apiClient(API_ENDPOINTS.admin.logout, {
+        method: 'POST',
+        cache: 'no-store',
+      });
+    },
+    getSession: async () => {
+      return apiClient(API_ENDPOINTS.admin.session, {
+        cache: 'no-store',
+      });
+    },
+    refreshSession: async () => {
+      return apiClient(API_ENDPOINTS.admin.session, {
+        method: 'POST',
+        cache: 'no-store',
+      });
+    },
+  },
+
+  // Dashboard
+  dashboard: {
+    getStats: async () => {
+      return apiClient(API_ENDPOINTS.admin.dashboard, {
+        cache: 'no-store',
+      });
+    },
+  },
+
+  // Analytics
+  analytics: {
+    getData: async (params: {
+      period?: 'day' | 'week' | 'month' | 'year';
+      startDate?: string;
+      endDate?: string;
+      type?: 'views' | 'users' | 'manga' | 'chapters';
+    } = {}) => {
+      return apiClient(API_ENDPOINTS.admin.analytics, {
+        params,
+        cache: 'no-store',
+      });
+    },
+  },
+
+  // Manga Management
+  manga: {
+    getList: async (params: {
+      page?: number;
+      limit?: number;
+      sort?: string;
+      order?: 'asc' | 'desc';
+      search?: string;
+      status?: string;
+    } = {}) => {
+      return apiClient(API_ENDPOINTS.admin.manga.list, {
+        params,
+        cache: 'no-store',
+      });
+    },
+    getDetail: async (id: number) => {
+      return apiClient(API_ENDPOINTS.admin.manga.detail(id), {
+        cache: 'no-store',
+      });
+    },
+    create: async (data: any) => {
+      return apiClient(API_ENDPOINTS.admin.manga.create, {
+        method: 'POST',
+        body: data,
+        cache: 'no-store',
+      });
+    },
+    update: async (id: number, data: any) => {
+      return apiClient(API_ENDPOINTS.admin.manga.update(id), {
+        method: 'PUT',
+        body: data,
+        cache: 'no-store',
+      });
+    },
+    delete: async (id: number) => {
+      return apiClient(API_ENDPOINTS.admin.manga.delete(id), {
+        method: 'DELETE',
+        cache: 'no-store',
+      });
+    },
+    bulkOperation: async (data: {
+      action: string;
+      ids: number[];
+      reason?: string;
+      duration?: number;
+      notify?: boolean;
+    }) => {
+      return apiClient(API_ENDPOINTS.admin.manga.bulk, {
+        method: 'POST',
+        body: data,
+        cache: 'no-store',
+      });
+    },
+    approve: async (id: number) => {
+      return apiClient(API_ENDPOINTS.admin.manga.approve(id), {
+        method: 'POST',
+        cache: 'no-store',
+      });
+    },
+    reject: async (id: number) => {
+      return apiClient(API_ENDPOINTS.admin.manga.reject(id), {
+        method: 'POST',
+        cache: 'no-store',
+      });
+    },
+  },
+
+  // User Management
+  users: {
+    getList: async (params: {
+      page?: number;
+      limit?: number;
+      sort?: string;
+      order?: 'asc' | 'desc';
+      search?: string;
+      role?: string;
+      status?: string;
+    } = {}) => {
+      return apiClient(API_ENDPOINTS.admin.users.list, {
+        params,
+        cache: 'no-store',
+      });
+    },
+    getDetail: async (id: number) => {
+      return apiClient(API_ENDPOINTS.admin.users.detail(id), {
+        cache: 'no-store',
+      });
+    },
+    create: async (data: any) => {
+      return apiClient(API_ENDPOINTS.admin.users.create, {
+        method: 'POST',
+        body: data,
+        cache: 'no-store',
+      });
+    },
+    update: async (id: number, data: any) => {
+      return apiClient(API_ENDPOINTS.admin.users.update(id), {
+        method: 'PUT',
+        body: data,
+        cache: 'no-store',
+      });
+    },
+    delete: async (id: number) => {
+      return apiClient(API_ENDPOINTS.admin.users.delete(id), {
+        method: 'DELETE',
+        cache: 'no-store',
+      });
+    },
+    ban: async (id: number, data: { reason: string; duration?: number; notify?: boolean }) => {
+      return apiClient(API_ENDPOINTS.admin.users.ban(id), {
+        method: 'POST',
+        body: data,
+        cache: 'no-store',
+      });
+    },
+    unban: async (id: number) => {
+      return apiClient(API_ENDPOINTS.admin.users.unban(id), {
+        method: 'DELETE',
+        cache: 'no-store',
+      });
+    },
+    getStats: async (id: number) => {
+      return apiClient(API_ENDPOINTS.admin.users.stats(id), {
+        cache: 'no-store',
+      });
+    },
+    bulkOperation: async (data: {
+      action: string;
+      ids: number[];
+      reason?: string;
+      duration?: number;
+      notify?: boolean;
+    }) => {
+      return apiClient(API_ENDPOINTS.admin.users.bulk, {
+        method: 'POST',
+        body: data,
+        cache: 'no-store',
+      });
+    },
   },
 };
 
