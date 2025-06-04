@@ -133,7 +133,7 @@ export function StarRating({
           {/* Left Side - Rating Score and Count Display */}
           <div className="flex flex-col items-start text-left flex-shrink-0 min-w-0">
             {/* Large Rating Score */}
-            <div className="text-xl lg:text-2xl font-bold text-foreground whitespace-nowrap">
+            <div className="text-xl font-bold text-foreground whitespace-nowrap">
               {getDisplayRating()}/10
             </div>
             {/* Rating Count */}

@@ -51,7 +51,7 @@ export default function Header() {
   };
 
   return (
-    <header className={`border-b border-border/40 bg-background/95 backdrop-blur-sm top-0 z-50 ${
+    <header className={`border-b border-border/40 bg-background/40 backdrop-blur-sm top-0 z-50 ${
       shouldHeaderBeSticky ? 'sticky' : 'relative'
     }`}>
       <div className='container mx-auto px-4 py-3'>
