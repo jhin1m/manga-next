@@ -19,13 +19,35 @@ import { Loader2, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { Comment } from '@/types/comment'
 import { commentApi } from '@/lib/api/client'
+import { validateCommentContent } from '@/lib/utils/badWords'
 
 // Create schema with dynamic validation messages
 const createFormSchema = (t: any) => z.object({
   content: z.string()
     .min(1, t('form.validation.required'))
-    .max(2000, t('form.validation.maxLength', { max: 2000 }))
-    .refine(content => content.trim().length > 0, t('form.validation.whitespace')),
+    .max(500, t('form.validation.maxLength', { max: 500 }))
+    .refine(content => content.trim().length > 0, t('form.validation.whitespace'))
+    .refine(content => {
+      const validation = validateCommentContent(content)
+      if (!validation.isValid) {
+        // Get the first error for the validation message
+        const firstError = validation.errors[0]
+        if (firstError.type === 'inappropriateContent' && firstError.data?.words) {
+          throw new z.ZodError([{
+            code: 'custom',
+            message: t('form.validation.inappropriateContent', { words: firstError.data.words.join(', ') }),
+            path: ['content']
+          }])
+        } else {
+          throw new z.ZodError([{
+            code: 'custom',
+            message: t(`form.validation.${firstError.type}`),
+            path: ['content']
+          }])
+        }
+      }
+      return true
+    }, t('form.validation.inappropriateContent', { words: '' })),
 })
 
 interface CommentFormProps {
@@ -97,7 +119,7 @@ export default function CommentForm({
   }
 
   const characterCount = form.watch('content')?.length || 0
-  const maxCharacters = 2000
+  const maxCharacters = 500
 
   return (
     <Card>

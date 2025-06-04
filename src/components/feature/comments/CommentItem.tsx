@@ -71,7 +71,7 @@ export default function CommentItem({
   const t = useTranslations('comments')
 
   const isOwner = currentUserId === comment.user_id
-  const canEdit = isOwner && !isReply // Only allow editing top-level comments
+  const canEdit = isOwner && !isReply && (comment.edit_count || 0) < 1 // Only allow editing top-level comments once
   const canDelete = isOwner || isAdmin
   const canReport = currentUserId && !isOwner
 
@@ -291,7 +291,7 @@ export default function CommentItem({
                 </div>
               )}
 
-              {comment.repliesCount && comment.repliesCount > (comment.other_Comments?.length || 0) && (
+              {comment.repliesCount && comment.repliesCount > (comment.other_Comments?.length || 0) ? (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -303,7 +303,7 @@ export default function CommentItem({
                     : t('actions.showReplies', { count: comment.repliesCount - (comment.other_Comments?.length || 0) })
                   }
                 </Button>
-              )}
+              ) : null}
             </div>
           )}
         </div>

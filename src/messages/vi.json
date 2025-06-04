@@ -60,7 +60,15 @@
     "synopsis": "Tóm tắt nội dung",
     "information": "Thông tin",
     "showMore": "Xem thêm",
-    "showLess": "Thu gọn"
+    "showLess": "Thu gọn",
+    "youMayAlsoLike": "Có thể bạn cũng thích",
+    "details": "Chi tiết",
+    "authorLabel": "Tác giả:",
+    "artistLabel": "Họa sĩ:",
+    "statusLabel": "Trạng thái:",
+    "publishedLabel": "Xuất bản:",
+    "serializationLabel": "Nhà xuất bản:",
+    "updatedLabel": "Cập nhật:"
   },
   "search": {
     "placeholder": "Tìm kiếm truyện...",
@@ -99,13 +107,17 @@
     "login": "Đăng nhập",
     "register": "Đăng ký",
     "email": "Email",
+    "emailOrUsername": "Email hoặc Tên đăng nhập",
     "password": "Mật khẩu",
     "confirmPassword": "Xác nhận mật khẩu",
     "loginSuccess": "Đăng nhập thành công rồi đó!",
     "loginError": "Email hoặc mật khẩu không đúng rồi.",
     "loggingIn": "Đang đăng nhập...",
     "enterCredentials": "Vui lòng nhập thông tin đăng nhập của bạn.",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "logoutSuccess": "Đăng xuất thành công",
+    "logoutError": "Không thể đăng xuất",
+    "signingOut": "Đang đăng xuất..."
   },
   "errors": {
     "failedToLoad": "Không thể tải được rồi.",
@@ -113,7 +125,8 @@
     "somethingWentWrong": "Đã xảy ra lỗi gì đó rồi.",
     "networkError": "Lỗi mạng rồi.",
     "invalidEmail": "Vui lòng nhập địa chỉ email hợp lệ nha.",
-    "passwordRequired": "Mật khẩu là bắt buộc."
+    "passwordRequired": "Mật khẩu là bắt buộc.",
+    "emailOrUsernameRequired": "Vui lòng nhập email hoặc tên đăng nhập."
   },
   "notFound": {
     "title": "Không tìm thấy trang",
@@ -255,7 +268,11 @@
       "validation": {
         "required": "Bình luận không được để trống",
         "maxLength": "Bình luận không được vượt quá {max} ký tự",
-        "whitespace": "Bình luận không được chỉ chứa khoảng trắng"
+        "whitespace": "Bình luận không được chỉ chứa khoảng trắng",
+        "inappropriateContent": "Nội dung chứa từ ngữ không phù hợp: {words}",
+        "excessiveCaps": "Nội dung chứa quá nhiều chữ in hoa",
+        "excessiveRepetition": "Nội dung chứa quá nhiều từ lặp lại",
+        "tooManyLinks": "Nội dung chứa quá nhiều liên kết"
       },
       "characterCount": "{current}/{max}",
       "guidelines": {
@@ -420,6 +437,12 @@
       "newChapterAvailable": "Chương mới đã có sẵn!",
       "chapterReleased": "Chương {number} của \"{title}\" đã được phát hành."
     }
+  },
+  "reader": {
+    "endOfChapter": "Hết chương {number}",
+    "previousChapter": "Chương trước",
+    "nextChapter": "Chương sau",
+    "pageAlt": "Trang {number}"
   },
   "staticPages": {
     "about": {

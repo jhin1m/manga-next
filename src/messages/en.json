@@ -60,7 +60,15 @@
     "synopsis": "Synopsis",
     "information": "Information",
     "showMore": "Show More",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "youMayAlsoLike": "You May Also Like",
+    "details": "Details",
+    "authorLabel": "Author:",
+    "artistLabel": "Artist:",
+    "statusLabel": "Status:",
+    "publishedLabel": "Published:",
+    "serializationLabel": "Serialization:",
+    "updatedLabel": "Updated:"
   },
   "search": {
     "placeholder": "Search for your next manga...",
@@ -99,13 +107,17 @@
     "login": "Login",
     "register": "Register",
     "email": "Email",
+    "emailOrUsername": "Email or Username",
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "loginSuccess": "You're all logged in! Welcome back!",
     "loginError": "Hmm, looks like your email or password isn't quite right.",
     "loggingIn": "Logging you in...",
     "enterCredentials": "Please enter your details to access your account.",
-    "logout": "Logout"
+    "logout": "Sign out",
+    "logoutSuccess": "Logged out successfully",
+    "logoutError": "Failed to log out",
+    "signingOut": "Signing out..."
   },
   "errors": {
     "failedToLoad": "Couldn't load that for you.",
@@ -113,7 +125,8 @@
     "somethingWentWrong": "Something went wrong on our end.",
     "networkError": "Looks like a network hiccup.",
     "invalidEmail": "Please enter a valid email address.",
-    "passwordRequired": "Don't forget your password!"
+    "passwordRequired": "Don't forget your password!",
+    "emailOrUsernameRequired": "Please enter your email or username."
   },
   "notFound": {
     "title": "Page Not Found",
@@ -255,7 +268,11 @@
       "validation": {
         "required": "Comment cannot be empty",
         "maxLength": "Comment cannot exceed {max} characters",
-        "whitespace": "Comment cannot contain only whitespace"
+        "whitespace": "Comment cannot contain only whitespace",
+        "inappropriateContent": "Content contains inappropriate language: {words}",
+        "excessiveCaps": "Content contains too many capital letters",
+        "excessiveRepetition": "Content contains too many repeated words",
+        "tooManyLinks": "Content contains too many links"
       },
       "characterCount": "{current}/{max}",
       "guidelines": {
@@ -420,6 +437,12 @@
       "newChapterAvailable": "New Chapter Available!",
       "chapterReleased": "Chapter {number} of \"{title}\" has been released."
     }
+  },
+  "reader": {
+    "endOfChapter": "End of chapter {number}",
+    "previousChapter": "Previous Chapter",
+    "nextChapter": "Next Chapter",
+    "pageAlt": "Page {number}"
   },
   "staticPages": {
     "about": {

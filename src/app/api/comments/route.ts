@@ -10,6 +10,7 @@ import {
   COMMENT_RATE_LIMITS,
   COMMENT_VALIDATION
 } from '@/types/comment'
+import { validateCommentContent, cleanCommentContent } from '@/lib/utils/badWords'
 
 /**
  * GET /api/comments
@@ -367,8 +368,39 @@ export async function POST(request: Request) {
       )
     }
 
+    // Bad word and content validation
+    const contentValidation = validateCommentContent(validatedData.content)
+    if (!contentValidation.isValid) {
+      // Convert ValidationError to user-friendly messages
+      const errorMessages = contentValidation.errors.map(error => {
+        switch (error.type) {
+          case 'inappropriateContent':
+            return `Nội dung chứa từ ngữ không phù hợp: ${error.data?.words?.join(', ') || ''}`
+          case 'excessiveCaps':
+            return 'Nội dung chứa quá nhiều chữ in hoa'
+          case 'excessiveRepetition':
+            return 'Nội dung chứa quá nhiều từ lặp lại'
+          case 'tooManyLinks':
+            return 'Nội dung chứa quá nhiều liên kết'
+          default:
+            return 'Nội dung không phù hợp'
+        }
+      })
+
+      return NextResponse.json(
+        {
+          error: 'Nội dung không phù hợp',
+          details: errorMessages
+        },
+        { status: 400 }
+      )
+    }
+
+    // Clean the content
+    const cleanedContent = cleanCommentContent(validatedData.content)
+
     // Basic spam detection
-    const content = validatedData.content.toLowerCase()
+    const content = cleanedContent.toLowerCase()
     const hasSpamKeywords = COMMENT_VALIDATION.SPAM_KEYWORDS.some(keyword =>
       content.includes(keyword.toLowerCase())
     )
@@ -441,7 +473,7 @@ export async function POST(request: Request) {
         comic_id: validatedData.comic_id,
         chapter_id: validatedData.chapter_id,
         parent_comment_id: validatedData.parent_comment_id,
-        content: validatedData.content,
+        content: cleanedContent,
         status: hasSpamKeywords ? CommentStatus.PENDING : CommentStatus.APPROVED,
       },
       include: {

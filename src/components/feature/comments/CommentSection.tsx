@@ -59,7 +59,7 @@ export default function CommentSection({
     total: initialCommentsCount,
     currentPage: 1,
     totalPages: 1,
-    perPage: 20,
+    perPage: 10,
     hasMore: false
   })
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'most_liked'>('newest')
@@ -74,7 +74,7 @@ export default function CommentSection({
       setError(null)
 
       const params = {
-        limit: 10, // Giảm xuống 10 để test Load More
+        limit: 10,
         sort,
         view_mode: mode,
         pagination_type: paginationType,
@@ -252,43 +252,17 @@ export default function CommentSection({
       <Card>
         <CardHeader>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5" />
-              {t('title')} ({pagination.total ?? comments.length})
-            </CardTitle>
+            <div className="flex items-center justify-between sm:justify-start">
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5" />
+                {t('title')} ({pagination.total ?? comments.length})
+              </CardTitle>
 
-            {/* Sort Options */}
-            <div className="flex gap-2">
-              {/* Desktop: Show all buttons */}
-              <div className="hidden sm:flex gap-2">
-                <Button
-                  variant={sortBy === 'newest' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleSortChange('newest')}
-                >
-                  {t('sortBy.newest')}
-                </Button>
-                <Button
-                  variant={sortBy === 'oldest' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleSortChange('oldest')}
-                >
-                  {t('sortBy.oldest')}
-                </Button>
-                <Button
-                  variant={sortBy === 'most_liked' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleSortChange('most_liked')}
-                >
-                  {t('sortBy.mostLiked')}
-                </Button>
-              </div>
-
-              {/* Mobile: Show dropdown */}
+              {/* Mobile: Show dropdown inline with title */}
               <div className="sm:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="w-full">
+                    <Button variant="outline" size="sm">
                       {sortBy === 'newest' ? t('sortBy.newest') :
                        sortBy === 'oldest' ? t('sortBy.oldest') : t('sortBy.mostLiked')}
                       <ChevronDown className="ml-2 h-4 w-4" />
@@ -307,6 +281,31 @@ export default function CommentSection({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+            </div>
+
+            {/* Desktop: Show all buttons */}
+            <div className="hidden sm:flex gap-2">
+              <Button
+                variant={sortBy === 'newest' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleSortChange('newest')}
+              >
+                {t('sortBy.newest')}
+              </Button>
+              <Button
+                variant={sortBy === 'oldest' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleSortChange('oldest')}
+              >
+                {t('sortBy.oldest')}
+              </Button>
+              <Button
+                variant={sortBy === 'most_liked' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleSortChange('most_liked')}
+              >
+                {t('sortBy.mostLiked')}
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -385,7 +384,7 @@ export default function CommentSection({
           )}
 
           {/* Pagination */}
-          {paginationType === 'offset' && pagination.totalPages && pagination.totalPages > 1 && (
+          {paginationType === 'offset' && pagination.totalPages && pagination.totalPages > 1 ? (
             <div className="mt-6">
               <CommentPagination
                 currentPage={pagination.currentPage || 1}
@@ -393,10 +392,10 @@ export default function CommentSection({
                 onPageChange={handlePageChange}
               />
             </div>
-          )}
+          ) : null}
 
           {/* Load More for cursor-based pagination */}
-          {paginationType === 'cursor' && pagination.hasMore && comments.length > 0 && (
+          {paginationType === 'cursor' && pagination.hasMore && comments.length > 0 ? (
             <LoadMoreComments
               mangaId={mangaId}
               chapterId={chapterId}
@@ -406,7 +405,7 @@ export default function CommentSection({
               onCommentsLoaded={handleLoadMoreComments}
               disabled={loading}
             />
-          )}
+          ) : null}
         </CardContent>
       </Card>
     </div>

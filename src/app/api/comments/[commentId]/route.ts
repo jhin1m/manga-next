@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { commentUpdateSchema } from '@/types/comment'
+import { validateCommentContent, cleanCommentContent } from '@/lib/utils/badWords'
 
 /**
  * GET /api/comments/[commentId]
@@ -154,7 +155,7 @@ export async function PUT(
     // Check if comment exists and user owns it
     const existingComment = await prisma.comments.findUnique({
       where: { id },
-      select: { id: true, user_id: true, created_at: true }
+      select: { id: true, user_id: true, created_at: true, edit_count: true }
     })
 
     if (!existingComment) {
@@ -180,12 +181,52 @@ export async function PUT(
       )
     }
 
+    // Check edit count limit (only allow one edit)
+    if (existingComment.edit_count >= 1) {
+      return NextResponse.json(
+        { error: 'Comments can only be edited once' },
+        { status: 403 }
+      )
+    }
+
+    // Bad word and content validation
+    const contentValidation = validateCommentContent(validatedData.content)
+    if (!contentValidation.isValid) {
+      // Convert ValidationError to user-friendly messages
+      const errorMessages = contentValidation.errors.map(error => {
+        switch (error.type) {
+          case 'inappropriateContent':
+            return `Nội dung chứa từ ngữ không phù hợp: ${error.data?.words?.join(', ') || ''}`
+          case 'excessiveCaps':
+            return 'Nội dung chứa quá nhiều chữ in hoa'
+          case 'excessiveRepetition':
+            return 'Nội dung chứa quá nhiều từ lặp lại'
+          case 'tooManyLinks':
+            return 'Nội dung chứa quá nhiều liên kết'
+          default:
+            return 'Nội dung không phù hợp'
+        }
+      })
+
+      return NextResponse.json(
+        {
+          error: 'Nội dung không phù hợp',
+          details: errorMessages
+        },
+        { status: 400 }
+      )
+    }
+
+    // Clean the content
+    const cleanedContent = cleanCommentContent(validatedData.content)
+
     // Update comment
     const updatedComment = await prisma.comments.update({
       where: { id },
       data: {
-        content: validatedData.content,
+        content: cleanedContent,
         updated_at: new Date(),
+        edit_count: existingComment.edit_count + 1,
       },
       include: {
         Users: {

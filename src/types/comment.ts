@@ -19,6 +19,7 @@ export interface Comment {
   status: CommentStatus
   likes_count: number
   dislikes_count: number
+  edit_count: number
   created_at: string
   updated_at: string
 
