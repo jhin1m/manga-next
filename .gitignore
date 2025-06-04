@@ -50,3 +50,6 @@ secrets/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+public/apple-touch-icon*.png
+public/icon*.png
+public/favicon*.png
