@@ -321,7 +321,30 @@
   "sidebar": {
     "recentComments": "Bình luận gần đây",
     "readingHistory": "Lịch sử đọc",
-    "recommendedManga": "Truyện đề xuất"
+    "recommendedManga": "Truyện đề xuất",
+    "rankings": "Bảng xếp hạng",
+    "rankingsData": {
+      "daily": "Hôm nay",
+      "weekly": "Tuần này",
+      "monthly": "Tháng này",
+      "trending": "Hot",
+      "errorLoading": "Không thể tải bảng xếp hạng",
+      "noRankings": "Chưa có dữ liệu xếp hạng"
+    }
+  },
+  "viewStats": {
+    "title": "Thống kê lượt xem {type}",
+    "overview": "Tổng quan",
+    "trends": "xu hướng",
+    "totalViews": "Tổng lượt xem",
+    "dailyViews": "Lượt xem hôm nay",
+    "weeklyViews": "Lượt xem tuần này",
+    "monthlyViews": "Lượt xem tháng này",
+    "today": "hôm nay",
+    "thisWeek": "tuần này",
+    "thisMonth": "tháng này",
+    "trendsComingSoon": "Xu hướng sẽ có sớm",
+    "trendsDescription": "Biểu đồ xu hướng lượt xem sẽ hiển thị ở đây"
   },
   "chapterReport": {
     "reportIssue": "Báo cáo vấn đề",

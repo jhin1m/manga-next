@@ -10,7 +10,16 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "seed": "npx ts-node prisma/seed.ts",
-    "test:revalidation": "node scripts/test-revalidation.js"
+    "test:revalidation": "node scripts/test-revalidation.js",
+    "test:view-stats": "node scripts/test-view-statistics.js",
+    "test:rankings": "node scripts/test-manga-rankings.js",
+    "test:api-client": "node scripts/test-api-client-rankings.js",
+    "test:db-migration": "node scripts/verify-database-migration.js",
+    "view-stats": "node scripts/view-stats-aggregation.js",
+    "view-stats:comics": "node scripts/view-stats-aggregation.js comics",
+    "view-stats:chapters": "node scripts/view-stats-aggregation.js chapters",
+    "view-stats:snapshots": "node scripts/view-stats-aggregation.js snapshots",
+    "view-stats:cleanup": "node scripts/view-stats-aggregation.js cleanup"
   },
   "engines": {
     "node": ">=18.0.0",

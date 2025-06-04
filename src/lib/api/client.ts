@@ -21,6 +21,11 @@ const API_CONFIG = {
     genres: { revalidate: 86400, tags: ['genres'] as string[] }, // 24 hours
     search: { revalidate: 900, tags: ['search'] as string[] }, // 15 minutes
     ratings: { revalidate: 86400, tags: ['ratings'] as string[] }, // 24 hours (1 day)
+    rankings: {
+      daily: { revalidate: 1800, tags: ['rankings', 'rankings-daily'] as string[] }, // 30 minutes
+      weekly: { revalidate: 3600, tags: ['rankings', 'rankings-weekly'] as string[] }, // 1 hour
+      monthly: { revalidate: 7200, tags: ['rankings', 'rankings-monthly'] as string[] }, // 2 hours
+    },
   }
 } as const;
 
@@ -31,6 +36,8 @@ export const API_ENDPOINTS = {
     list: '/api/manga',
     detail: (slug: string) => `/api/manga/${slug}`,
     chapters: (slug: string) => `/api/manga/${slug}/chapters`,
+    rankings: '/api/manga/rankings',
+    view: (slug: string) => `/api/manga/${slug}/view`,
   },
   // Chapter endpoints
   chapters: {
@@ -779,6 +786,48 @@ export const ratingApi = {
   },
 };
 
+// Rankings API functions
+export const rankingsApi = {
+  // Get manga rankings by period
+  getRankings: async (params: {
+    period?: 'daily' | 'weekly' | 'monthly';
+    limit?: number;
+  } = {}) => {
+    const { period = 'weekly', limit = 10 } = params;
+
+    // Get appropriate cache options based on period
+    const cacheOptions = API_CONFIG.defaultCacheOptions.rankings[period];
+
+    return apiClient(API_ENDPOINTS.manga.rankings, {
+      params: { period, limit },
+      next: {
+        ...cacheOptions,
+        tags: ['rankings', `rankings-${period}`, 'manga-rankings'],
+      },
+    });
+  },
+
+  // Refresh rankings cache (for admin use)
+  refresh: async (options?: { secret?: string }) => {
+    return apiClient(API_ENDPOINTS.manga.rankings, {
+      method: 'POST',
+      body: options,
+      cache: 'no-store',
+    });
+  },
+};
+
+// View tracking API functions
+export const viewApi = {
+  // Track manga view
+  trackMangaView: async (slug: string) => {
+    return apiClient(API_ENDPOINTS.manga.view(slug), {
+      method: 'POST',
+      cache: 'no-store',
+    });
+  },
+};
+
 // Export types for better TypeScript support
 export type MangaListParams = Parameters<typeof mangaApi.getList>[0];
 export type ChapterListParams = Parameters<typeof mangaApi.getChapters>[1];
@@ -787,3 +836,4 @@ export type SearchParams = Parameters<typeof searchApi.searchManga>[0];
 export type CommentListParams = Parameters<typeof commentApi.getList>[0];
 export type CommentCreateParams = Parameters<typeof commentApi.create>[0];
 export type FavoritesListParams = Parameters<typeof favoritesApi.getList>[0];
+export type RankingsParams = Parameters<typeof rankingsApi.getRankings>[0];

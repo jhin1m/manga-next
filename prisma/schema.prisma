@@ -29,12 +29,12 @@ model Chapter_Views {
   Users      Users?    @relation(fields: [user_id], references: [id], onUpdate: NoAction)
 
   @@index([chapter_id, viewed_at(sort: Desc)], map: "idx_chapter_views_chapter_id_viewed_at")
+  @@index([viewed_at(sort: Desc)], map: "idx_chapter_views_viewed_at")
 }
 
 model Chapters {
   id               Int                @id @default(autoincrement())
   comic_id         Int
-  chapter_number   Float
   title            String?            @db.VarChar(255)
   slug             String             @db.VarChar(255)
   release_date     DateTime?          @default(now()) @db.Timestamptz(6)
@@ -42,13 +42,17 @@ model Chapters {
   uploader_id      Int?
   created_at       DateTime?          @default(now()) @db.Timestamptz(6)
   updated_at       DateTime?          @default(now()) @db.Timestamptz(6)
+  chapter_number   Float
+  daily_views      Int?               @default(0)
+  monthly_views    Int?               @default(0)
+  weekly_views     Int?               @default(0)
+  ChapterReports   ChapterReport[]
   Chapter_Views    Chapter_Views[]
   Comics           Comics             @relation(fields: [comic_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   Users            Users?             @relation(fields: [uploader_id], references: [id], onUpdate: NoAction)
   Comments         Comments[]
   Pages            Pages[]
   Reading_Progress Reading_Progress[]
-  ChapterReports   ChapterReport[]
 
   @@unique([comic_id, chapter_number])
   @@unique([comic_id, slug])
@@ -74,7 +78,6 @@ model Comic_Genres {
   Genres     Genres    @relation(fields: [genre_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([comic_id, genre_id])
-  // Optimize genre filtering and counting queries
   @@index([genre_id], map: "idx_comic_genres_genre_id")
   @@index([comic_id], map: "idx_comic_genres_comic_id")
 }
@@ -100,56 +103,66 @@ model Comic_Views {
   Users      Users?    @relation(fields: [user_id], references: [id], onUpdate: NoAction)
 
   @@index([comic_id, viewed_at(sort: Desc)], map: "idx_comic_views_comic_id_viewed_at")
+  @@index([viewed_at(sort: Desc)], map: "idx_comic_views_viewed_at")
+}
+
+model View_Statistics {
+  id            BigInt    @id @default(autoincrement())
+  entity_type   String    @db.VarChar(20)
+  entity_id     Int
+  date          DateTime  @db.Date
+  daily_views   Int       @default(0)
+  weekly_views  Int       @default(0)
+  monthly_views Int       @default(0)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@unique([entity_type, entity_id, date])
+  @@index([entity_type, entity_id, date(sort: Desc)], map: "idx_view_stats_entity_date")
+  @@index([date(sort: Desc)], map: "idx_view_stats_date")
 }
 
 model Comics {
-  id                       Int                @id @default(autoincrement())
-  title                    String             @db.VarChar(255)
-  slug                     String             @unique @db.VarChar(255)
+  id                       Int                      @id @default(autoincrement())
+  title                    String                   @db.VarChar(255)
+  slug                     String                   @unique @db.VarChar(255)
   alternative_titles       Json?
   description              String?
-  cover_image_url          String?            @db.VarChar(255)
-  status                   String             @default("ongoing") @db.VarChar(50)
-  release_date             DateTime?          @db.Date
-  country_of_origin        String?            @db.VarChar(100)
-  age_rating               String?            @db.VarChar(50)
-  total_views              Int?               @default(0)
-  total_favorites          Int?               @default(0)
-  last_chapter_uploaded_at DateTime?          @db.Timestamptz(6)
+  cover_image_url          String?                  @db.VarChar(255)
+  status                   String                   @default("ongoing") @db.VarChar(50)
+  release_date             DateTime?                @db.Date
+  country_of_origin        String?                  @db.VarChar(100)
+  age_rating               String?                  @db.VarChar(50)
+  total_views              Int?                     @default(0)
+  total_favorites          Int?                     @default(0)
+  last_chapter_uploaded_at DateTime?                @db.Timestamptz(6)
   uploader_id              Int?
-  created_at               DateTime?          @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime?          @default(now()) @db.Timestamptz(6)
+  created_at               DateTime?                @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime?                @default(now()) @db.Timestamptz(6)
   search_vector            Unsupported("tsvector")?
+  daily_views              Int?                     @default(0)
+  monthly_views            Int?                     @default(0)
+  weekly_views             Int?                     @default(0)
   Chapters                 Chapters[]
   Comic_Authors            Comic_Authors[]
   Comic_Genres             Comic_Genres[]
   Comic_Publishers         Comic_Publishers[]
   Comic_Views              Comic_Views[]
-  Users                    Users?             @relation(fields: [uploader_id], references: [id], onUpdate: NoAction)
+  Users                    Users?                   @relation(fields: [uploader_id], references: [id], onUpdate: NoAction)
   Comments                 Comments[]
   Favorites                Favorites[]
-  Reading_Progress         Reading_Progress[]
   Ratings                  Ratings[]
+  Reading_Progress         Reading_Progress[]
 
-  // Existing indexes
   @@index([last_chapter_uploaded_at(sort: Desc)], map: "idx_comics_last_chapter_uploaded_at")
   @@index([status], map: "idx_comics_status")
   @@index([title], map: "idx_comics_title")
   @@index([search_vector], map: "idx_comics_search_vector", type: Gin)
-
-  // New optimized indexes for common query patterns
   @@index([total_views(sort: Desc)], map: "idx_comics_total_views_desc")
   @@index([total_favorites(sort: Desc)], map: "idx_comics_total_favorites_desc")
   @@index([status, last_chapter_uploaded_at(sort: Desc)], map: "idx_comics_status_last_chapter")
   @@index([status, total_views(sort: Desc)], map: "idx_comics_status_total_views")
   @@index([created_at(sort: Desc)], map: "idx_comics_created_at_desc")
-}
-
-enum CommentStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  FLAGGED
 }
 
 /// Enhanced Comments model with moderation and engagement features
@@ -159,32 +172,25 @@ model Comments {
   comic_id          Int?
   chapter_id        Int?
   parent_comment_id Int?
-  content           String          @db.Text
-  status            CommentStatus   @default(APPROVED)
-  likes_count       Int             @default(0)
-  dislikes_count    Int             @default(0)
+  content           String
   created_at        DateTime?       @default(now()) @db.Timestamptz(6)
   updated_at        DateTime?       @default(now()) @db.Timestamptz(6)
-
-  // Relations
+  dislikes_count    Int             @default(0)
+  likes_count       Int             @default(0)
+  status            CommentStatus   @default(APPROVED)
+  CommentLikes      CommentLike[]
+  CommentReports    CommentReport[]
   Chapters          Chapters?       @relation(fields: [chapter_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   Comics            Comics?         @relation(fields: [comic_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   Comments          Comments?       @relation("CommentsToComments", fields: [parent_comment_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   other_Comments    Comments[]      @relation("CommentsToComments")
   Users             Users           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  // New relations for engagement and moderation
-  CommentLikes      CommentLike[]
-  CommentReports    CommentReport[]
-
-  // Existing indexes
   @@index([chapter_id, created_at(sort: Desc)], map: "idx_comments_chapter_id_created_at")
   @@index([comic_id, created_at(sort: Desc)], map: "idx_comments_comic_id_created_at")
   @@index([user_id], map: "idx_comments_user_id")
   @@index([status], map: "idx_comments_status")
   @@index([parent_comment_id], map: "idx_comments_parent_id")
-
-  // New optimized indexes for comment sorting and filtering
   @@index([comic_id, status, created_at(sort: Desc)], map: "idx_comments_comic_status_created")
   @@index([chapter_id, status, created_at(sort: Desc)], map: "idx_comments_chapter_status_created")
   @@index([likes_count(sort: Desc), created_at(sort: Desc)], map: "idx_comments_likes_created")
@@ -196,12 +202,10 @@ model CommentLike {
   id         Int      @id @default(autoincrement())
   user_id    Int
   comment_id Int
-  is_like    Boolean  // true for like, false for dislike
+  is_like    Boolean
   created_at DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  Users    Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  Comments Comments @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  Comments   Comments @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  Users      Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, comment_id])
   @@index([comment_id], map: "idx_comment_likes_comment_id")
@@ -210,15 +214,13 @@ model CommentLike {
 /// Comment reporting for moderation
 model CommentReport {
   id         Int      @id @default(autoincrement())
-  user_id    Int      // User who reported
-  comment_id Int      // Comment being reported
+  user_id    Int
+  comment_id Int
   reason     String   @db.VarChar(255)
-  details    String?  @db.Text
+  details    String?
   created_at DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  Users    Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  Comments Comments @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  Comments   Comments @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  Users      Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, comment_id])
   @@index([comment_id], map: "idx_comment_reports_comment_id")
@@ -227,17 +229,15 @@ model CommentReport {
 /// Chapter error reporting for content issues
 model ChapterReport {
   id         Int      @id @default(autoincrement())
-  user_id    Int      // User who reported
-  chapter_id Int      // Chapter being reported
+  user_id    Int
+  chapter_id Int
   reason     String   @db.VarChar(255)
-  details    String?  @db.Text
-  status     String   @default("pending") @db.VarChar(50) // pending, resolved, dismissed
+  details    String?
+  status     String   @default("pending") @db.VarChar(50)
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  Users    Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  Chapters Chapters @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
+  Chapters   Chapters @relation(fields: [chapter_id], references: [id], onDelete: Cascade)
+  Users      Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, chapter_id])
   @@index([chapter_id], map: "idx_chapter_reports_chapter_id")
@@ -252,7 +252,6 @@ model Favorites {
   Users      Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([user_id, comic_id])
-  // Optimize favorites queries with pagination
   @@index([user_id, created_at(sort: Desc)], map: "idx_favorites_user_id_created_at")
   @@index([comic_id, created_at(sort: Desc)], map: "idx_favorites_comic_id_created_at")
 }
@@ -304,7 +303,6 @@ model Reading_Progress {
   Users                 Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([user_id, comic_id])
-  // Optimize reading progress queries with pagination
   @@index([user_id, updated_at(sort: Desc)], map: "idx_reading_progress_user_updated")
   @@index([comic_id, updated_at(sort: Desc)], map: "idx_reading_progress_comic_updated")
 }
@@ -314,71 +312,58 @@ model Ratings {
   id         Int      @id @default(autoincrement())
   user_id    Int
   comic_id   Int
-  rating     Float    @db.Real // Supports decimal ratings (0.5 to 5.0)
+  rating     Float    @db.Real
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
+  Comics     Comics   @relation(fields: [comic_id], references: [id], onDelete: Cascade)
+  Users      Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  // Relations
-  Users  Users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  Comics Comics @relation(fields: [comic_id], references: [id], onDelete: Cascade)
-
-  // Constraints and indexes
-  @@unique([user_id, comic_id]) // Prevent duplicate ratings from same user for same manga
-  @@index([comic_id], map: "idx_ratings_comic_id") // Performance optimization for manga rating queries
-  @@index([user_id], map: "idx_ratings_user_id") // Performance optimization for user rating queries
-  @@index([rating], map: "idx_ratings_rating") // Performance optimization for rating calculations
+  @@unique([user_id, comic_id])
+  @@index([comic_id], map: "idx_ratings_comic_id")
+  @@index([user_id], map: "idx_ratings_user_id")
+  @@index([rating], map: "idx_ratings_rating")
 }
 
 model Users {
-  id               Int                @id @default(autoincrement())
-  username         String             @unique @db.VarChar(255)
-  email            String             @unique @db.VarChar(255)
-  password_hash    String             @db.VarChar(255)
-  avatar_url       String?            @db.VarChar(255)
-  role             String             @default("user") @db.VarChar(50)
-  created_at       DateTime?          @default(now()) @db.Timestamptz(6)
-  updated_at       DateTime?          @default(now()) @db.Timestamptz(6)
-  Chapter_Views    Chapter_Views[]
-  Chapters         Chapters[]
-  Comic_Views      Comic_Views[]
-  Comics           Comics[]
-  Comments         Comments[]
-  Favorites        Favorites[]
-  Reading_Progress Reading_Progress[]
-  Ratings          Ratings[]
-
-  // Comment engagement relations
-  CommentLikes     CommentLike[]
-  CommentReports   CommentReport[]
-
-  // Chapter error reporting
-  ChapterReports   ChapterReport[]
-
-  // Notification system relations
+  id                   Int                   @id @default(autoincrement())
+  username             String                @unique @db.VarChar(255)
+  email                String                @unique @db.VarChar(255)
+  password_hash        String                @db.VarChar(255)
+  avatar_url           String?               @db.VarChar(255)
+  role                 String                @default("user") @db.VarChar(50)
+  created_at           DateTime?             @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime?             @default(now()) @db.Timestamptz(6)
+  accounts             Account[]
+  ChapterReports       ChapterReport[]
+  Chapter_Views        Chapter_Views[]
+  Chapters             Chapters[]
+  Comic_Views          Comic_Views[]
+  Comics               Comics[]
+  CommentLikes         CommentLike[]
+  CommentReports       CommentReport[]
+  Comments             Comments[]
+  Favorites            Favorites[]
   NotificationSettings NotificationSettings?
+  Ratings              Ratings[]
+  Reading_Progress     Reading_Progress[]
+  sessions             Session[]
   UserNotifications    UserNotification[]
-
-  // NextAuth.js relationships
-  accounts         Account[]
-  sessions         Session[]
 }
 
-// NextAuth.js models
 model Account {
   id                String  @id @default(cuid())
   userId            Int
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -399,39 +384,40 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Notification System Models
-
 /// User notification preferences and settings
 model NotificationSettings {
-  id                    Int      @id @default(autoincrement())
-  user_id               Int      @unique
-  in_app_notifications  Boolean  @default(true)  // Enable in-app notifications
-  new_chapter_alerts    Boolean  @default(true)  // Notify when favorited manga gets new chapters
-  created_at            DateTime @default(now()) @db.Timestamptz(6)
-  updated_at            DateTime @default(now()) @db.Timestamptz(6)
-
-  // Relations
-  Users Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id                   Int      @id @default(autoincrement())
+  user_id              Int      @unique
+  in_app_notifications Boolean  @default(true)
+  new_chapter_alerts   Boolean  @default(true)
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime @default(now()) @db.Timestamptz(6)
+  Users                Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id], map: "idx_notification_settings_user_id")
 }
 
 /// Individual user notifications with read status
 model UserNotification {
-  id           Int      @id @default(autoincrement())
-  user_id      Int
-  type         String   @db.VarChar(50) // 'new_chapter', 'system', etc.
-  title        String   @db.VarChar(255)
-  message      String   @db.Text
-  data         Json?    // Additional data (comic_id, chapter_id, etc.)
-  is_read      Boolean  @default(false)
-  created_at   DateTime @default(now()) @db.Timestamptz(6)
-  read_at      DateTime? @db.Timestamptz(6)
-
-  // Relations
-  Users Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  type       String    @db.VarChar(50)
+  title      String    @db.VarChar(255)
+  message    String
+  data       Json?
+  is_read    Boolean   @default(false)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  read_at    DateTime? @db.Timestamptz(6)
+  Users      Users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id, is_read], map: "idx_user_notifications_user_read")
   @@index([user_id, created_at(sort: Desc)], map: "idx_user_notifications_user_created")
   @@index([type], map: "idx_user_notifications_type")
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
 }

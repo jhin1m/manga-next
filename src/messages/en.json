@@ -321,7 +321,30 @@
   "sidebar": {
     "recentComments": "Recent Comments",
     "readingHistory": "Reading History",
-    "recommendedManga": "Recommended Manga"
+    "recommendedManga": "Recommended Manga",
+    "rankings": "Manga Rankings",
+    "rankingsData": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "trending": "Hot",
+      "errorLoading": "Failed to load rankings",
+      "noRankings": "No rankings available"
+    }
+  },
+  "viewStats": {
+    "title": "View Statistics for {type}",
+    "overview": "Overview",
+    "trends": "Trends",
+    "totalViews": "Total Views",
+    "dailyViews": "Daily Views",
+    "weeklyViews": "Weekly Views",
+    "monthlyViews": "Monthly Views",
+    "today": "today",
+    "thisWeek": "this week",
+    "thisMonth": "this month",
+    "trendsComingSoon": "Trends coming soon",
+    "trendsDescription": "Historical view trends will be available here"
   },
   "chapterReport": {
     "reportIssue": "Report Issue",
