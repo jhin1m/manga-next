@@ -6,9 +6,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { vi, enUS } from 'date-fns/locale'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
-
 import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 import { useNotifications } from '@/hooks/useNotifications'
 import { Bell, Settings, CheckCheck, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -202,7 +200,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
               className="w-full justify-center text-xs"
             >
               <Link href="/profile?tab=notifications">
-                View All Notifications
+                {t('viewAllNotifications')}
               </Link>
             </Button>
           </div>

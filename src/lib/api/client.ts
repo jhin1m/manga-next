@@ -20,6 +20,7 @@ const API_CONFIG = {
     chapterContent: { revalidate: 21600, tags: ['chapter-content'] as string[] }, // 6 hours
     genres: { revalidate: 86400, tags: ['genres'] as string[] }, // 24 hours
     search: { revalidate: 900, tags: ['search'] as string[] }, // 15 minutes
+    ratings: { revalidate: 86400, tags: ['ratings'] as string[] }, // 24 hours (1 day)
   }
 } as const;
 
@@ -344,10 +345,22 @@ export const revalidationApi = {
     },
   },
 
+  rating: {
+    // Revalidate after rating submission/update
+    update: async (mangaSlug: string, mangaId: number, options?: { secret?: string }) => {
+      return revalidationApi.trigger({
+        mangaSlug,
+        tags: ['ratings', `ratings-${mangaId}`, 'manga-detail', `manga-${mangaSlug}`],
+        paths: [`/manga/${mangaSlug}`],
+        ...options,
+      });
+    },
+  },
+
   // Revalidate everything (use sparingly)
   all: async (options?: { secret?: string }) => {
     return revalidationApi.trigger({
-      tags: ['manga-list', 'manga-detail', 'chapter-content', 'genres', 'search', 'hot-manga'],
+      tags: ['manga-list', 'manga-detail', 'chapter-content', 'genres', 'search', 'hot-manga', 'ratings'],
       paths: ['/manga', '/', '/genres'],
       ...options,
     });
@@ -750,7 +763,10 @@ export const ratingApi = {
   // Get rating statistics for a manga
   get: async (mangaId: number) => {
     const response = await apiClient(API_ENDPOINTS.ratings.get(mangaId), {
-      cache: 'no-store',
+      next: {
+        ...API_CONFIG.defaultCacheOptions.ratings,
+        tags: ['ratings', `ratings-${mangaId}`],
+      },
     });
 
     // API returns { success: true, data: {...} } format

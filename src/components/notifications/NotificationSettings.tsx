@@ -84,7 +84,7 @@ export function NotificationSettings() {
           {t('settings')}
         </CardTitle>
         <CardDescription>
-          Manage your notification preferences and stay updated with your favorite manga.
+          {t('settingsDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -96,7 +96,7 @@ export function NotificationSettings() {
                 {t('inAppNotifications')}
               </Label>
               <p className="text-xs text-muted-foreground">
-                Receive notifications within the application
+                {t('inAppDescription')}
               </p>
             </div>
             <Switch
@@ -115,7 +115,7 @@ export function NotificationSettings() {
                 {t('newChapterAlerts')}
               </Label>
               <p className="text-xs text-muted-foreground">
-                Get notified when your favorited manga releases new chapters
+                {t('newChapterDescription')}
               </p>
             </div>
             <Switch
@@ -138,7 +138,7 @@ export function NotificationSettings() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {t('saving')}
                 </>
               ) : (
                 <>
@@ -154,13 +154,13 @@ export function NotificationSettings() {
         <div className="bg-muted/50 rounded-lg p-4 space-y-2">
           <h4 className="text-sm font-medium flex items-center gap-2">
             <Bell className="h-4 w-4" />
-            How notifications work
+            {t('howNotificationsWork')}
           </h4>
           <ul className="text-xs text-muted-foreground space-y-1">
-            <li>• You'll only receive notifications for manga you've added to favorites</li>
-            <li>• Notifications appear when new chapters are published</li>
-            <li>• You can view all notifications from the bell icon in the header</li>
-            <li>• Notifications are automatically marked as read when you click on them</li>
+            <li>• {t('notificationInfo.favoritesOnly')}</li>
+            <li>• {t('notificationInfo.newChapters')}</li>
+            <li>• {t('notificationInfo.bellIcon')}</li>
+            <li>• {t('notificationInfo.autoMarkRead')}</li>
           </ul>
         </div>
       </CardContent>

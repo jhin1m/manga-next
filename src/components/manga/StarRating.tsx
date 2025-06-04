@@ -125,86 +125,90 @@ export function StarRating({
   const displayRatingForStars = hoveredRating || (isAuthenticated ? ratingData.userRating : getDefaultRating()) || 0
 
   return (
-    <div className={cn('space-y-4', className)} ref={containerRef}>
-      {/* Enhanced Rating Display and Interaction */}
-      <div className="space-y-3">
-        {/* Interactive Star Rating */}
-        <div className="flex flex-col items-start gap-2">
-          {/* Star Rating Interface */}
-          <div
-            className="flex items-center gap-1 flex-shrink-0"
-            onMouseLeave={handleMouseLeave}
-            role="radiogroup"
-            aria-label={`${t('rating')}: ${getDisplayRating()}/10`}
-          >
-            {[1, 2, 3, 4, 5].map((starIndex) => {
-              const fillState = getStarFillState(starIndex, displayRatingForStars)
-
-              return (
-                <Button
-                  key={`star-${starIndex}`}
-                  variant="ghost"
-                  size="sm"
-                  className="relative h-8 w-8 p-0 hover:bg-transparent group"
-                  disabled={isLoading}
-                  onClick={(e) => handleStarClickEvent(e, starIndex)}
-                  onMouseMove={(e) => handleStarHover(e, starIndex)}
-                  aria-label={`Rate ${starIndex} star${starIndex !== 1}`}
-                >
-                  {/* Background star (empty state) */}
-                  <Star
-                    className={cn(
-                      'absolute h-5 w-5 transition-all duration-150',
-                      'text-muted-foreground group-hover:text-yellow-400',
-                      isLoading && 'opacity-50'
-                    )}
-                  />
-
-                  {/* Half-filled star */}
-                  {fillState === 'half' && (
-                    <Star
-                      className={cn(
-                        'absolute h-5 w-5 transition-all duration-150',
-                        'fill-yellow-500 text-yellow-500',
-                        hoveredRating > 0 && 'scale-110',
-                        isLoading && 'opacity-50'
-                      )}
-                      style={{
-                        clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)'
-                      }}
-                    />
-                  )}
-
-                  {/* Fully filled star */}
-                  {fillState === 'full' && (
-                    <Star
-                      className={cn(
-                        'absolute h-5 w-5 transition-all duration-150',
-                        'fill-yellow-500 text-yellow-500',
-                        hoveredRating > 0 && 'scale-110',
-                        isLoading && 'opacity-50'
-                      )}
-                    />
-                  )}
-                </Button>
-              )
-            })}
+    <div className={cn('w-full', className)} ref={containerRef}>
+      {/* Enhanced Rating Display with Border/Frame */}
+      <div className="w-full border border-border rounded-lg bg-card/30 p-4 shadow-sm">
+        {/* Full Width Layout: Rating Info Left, Stars Right */}
+        <div className="flex items-center justify-between w-full">
+          {/* Left Side - Rating Score and Count Display */}
+          <div className="flex flex-col items-start text-left flex-shrink-0 min-w-0">
+            {/* Large Rating Score */}
+            <div className="text-xl lg:text-2xl font-bold text-foreground whitespace-nowrap">
+              {getDisplayRating()}/10
+            </div>
+            {/* Rating Count */}
+            <div className="text-xs lg:text-sm text-muted-foreground whitespace-nowrap">
+              {formatRatingCount(ratingData.totalRatings)} {t('rating')}{ratingData.totalRatings !== 1}
+            </div>
           </div>
 
-          {/* Rating Score and Count Display - Under Stars */}
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="text-sm font-light whitespace-nowrap">
-              {getDisplayRating()}/10
-            </span>
-            <span className="text-sm text-muted-foreground whitespace-nowrap">
-              ({formatRatingCount(ratingData.totalRatings)} {t('rating')}{ratingData.totalRatings !== 1})
-            </span>
+          {/* Right Side - Interactive Star Rating */}
+          <div className="flex items-center justify-end flex-shrink-0 overflow-hidden">
+            <div
+              className="flex items-center"
+              onMouseLeave={handleMouseLeave}
+              role="radiogroup"
+              aria-label={`${t('rating')}: ${getDisplayRating()}/10`}
+            >
+              {[1, 2, 3, 4, 5].map((starIndex) => {
+                const fillState = getStarFillState(starIndex, displayRatingForStars)
+
+                return (
+                  <Button
+                    key={`star-${starIndex}`}
+                    variant="ghost"
+                    size="sm"
+                    className="relative h-7 w-7 lg:h-8 lg:w-8 xl:h-10 xl:w-10 p-0 hover:bg-transparent group flex-shrink-0 rounded-none"
+                    disabled={isLoading}
+                    onClick={(e) => handleStarClickEvent(e, starIndex)}
+                    onMouseMove={(e) => handleStarHover(e, starIndex)}
+                    aria-label={`Rate ${starIndex} star${starIndex !== 1}`}
+                  >
+                    {/* Background star (empty state) */}
+                    <Star
+                      className={cn(
+                        'absolute h-5 w-5 lg:h-6 lg:w-6 xl:h-7 xl:w-7 transition-all duration-150',
+                        'text-muted-foreground group-hover:text-yellow-400',
+                        isLoading && 'opacity-50'
+                      )}
+                    />
+
+                    {/* Half-filled star */}
+                    {fillState === 'half' && (
+                      <Star
+                        className={cn(
+                          'absolute h-5 w-5 lg:h-6 lg:w-6 xl:h-7 xl:w-7 transition-all duration-150',
+                          'fill-yellow-500 text-yellow-500',
+                          hoveredRating > 0 && 'scale-110',
+                          isLoading && 'opacity-50'
+                        )}
+                        style={{
+                          clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)'
+                        }}
+                      />
+                    )}
+
+                    {/* Fully filled star */}
+                    {fillState === 'full' && (
+                      <Star
+                        className={cn(
+                          'absolute h-5 w-5 lg:h-6 lg:w-6 xl:h-7 xl:w-7 transition-all duration-150',
+                          'fill-yellow-500 text-yellow-500',
+                          hoveredRating > 0 && 'scale-110',
+                          isLoading && 'opacity-50'
+                        )}
+                      />
+                    )}
+                  </Button>
+                )
+              })}
+            </div>
           </div>
         </div>
 
         {/* Loading indicator */}
         {isLoading && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-3 pt-3 border-t border-border">
             <div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
             <span>{tCommon('loading')}</span>
           </div>

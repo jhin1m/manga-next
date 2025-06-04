@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { useNotifications } from '@/hooks/useNotifications'
-import { NotificationPanel } from './NotificationPanel'
+import { NotificationPanel } from '@/components/notifications/NotificationPanel'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 

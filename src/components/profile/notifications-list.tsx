@@ -127,7 +127,7 @@ export default function NotificationsList() {
             )}
           </h2>
           <p className="text-muted-foreground">
-            Manage your notifications and stay updated with your favorite manga.
+            {t('settingsDescription')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -138,7 +138,7 @@ export default function NotificationsList() {
             disabled={isLoading}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+            {t('refresh')}
           </Button>
           {unreadCount > 0 && (
             <Button
@@ -157,7 +157,7 @@ export default function NotificationsList() {
           >
             <Link href="/profile/settings">
               <Settings className="h-4 w-4 mr-2" />
-              Settings
+              {t('settingsButton')}
             </Link>
           </Button>
         </div>
@@ -169,7 +169,7 @@ export default function NotificationsList() {
       {isLoading && notifications.length === 0 ? (
         <div className="flex items-center justify-center py-8">
           <RefreshCw className="h-6 w-6 animate-spin mr-2" />
-          <span>Loading notifications...</span>
+          <span>{t('loadingNotifications')}</span>
         </div>
       ) : notifications.length === 0 ? (
         <Card>
@@ -178,11 +178,11 @@ export default function NotificationsList() {
               <Bell className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <h3 className="text-lg font-medium mb-2">{t('noNotifications')}</h3>
               <p className="text-muted-foreground mb-4">
-                You'll receive notifications here when your favorited manga get new chapters.
+                {t('noNotificationsDescription')}
               </p>
               <Button asChild variant="outline">
                 <Link href="/manga">
-                  Browse Manga
+                  {t('browseManga')}
                 </Link>
               </Button>
             </div>
@@ -265,10 +265,10 @@ export default function NotificationsList() {
                 {isLoadingMore ? (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Loading...
+                    {t('loading')}
                   </>
                 ) : (
-                  'Load More'
+                  t('loadMore')
                 )}
               </Button>
             </div>
@@ -277,7 +277,10 @@ export default function NotificationsList() {
           {/* Pagination Info */}
           {pagination && (
             <div className="text-center text-sm text-muted-foreground pt-4">
-              Showing {notifications.length} of {pagination.total} notifications
+              {t('showingNotifications', {
+                count: notifications.length,
+                total: pagination.total
+              })}
             </div>
           )}
         </div>

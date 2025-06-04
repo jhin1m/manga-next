@@ -17,16 +17,19 @@
     "latest": "Mới nhất",
     "search": "Tìm kiếm",
     "searchManga": "Tìm truyện gì nè?",
-    "profile": "Hồ sơ của bạn",
-    "myFavorites": "Truyện yêu thích của bạn",
+    "profile": "Trang cá nhân",
+    "myFavorites": "Tủ truyện",
+    "history": "Lịch sử đọc",
+    "notifications": "Thông báo",
+    "settings": "Cài đặt",
     "genres": "Thể loại",
     "viewAllGenres": "Xem tất cả thể loại",
     "loading": "Đang tải"
   },
   "manga": {
     "hotManga": "Truyện Hot",
-    "latestManga": "Truyện mới nhất",
-    "latestUpdates": "Cập nhật mới nhất",
+    "latestManga": "Truyện mới đăng",
+    "latestUpdates": "Truyện mới cập nhật",
     "recommendedManga": "Truyện đề xuất cho bạn",
     "rating": "Đánh giá",
     "ratings": "Đánh giá",
@@ -86,10 +89,10 @@
       "hiatus": "Tạm dừng"
     },
     "sortOptions": {
-      "latest": "Cập nhật mới nhất",
+      "latest": "Mới cập nhật",
       "newest": "Mới thêm",
-      "popular": "Phổ biến nhất",
-      "rating": "Đánh giá cao nhất"
+      "popular": "Phổ biến",
+      "rating": "Đánh giá cao"
     }
   },
   "auth": {
@@ -101,7 +104,8 @@
     "loginSuccess": "Đăng nhập thành công rồi đó!",
     "loginError": "Email hoặc mật khẩu không đúng rồi.",
     "loggingIn": "Đang đăng nhập...",
-    "enterCredentials": "Vui lòng nhập thông tin đăng nhập của bạn."
+    "enterCredentials": "Vui lòng nhập thông tin đăng nhập của bạn.",
+    "logout": "Đăng xuất"
   },
   "errors": {
     "failedToLoad": "Không thể tải được rồi.",
@@ -139,8 +143,8 @@
     "navigation": {
       "title": "Điều hướng",
       "browse": "Duyệt",
-      "popular": "Phổ biến",
-      "latest": "Mới nhất",
+      "popular": "Truyện Hot",
+      "latest": "Truyện mới",
       "search": "Tìm kiếm",
       "genres": "Thể loại"
     },
@@ -365,6 +369,26 @@
     "failedToLoad": "Không thể tải thông báo",
     "failedToUpdate": "Không thể cập nhật cài đặt",
     "loginRequired": "Vui lòng đăng nhập để xem thông báo",
+    "viewAllNotifications": "Xem tất cả thông báo",
+    "saving": "Đang lưu...",
+    "howNotificationsWork": "Cách thức hoạt động của thông báo",
+    "notificationInfo": {
+      "favoritesOnly": "Bạn chỉ nhận thông báo cho những truyện đã thêm vào yêu thích",
+      "newChapters": "Thông báo xuất hiện khi có chương mới được phát hành",
+      "bellIcon": "Bạn có thể xem tất cả thông báo từ biểu tượng chuông ở header",
+      "autoMarkRead": "Thông báo sẽ tự động được đánh dấu đã đọc khi bạn click vào"
+    },
+    "settingsDescription": "Quản lý tùy chọn thông báo và cập nhật với những truyện yêu thích của bạn.",
+    "inAppDescription": "Nhận thông báo trong ứng dụng",
+    "newChapterDescription": "Nhận thông báo khi truyện yêu thích có chương mới",
+    "refresh": "Làm mới",
+    "settingsButton": "Cài đặt",
+    "loadingNotifications": "Đang tải thông báo...",
+    "noNotificationsDescription": "Bạn sẽ nhận thông báo ở đây khi truyện yêu thích có chương mới.",
+    "browseManga": "Duyệt truyện",
+    "loading": "Đang tải...",
+    "loadMore": "Tải thêm",
+    "showingNotifications": "Hiển thị {count} trong tổng số {total} thông báo",
     "types": {
       "new_chapter": "Chương mới",
       "system": "Hệ thống"
@@ -372,6 +396,167 @@
     "messages": {
       "newChapterAvailable": "Chương mới đã có sẵn!",
       "chapterReleased": "Chương {number} của \"{title}\" đã được phát hành."
+    }
+  },
+  "staticPages": {
+    "about": {
+      "title": "Về chúng tôi",
+      "subtitle": "Tìm hiểu thêm về Manga Next",
+      "mission": {
+        "title": "Sứ mệnh của chúng tôi",
+        "content": "Tại Manga Next, chúng tôi đam mê mang đến trải nghiệm đọc manga tốt nhất cho các fan trên toàn thế giới. Sứ mệnh của chúng tôi là cung cấp một nền tảng toàn diện, thân thiện với người dùng, nơi những người đam mê manga có thể khám phá, đọc và thưởng thức các bộ truyện yêu thích của họ."
+      },
+      "features": {
+        "title": "Những gì chúng tôi cung cấp",
+        "items": [
+          "Thư viện manga rộng lớn với hàng nghìn đầu truyện",
+          "Cập nhật thường xuyên với những chương mới nhất",
+          "Giao diện đọc truyện thân thiện với người dùng",
+          "Đề xuất cá nhân hóa",
+          "Tính năng cộng đồng và thảo luận",
+          "Hỗ trợ đa ngôn ngữ"
+        ]
+      },
+      "team": {
+        "title": "Đội ngũ của chúng tôi",
+        "content": "Chúng tôi là một đội ngũ tận tâm gồm những người yêu manga, nhà phát triển và nhà thiết kế cùng nhau tạo ra nền tảng đọc manga tuyệt vời nhất."
+      }
+    },
+    "help": {
+      "title": "Trợ giúp & Hỗ trợ",
+      "subtitle": "Tìm câu trả lời cho các câu hỏi thường gặp",
+      "faq": {
+        "title": "Câu hỏi thường gặp",
+        "items": [
+          {
+            "question": "Làm thế nào để tạo tài khoản?",
+            "answer": "Nhấp vào nút 'Đăng nhập' ở header và chọn 'Đăng ký' để tạo tài khoản mới."
+          },
+          {
+            "question": "Làm thế nào để thêm manga vào yêu thích?",
+            "answer": "Truy cập bất kỳ trang manga nào và nhấp vào biểu tượng trái tim để thêm vào danh sách yêu thích của bạn."
+          },
+          {
+            "question": "Làm thế nào để báo cáo vấn đề với chương truyện?",
+            "answer": "Sử dụng nút báo cáo trên bất kỳ trang chương nào để thông báo cho chúng tôi về các vấn đề như thiếu trang hoặc nội dung không chính xác."
+          },
+          {
+            "question": "Tôi có thể đọc manga offline không?",
+            "answer": "Hiện tại, nền tảng của chúng tôi yêu cầu kết nối internet để đọc manga."
+          }
+        ]
+      },
+      "contact": {
+        "title": "Vẫn cần trợ giúp?",
+        "content": "Nếu bạn không thể tìm thấy câu trả lời mà bạn đang tìm kiếm, vui lòng liên hệ với đội ngũ hỗ trợ của chúng tôi."
+      }
+    },
+    "privacy": {
+      "title": "Chính sách bảo mật",
+      "subtitle": "Cách chúng tôi bảo vệ thông tin của bạn",
+      "lastUpdated": "Cập nhật lần cuối: {date}",
+      "sections": [
+        {
+          "title": "Thông tin chúng tôi thu thập",
+          "content": "Chúng tôi thu thập thông tin bạn cung cấp trực tiếp cho chúng tôi, chẳng hạn như khi bạn tạo tài khoản, cập nhật hồ sơ hoặc liên hệ với chúng tôi để được hỗ trợ."
+        },
+        {
+          "title": "Cách chúng tôi sử dụng thông tin của bạn",
+          "content": "Chúng tôi sử dụng thông tin thu thập được để cung cấp, duy trì và cải thiện dịch vụ của mình, xử lý giao dịch và giao tiếp với bạn."
+        },
+        {
+          "title": "Chia sẻ thông tin",
+          "content": "Chúng tôi không bán, trao đổi hoặc chuyển giao thông tin cá nhân của bạn cho bên thứ ba mà không có sự đồng ý của bạn, trừ khi được mô tả trong chính sách này."
+        },
+        {
+          "title": "Bảo mật dữ liệu",
+          "content": "Chúng tôi thực hiện các biện pháp bảo mật thích hợp để bảo vệ thông tin cá nhân của bạn khỏi việc truy cập, thay đổi, tiết lộ hoặc phá hủy trái phép."
+        },
+        {
+          "title": "Quyền của bạn",
+          "content": "Bạn có quyền truy cập, cập nhật hoặc xóa thông tin cá nhân của mình. Bạn có thể quản lý cài đặt tài khoản hoặc liên hệ với chúng tôi để được hỗ trợ."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Điều khoản dịch vụ",
+      "subtitle": "Các điều khoản và điều kiện sử dụng dịch vụ của chúng tôi",
+      "lastUpdated": "Cập nhật lần cuối: {date}",
+      "sections": [
+        {
+          "title": "Chấp nhận điều khoản",
+          "content": "Bằng việc truy cập và sử dụng trang web này, bạn chấp nhận và đồng ý bị ràng buộc bởi các điều khoản và điều kiện của thỏa thuận này."
+        },
+        {
+          "title": "Giấy phép sử dụng",
+          "content": "Được phép tạm thời tải xuống một bản sao tài liệu trên trang web của Manga Next chỉ để xem cá nhân, phi thương mại tạm thời."
+        },
+        {
+          "title": "Tuyên bố từ chối trách nhiệm",
+          "content": "Các tài liệu trên trang web của Manga Next được cung cấp trên cơ sở 'như hiện tại'. Manga Next không đưa ra bất kỳ bảo đảm nào, rõ ràng hoặc ngụ ý."
+        },
+        {
+          "title": "Giới hạn",
+          "content": "Trong mọi trường hợp, Manga Next hoặc các nhà cung cấp của nó sẽ không chịu trách nhiệm về bất kỳ thiệt hại nào phát sinh từ việc sử dụng hoặc không thể sử dụng tài liệu trên trang web này."
+        },
+        {
+          "title": "Hành vi người dùng",
+          "content": "Người dùng không được sử dụng dịch vụ cho bất kỳ mục đích bất hợp pháp nào hoặc theo bất kỳ cách nào có thể làm hỏng, vô hiệu hóa hoặc làm suy giảm dịch vụ."
+        }
+      ]
+    },
+    "dmca": {
+      "title": "Thông báo DMCA",
+      "subtitle": "Tuân thủ Đạo luật Bản quyền Thiên niên kỷ Kỹ thuật số",
+      "sections": [
+        {
+          "title": "Chính sách bản quyền",
+          "content": "Manga Next tôn trọng quyền sở hữu trí tuệ của người khác và mong đợi người dùng cũng làm như vậy. Chúng tôi phản hồi các thông báo về cáo buộc vi phạm bản quyền tuân thủ Đạo luật Bản quyền Thiên niên kỷ Kỹ thuật số."
+        },
+        {
+          "title": "Nộp thông báo DMCA",
+          "content": "Nếu bạn tin rằng tác phẩm có bản quyền của bạn đã được sao chép theo cách cấu thành vi phạm bản quyền, vui lòng cung cấp cho đại lý được chỉ định của chúng tôi thông tin sau:"
+        },
+        {
+          "title": "Thông tin bắt buộc",
+          "items": [
+            "Chữ ký vật lý hoặc điện tử của chủ sở hữu bản quyền",
+            "Xác định tác phẩm có bản quyền được cho là đã bị vi phạm",
+            "Xác định tài liệu được cho là vi phạm",
+            "Thông tin đủ hợp lý để chúng tôi liên hệ với bạn",
+            "Tuyên bố rằng bạn tin tưởng một cách thiện chí rằng việc sử dụng tài liệu không được ủy quyền",
+            "Tuyên bố rằng thông tin trong thông báo là chính xác"
+          ]
+        },
+        {
+          "title": "Thông tin liên hệ",
+          "content": "Vui lòng gửi thông báo DMCA đến đại lý được chỉ định của chúng tôi thông qua biểu mẫu liên hệ hoặc email được cung cấp trên trang liên hệ của chúng tôi."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Liên hệ với chúng tôi",
+      "subtitle": "Liên lạc với đội ngũ của chúng tôi",
+      "form": {
+        "name": "Tên",
+        "email": "Email",
+        "subject": "Chủ đề",
+        "message": "Tin nhắn",
+        "send": "Gửi tin nhắn",
+        "sending": "Đang gửi...",
+        "success": "Tin nhắn đã được gửi thành công!",
+        "error": "Không thể gửi tin nhắn. Vui lòng thử lại."
+      },
+      "info": {
+        "title": "Các cách khác để liên hệ với chúng tôi",
+        "response": "Chúng tôi thường phản hồi trong vòng 24-48 giờ.",
+        "business": "Đối với các yêu cầu kinh doanh, vui lòng bao gồm thông tin chi tiết về yêu cầu của bạn."
+      }
+    },
+    "common": {
+      "backToHome": "Về trang chủ",
+      "readMore": "Đọc thêm",
+      "readLess": "Thu gọn"
     }
   }
 }

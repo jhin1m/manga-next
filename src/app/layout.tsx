@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fira_Sans } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -12,11 +12,12 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { seoConfig } from "@/config/seo.config";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { MainContent } from "@/components/layout/MainContent";
 
-const firaSans = Fira_Sans({
-  variable: "--font-fira-sans",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
-  weight: ["300", "400"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = constructMetadata();
@@ -31,7 +32,7 @@ export default async function RootLayout({
   return (
     <html lang={seoConfig.site.language} suppressHydrationWarning className="dark">
       <body
-        className={`${firaSans.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
+        className={`${nunito.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
@@ -42,9 +43,9 @@ export default async function RootLayout({
           >
             <AuthProvider>
               <Header />
-              <main className="flex-grow container mx-auto px-4 py-6 sm:px-14 2xl:px-48">
+              <MainContent>
                 {children}
-              </main>
+              </MainContent>
               <Footer />
               <Toaster />
 

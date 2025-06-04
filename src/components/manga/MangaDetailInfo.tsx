@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Eye, BookOpen, Heart, ChevronDown, ChevronUp } from "lucide-react";
 import { FavoriteButton } from "@/components/manga/FavoriteButton";
@@ -47,34 +48,44 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
 
   return (
-    <section className="relative">
+    <section className="relative overflow-hidden">
       {/* Background Image with Blur Effect */}
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src={manga.coverImage}
-          alt=""
-          fill
-          className="object-cover blur-xl scale-110 opacity-15 grayscale"
-          priority
-        />
-
+      <div className="absolute inset-0 z-0">
+        <div className="relative w-full h-full">
+          <Image
+            src={manga.coverImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover scale-110"
+            priority
+          />
+          {/* Overlay gradients for better readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/95" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
+          <div className="absolute inset-0 backdrop-blur-sm" />
+        </div>
       </div>
 
-      {/* Responsive Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 relative z-10">
+      <Card className="relative z-10 bg-card/80 backdrop-blur-md border-border/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:bg-card/85">
+        <CardContent className="p-4 sm:p-6 lg:p-8">
+          {/* Responsive Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 relative z-10">
         {/* Left Column - Cover + Title + Actions */}
         <div className="col-span-1 lg:col-span-3">
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
             {/* Cover Image */}
-            <div className="relative aspect-[2/3] w-40 xs:w-48 sm:w-56 lg:w-64 mx-auto sm:mx-0 flex-shrink-0 overflow-hidden rounded-lg shadow-lg">
+            <div className="group relative aspect-[2/3] w-40 xs:w-48 sm:w-56 lg:w-64 mx-auto sm:mx-0 flex-shrink-0 overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 ring-1 ring-border/20 hover:ring-primary/30">
               <Image
                 src={manga.coverImage}
                 alt={manga.title}
                 fill
                 sizes="(max-width: 480px) 160px, (max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
-                className="object-cover"
+                className="object-cover transition-transform duration-300 group-hover:scale-110"
                 priority
               />
+              {/* Subtle overlay for depth */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             {/* Title + Action Buttons */}
             <div className="flex-1 flex flex-col text-center sm:text-left space-y-3 sm:space-y-4">
@@ -85,11 +96,11 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
 
               {/* Title Section */}
               <div>
-                <h1 className="text-xl xs:text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
+                <h1 className="text-xl xs:text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight line-clamp-2">
                   {manga.title}
                 </h1>
                 {manga.alternativeTitles && manga.alternativeTitles.length > 0 && (
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2">
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 max-h-[2.5rem] xs:max-h-[3rem] sm:max-h-[3.5rem] lg:max-h-[4rem] overflow-y-auto scrollbar-hidden">
                     {manga.alternativeTitles.join("; ")}
                   </p>
                 )}
@@ -291,17 +302,17 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
 
               {/* Star Rating */}
               <div className="flex justify-center lg:justify-start py-1">
-                <div className="border border-border rounded-lg p-3 bg-card/50 backdrop-blur-sm">
                   <StarRating
                     mangaId={manga.id}
                     mangaSlug={manga.slug}
                   />
-                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }

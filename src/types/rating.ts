@@ -69,3 +69,17 @@ export interface RatingErrorResponse {
   error: string
   details?: string
 }
+
+// Rate limiting constants for ratings
+export const RATING_RATE_LIMITS = {
+  MAX_RATINGS_PER_HOUR: 20, // Maximum ratings per user per hour
+  MAX_RATINGS_PER_DAY: 100, // Maximum ratings per user per day
+  MIN_TIME_BETWEEN_RATINGS: 10, // Minimum seconds between ratings for same manga
+} as const
+
+// Rating validation constants
+export const RATING_VALIDATION = {
+  MIN_RATING: 0.5,
+  MAX_RATING: 5.0,
+  RATING_INCREMENT: 0.5,
+} as const
