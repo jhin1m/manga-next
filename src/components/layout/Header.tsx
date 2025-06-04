@@ -25,6 +25,7 @@ import { useTranslations } from 'next-intl';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useRouteDetection } from '@/hooks/useRouteDetection';
 import { toast } from 'sonner';
+import { seoConfig } from '@/config/seo.config'
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -57,7 +58,7 @@ export default function Header() {
       <div className='container mx-auto px-4 py-3'>
         <div className='flex justify-between items-center sm:px-14 2xl:px-21'>
           <Link href='/' className='text-xl font-bold'>
-            Manga Next
+            {seoConfig.site.name}
           </Link>
 
           {/* Desktop Navigation */}

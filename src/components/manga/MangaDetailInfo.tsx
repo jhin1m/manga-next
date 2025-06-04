@@ -132,15 +132,15 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
                 <div className="flex items-center gap-4 lg:gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <Eye className="h-4 w-4 text-muted-foreground" />
-                    <span>{formatViews(manga.views)} views</span>
+                    <span>{formatViews(manga.views)} {t('views')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-4 w-4 text-muted-foreground" />
-                    <span>{manga.chapterCount} chapters</span>
+                    <span>{manga.chapterCount} {t('chapters')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart className="h-4 w-4 text-muted-foreground" />
-                    <span>{formatViews(manga.favorites)} favorites</span>
+                    <span>{formatViews(manga.favorites)} {t('favorites')}</span>
                   </div>
                 </div>
               </div>
@@ -209,7 +209,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
                 onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
                 className="flex items-center justify-center gap-2 w-full py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                <span>Details</span>
+                <span>{t('details')}</span>
                 {isMetadataExpanded ? (
                   <ChevronUp className="h-4 w-4" />
                 ) : (
@@ -262,37 +262,37 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
               <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-center lg:text-left">
                 {manga.author && (
                   <div>
-                    <span className="text-muted-foreground">Author:</span>{" "}
+                    <span className="text-muted-foreground">{t('authorLabel')} </span>
                     <span className="font-medium">{manga.author}</span>
                   </div>
                 )}
                 {manga.artist && (
                   <div>
-                    <span className="text-muted-foreground">Artist:</span>{" "}
+                    <span className="text-muted-foreground">{t('artistLabel')} </span>
                     <span className="font-medium">{manga.artist}</span>
                   </div>
                 )}
                 {manga.status && (
                   <div>
-                    <span className="text-muted-foreground">Status:</span>{" "}
+                    <span className="text-muted-foreground">{t('statusLabel')} </span>
                     <span className="font-medium">{manga.status}</span>
                   </div>
                 )}
                 {manga.publishedYear && (
                   <div>
-                    <span className="text-muted-foreground">Published:</span>{" "}
+                    <span className="text-muted-foreground">{t('publishedLabel')} </span>
                     <span className="font-medium">{manga.publishedYear}</span>
                   </div>
                 )}
                 {manga.serialization && (
                   <div>
-                    <span className="text-muted-foreground">Serialization:</span>{" "}
+                    <span className="text-muted-foreground">{t('serializationLabel')} </span>
                     <span className="font-medium">{manga.serialization}</span>
                   </div>
                 )}
                 {manga.updatedAt && (
                   <div>
-                    <span className="text-muted-foreground">Updated:</span>{" "}
+                    <span className="text-muted-foreground">{t('updatedLabel')} </span>
                     <span className="font-medium">
                       {formatDate(manga.updatedAt)}
                     </span>

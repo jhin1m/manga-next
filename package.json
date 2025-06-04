@@ -10,6 +10,7 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "seed": "npx ts-node prisma/seed.ts",
+    "generate:icons": "node scripts/generate-icons.js",
     "test:revalidation": "node scripts/test-revalidation.js",
     "test:view-stats": "node scripts/test-view-statistics.js",
     "test:rankings": "node scripts/test-manga-rankings.js",
@@ -73,6 +74,7 @@
     "sharp": "^0.34.1",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",
+    "to-ico": "1.1.5",
     "zod": "^3.25.23"
   },
   "devDependencies": {
