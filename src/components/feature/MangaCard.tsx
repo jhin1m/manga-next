@@ -68,7 +68,7 @@ export default function MangaCard({
             {/* Trạng thái manga ở góc trái trên ảnh bìa */}
             {status && (
               <div className='absolute top-0 left-0 bg-primary text-primary-foreground text-xs py-1 px-2 rounded-br'>
-                {status}
+                {status === 'ongoing' ? t('ongoing') : t('completed')}
               </div>
             )}
 

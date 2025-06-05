@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Star, Eye, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -66,12 +65,7 @@ export default async function RecommendedManga() {
       {manga.map((item: RecommendedMangaType) => (
         <div key={item.id} className="flex gap-3">
           <div className="relative h-16 w-12 rounded-md overflow-hidden shrink-0">
-            <Image
-              src={item.coverImage}
-              alt={item.title}
-              fill
-              className="object-cover"
-            />
+            <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover" />
           </div>
           <div className="space-y-1 flex-1">
             <h4 className="font-medium text-sm line-clamp-1">

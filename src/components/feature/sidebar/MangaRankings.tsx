@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Crown, Medal, Award, TrendingUp, Eye } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -149,12 +148,10 @@ export default function MangaRankings({ className }: MangaRankingsProps) {
 
           {/* Cover Image */}
           <div className="relative w-10 h-14 flex-shrink-0 overflow-hidden rounded-md shadow-sm">
-            <Image
-              src={manga.cover_image_url || '/placeholder-manga.jpg'}
+            <img
+              src={manga.cover_image_url || 'https://placehold.co/300x450/png'}
               alt={manga.title}
-              fill
-              sizes="40px"
-              className="object-cover transition-transform duration-200 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
             />
           </div>
 

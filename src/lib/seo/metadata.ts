@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import { seoConfig, getSiteUrl, getPageTitle } from '@/config/seo.config';
-import { getMangaTemplate, getChapterTemplate, getGenreTemplate, getSearchTemplate } from './templates';
+import { getMangaTemplate, getChapterTemplate, getGenreTemplate, getSearchTemplate, getMangaListTemplate } from './templates';
 import type {
-  BaseMetadataProps,
   EnhancedMetadataProps,
   MangaMetadataProps,
   ChapterMetadataProps,
@@ -189,5 +188,43 @@ export function constructSearchMetadata(data: SearchMetadataProps = {}): Metadat
     type: template.type,
     canonical: getSiteUrl(searchPath),
     noIndex: !data.query, // Don't index empty search pages
+  });
+}
+
+// Manga list metadata using templates
+export function constructMangaListMetadata(data: {
+  pageTitle: string;
+  totalResults?: number;
+  filters?: string[];
+  sort?: string;
+  status?: string;
+  genre?: string;
+  page?: number;
+}): Metadata {
+  const template = getMangaListTemplate({
+    pageTitle: data.pageTitle,
+    totalResults: data.totalResults,
+    filters: data.filters,
+    sort: data.sort,
+    status: data.status,
+    genre: data.genre,
+  });
+
+  // Build canonical URL with filters
+  const params = new URLSearchParams();
+  if (data.sort && data.sort !== 'latest') params.append('sort', data.sort);
+  if (data.status && data.status !== 'all') params.append('status', data.status);
+  if (data.genre && data.genre !== 'all') params.append('genre', data.genre);
+  if (data.page && data.page > 1) params.append('page', data.page.toString());
+
+  const queryString = params.toString();
+  const canonicalPath = `/manga${queryString ? `?${queryString}` : ''}`;
+
+  return constructMetadata({
+    title: template.title,
+    description: template.description,
+    keywords: template.keywords,
+    type: template.type,
+    canonical: getSiteUrl(canonicalPath),
   });
 }

@@ -206,6 +206,16 @@ export class MangaRawSource extends BaseSource {
       });
     }
 
+    // Lấy thông tin artist/author
+    let author: string | undefined;
+    if (data.artist && typeof data.artist === 'object') {
+      // Nếu artist là object, lấy name hoặc username
+      author = data.artist.name || data.artist.username || data.artist.display_name;
+    } else if (typeof data.artist === 'string') {
+      // Nếu artist là string
+      author = data.artist;
+    }
+
     return {
       sourceId: data.id,
       sourceName: this.getName(),
@@ -215,6 +225,7 @@ export class MangaRawSource extends BaseSource {
       description: data.pilot,
       coverUrl: data.cover_full_url,
       status: statusMap[data.status] || 'unknown',
+      author,
       views: data.views,
       genres,
       createdAt: new Date(data.created_at),

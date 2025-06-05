@@ -5,7 +5,7 @@ import { generateHomeJsonLd } from "@/lib/seo/jsonld";
 import HotMangaSlider from "@/components/feature/HotMangaSlider";
 import LatestUpdateMangaList from "@/components/feature/LatestUpdateMangaList";
 import Sidebar from "@/components/feature/Sidebar";
-import Link from "next/link";
+import ViewMoreButton from "@/components/ui/ViewMoreButton";
 import { seoConfig, getSiteUrl } from "@/config/seo.config";
 
 import { mangaApi } from '@/lib/api/client';
@@ -74,7 +74,7 @@ export default async function Home({
   const jsonLd = generateHomeJsonLd();
 
   // Fetch data for the latest manga with pagination
-  await fetchMangaData('latest', 20, currentPage);
+  await fetchMangaData('latest', 24, currentPage);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
@@ -88,14 +88,10 @@ export default async function Home({
         {/* Main Content */}
         <section className="space-y-6">
           {/* Latest Update Manga List */}
-          <LatestUpdateMangaList page={currentPage} limit={20} />
+          <LatestUpdateMangaList page={currentPage} limit={24} />
 
           {/* View More Button */}
-          <div className="flex justify-center mt-8">
-            <Link href="/manga?page=2" className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-md text-center transition-colors duration-200">
-              View more manga
-            </Link>
-          </div>
+          <ViewMoreButton href="/manga?page=2" />
         </section>
 
         {/* Sidebar */}

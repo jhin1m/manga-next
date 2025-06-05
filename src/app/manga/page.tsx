@@ -2,12 +2,13 @@ import { Metadata } from 'next';
 import FilterSortBar from '@/components/feature/FilterSortBar';
 import MangaCard from '@/components/feature/MangaCard';
 import PaginationWrapper from '@/components/feature/PaginationWrapper';
-import { constructMetadata } from '@/lib/seo/metadata';
+import { constructMangaListMetadata } from '@/lib/seo/metadata';
 import JsonLdScript from '@/components/seo/JsonLdScript';
 import { generateMangaListJsonLd } from '@/lib/seo/jsonld';
 import { mangaApi } from '@/lib/api/client';
-import { seoConfig, getSiteUrl } from '@/config/seo.config';
-
+import MangaPageTracker from '@/components/analytics/MangaPageTracker';
+import { getServerPageTitle } from '@/lib/page-titles';
+import { getTranslations, getLocale } from 'next-intl/server';
 // Fetch manga from API using centralized API client
 async function fetchManga(params: {
   sort?: string;
@@ -44,7 +45,7 @@ async function fetchManga(params: {
         views: comic.total_views || 0,
         chapterCount: comic._chapterCount || 0,
         updatedAt: comic.last_chapter_uploaded_at || undefined,
-        status: comic.status || 'Ongoing',
+        status: comic.status,
       })),
       totalPages: data.totalPages,
       currentPage: data.currentPage,
@@ -56,12 +57,51 @@ async function fetchManga(params: {
   }
 }
 
-export const metadata: Metadata = constructMetadata({
-  title: `Latest Manga - ${seoConfig.site.name}`,
-  description: `Browse the latest manga updates on ${seoConfig.site.name}. Find your favorite manga series and read them online for free.`,
-  keywords: ['manga list', 'latest manga', 'read manga online', 'free manga', 'manga updates', seoConfig.site.name.toLowerCase()],
-  canonical: getSiteUrl('/manga'),
-});
+// Generate dynamic metadata based on search parameters
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+
+  const sortParam = params['sort'];
+  const sort = typeof sortParam === 'string' ? sortParam : 'latest';
+
+  const statusParam = params['status'];
+  const status = typeof statusParam === 'string' ? statusParam : undefined;
+
+  const genreParam = params['genre'];
+  const genre = typeof genreParam === 'string' ? genreParam : undefined;
+
+  const pageParam = params['page'];
+  const page = typeof pageParam === 'string' ? parseInt(pageParam, 10) : 1;
+
+  // Get current locale from next-intl
+  const currentLocale = await getLocale();
+
+  // Get page title using configurable system
+  const pageTitle = getServerPageTitle('manga', { sort, status, genre }, currentLocale);
+
+  // Build filters array for SEO
+  const filters: string[] = [];
+  if (sort !== 'latest') filters.push(sort);
+  if (status) filters.push(status);
+  if (genre) filters.push(genre);
+
+  // Get total results (we'll estimate for now, could be fetched from API)
+  const estimatedResults = 1000; // This could be fetched from API
+
+  return constructMangaListMetadata({
+    pageTitle,
+    totalResults: estimatedResults,
+    filters,
+    sort,
+    status,
+    genre,
+    page,
+  });
+}
 
 export default async function MangaPage({
   searchParams,
@@ -81,9 +121,9 @@ export default async function MangaPage({
   const genre = typeof genreParam === 'string' ? genreParam : undefined;
 
   const pageParam = params['page'];
-  const page = typeof pageParam === 'string' ? parseInt(pageParam, 20) : 1;
+  const page = typeof pageParam === 'string' ? parseInt(pageParam, 10) : 1;
 
-  const limit = 20; // Number of manga per page
+  const limit = 24; // Number of manga per page
 
   // Fetch manga with filters
   const results = await fetchManga({ sort, status, genre, page, limit });
@@ -91,11 +131,11 @@ export default async function MangaPage({
   const totalPages = results.totalPages;
   const currentPage = results.currentPage;
 
-  // Determine page title based on filters
-  let pageTitle = 'Latest Manga';
-  if (sort === 'popular') pageTitle = 'Popular Manga';
-  if (status === 'completed') pageTitle = 'Completed Manga';
-  if (genre) pageTitle = `${genre.charAt(0).toUpperCase() + genre.slice(1)} Manga`;
+  // Get current locale from next-intl
+  const currentLocale = await getLocale();
+
+  // Get page title using configurable system
+  const pageTitle = getServerPageTitle('manga', { sort, status, genre }, currentLocale);
 
   // Define manga item type
   interface MangaItem {
@@ -134,10 +174,19 @@ export default async function MangaPage({
 
   // Tạo JSON-LD cho trang danh sách manga
   const jsonLd = generateMangaListJsonLd();
+  const t = await getTranslations('search');
 
   return (
     <div className="container mx-auto py-8">
       <JsonLdScript id="manga-list-jsonld" jsonLd={jsonLd} />
+      <MangaPageTracker
+        pageTitle={pageTitle}
+        sort={sort}
+        status={status}
+        genre={genre}
+        page={currentPage}
+        totalResults={results.totalResults}
+      />
       <h1 className="text-2xl font-bold mb-6">{pageTitle}</h1>
 
       <div className="mb-6">
@@ -146,7 +195,7 @@ export default async function MangaPage({
 
       {manga.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 mb-8">
             {manga.map((item: MangaItem) => (
               <MangaCard
                 key={item.id}
@@ -166,7 +215,7 @@ export default async function MangaPage({
       ) : (
         <div className="text-center py-12">
           <p className="text-muted-foreground">
-            No manga found with the selected filters.
+            {t('noResults')}
           </p>
         </div>
       )}

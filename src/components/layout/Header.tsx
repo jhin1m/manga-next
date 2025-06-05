@@ -16,7 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { SearchButton, DesktopSearchButton } from '@/components/feature/SearchBar';
-import { Home, Clock } from 'lucide-react';
+import { Home, Clock, } from 'lucide-react';
 import { UserMenu } from '@/components/layout/user-menu';
 import { useSession, signOut } from 'next-auth/react';
 import { GenreDropdown, MobileGenreDropdown } from '@/components/feature/GenreDropdown';
@@ -57,8 +57,10 @@ export default function Header() {
     }`}>
       <div className='container mx-auto px-4 py-3'>
         <div className='flex justify-between items-center sm:px-14 2xl:px-21'>
-          <Link href='/' className='text-xl font-bold'>
-            {seoConfig.site.name}
+          <Link href='/' className='group relative'>
+            <span className='text-xl font-bold'>
+              {seoConfig.site.name}
+            </span>
           </Link>
 
           {/* Desktop Navigation */}

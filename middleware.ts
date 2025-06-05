@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import createIntlMiddleware from 'next-intl/middleware'
+import { locales, defaultLocale } from './src/i18n/config'
 
 // List of routes that require authentication
 const protectedRoutes = [
@@ -18,7 +20,20 @@ const authRoutes = [
   '/auth/register',
 ]
 
+// Create the intl middleware
+const intlMiddleware = createIntlMiddleware({
+  locales,
+  defaultLocale,
+  localeDetection: true,
+  localePrefix: 'never' // No /en, /vi prefix
+})
+
 export async function middleware(req: NextRequest) {
+  // First, handle internationalization
+  const intlResponse = intlMiddleware(req)
+  if (intlResponse) {
+    return intlResponse
+  }
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
   const isLoggedIn = !!token
   const path = req.nextUrl.pathname
@@ -63,7 +78,9 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public (public files)
      * - api/auth (NextAuth.js API routes)
+     * - api (API routes)
+     * - _vercel (Vercel internals)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public|api/auth).*)',
+    '/((?!api|_next/static|_next/image|_vercel|favicon.ico|public|.*\\..*).*)'
   ],
 }

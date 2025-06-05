@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { Eye } from 'lucide-react';
 import { formatViews } from '@/lib/utils/format';
@@ -28,13 +27,7 @@ export default function RelatedMangaItem({
       <div className="flex items-center gap-3 p-2 rounded-md hover:bg-accent/50 transition-colors">
         {/* Small thumbnail */}
         <div className="relative h-16 w-12 flex-shrink-0 overflow-hidden rounded">
-          <Image
-            src={coverImage}
-            alt={title}
-            fill
-            sizes="48px"
-            className="object-cover"
-          />
+          <img src={coverImage} alt={title} className="w-full h-full object-cover" />
         </div>
         
         {/* Manga info */}

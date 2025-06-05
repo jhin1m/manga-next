@@ -7,7 +7,7 @@ import { constructMetadata, constructGenreMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateGenreJsonLd } from "@/lib/seo/jsonld";
 import { genreApi } from '@/lib/api/client';
-import { formatDate } from '@/lib/utils/format';
+
 import { seoConfig } from '@/config/seo.config';
 
 // Generate metadata for the page

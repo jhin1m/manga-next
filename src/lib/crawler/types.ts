@@ -38,6 +38,7 @@ export interface StandardManga {
   description?: string;
   coverUrl: string;
   status: string;
+  author?: string;      // Tác giả/Artist
   views: number;
   genres: StandardGenre[];
   createdAt: Date;

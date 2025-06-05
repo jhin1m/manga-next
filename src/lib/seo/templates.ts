@@ -2,7 +2,7 @@
  * SEO Templates for different page types
  */
 
-import { seoConfig, getSiteUrl } from '@/config/seo.config';
+import { seoConfig } from '@/config/seo.config';
 import type { SeoTemplates, SeoTemplate } from './types';
 
 // Base template that all others extend
@@ -18,37 +18,44 @@ export const seoTemplates: SeoTemplates = {
   default: baseTemplate,
 
   manga: {
-    title: '{title} - Read Online Free | {siteName}',
-    description: 'Read {title} manga online for free. {description} Latest chapters available on {siteName}.',
-    keywords: ['{title}', 'manga', 'read online', 'free manga', '{genres}', '{author}'],
+    title: '{title}',
+    description: '{seoText.read} {title} {seoText.manga} {seoText.online} {seoText.forFree}. {description} {seoText.latestChapters} {seoText.on} {siteName}.',
+    keywords: ['{title}', '{seoText.manga}', '{seoText.readOnline}', '{seoText.freeManga}', '{genres}', '{author}'],
     type: 'article',
   },
 
   chapter: {
-    title: '{mangaTitle} Chapter {chapterNumber} - {siteName}',
-    description: 'Read {mangaTitle} Chapter {chapterNumber} online for free. High quality manga pages on {siteName}.',
-    keywords: ['{mangaTitle}', 'Chapter {chapterNumber}', 'manga', 'read online', '{genres}'],
+    title: '{mangaTitle} {seoText.chapter} {chapterNumber}',
+    description: '{seoText.read} {mangaTitle} {seoText.chapter} {chapterNumber} {seoText.online} {seoText.forFree}. {seoText.highQualityPages} {seoText.on} {siteName}.',
+    keywords: ['{mangaTitle}', '{seoText.chapter} {chapterNumber}', '{seoText.manga}', '{seoText.readOnline}', '{genres}'],
     type: 'article',
   },
 
   genre: {
-    title: '{genreName} Manga - Browse {genreName} Comics | {siteName}',
-    description: 'Discover the best {genreName} manga series. Browse {mangaCount} {genreName} comics and read online for free on {siteName}.',
-    keywords: ['{genreName} manga', '{genreName} comics', 'read {genreName}', 'manga genre'],
+    title: '{genreName}',
+    description: '{seoText.discoverBest} {genreName} {seoText.manga} {seoText.series}. {seoText.browse} {mangaCount} {genreName} {seoText.comics} {seoText.and} {seoText.readOnline} {seoText.forFree} {seoText.on} {siteName}.',
+    keywords: ['{genreName} {seoText.manga}', '{genreName} {seoText.comics}', '{seoText.readOnline} {genreName}', '{seoText.mangaGenre}'],
     type: 'website',
   },
 
   search: {
-    title: 'Search Results for "{query}" | {siteName}',
-    description: 'Find manga with keyword "{query}". Browse search results and discover new manga series on {siteName}.',
-    keywords: ['search', 'find manga', '{query}', 'manga search'],
+    title: '{seoText.searchResults} for "{query}" | {siteName}',
+    description: '{seoText.findWithKeyword} "{query}". {seoText.browseSearchResults} {seoText.on} {siteName}.',
+    keywords: ['{seoText.search}', '{seoText.findManga}', '{query}', '{seoText.mangaSearch}'],
+    type: 'website',
+  },
+
+  mangaList: {
+    title: '{pageTitle}',
+    description: '{pageTitle} {siteName}. {seoText.discoverBest} {totalResults} {seoText.manga} {seoText.series} {seoText.and} {seoText.readOnline} {seoText.forFree}. {seoText.updatedDaily}.',
+    keywords: ['{pageTitle}', '{seoText.mangaList}', '{seoText.browseManga}', '{seoText.readMangaOnline}', '{seoText.freeManga}', '{filters}'],
     type: 'website',
   },
 
   profile: {
-    title: '{username} Profile | {siteName}',
-    description: 'View {username}\'s profile, bookmarks, and reading history on {siteName}.',
-    keywords: ['user profile', '{username}', 'bookmarks', 'reading history'],
+    title: '{username} {seoText.profile} | {siteName}',
+    description: '{seoText.viewProfile} {username}\'s {seoText.profile}, {seoText.bookmarks}, {seoText.and} {seoText.readingHistory} {seoText.on} {siteName}.',
+    keywords: ['{seoText.userProfile}', '{username}', '{seoText.bookmarks}', '{seoText.readingHistory}'],
     type: 'profile',
   },
 };
@@ -65,14 +72,23 @@ export const processTemplate = (
     siteName: seoConfig.site.name,
     siteDescription: seoConfig.site.description,
     siteUrl: seoConfig.urls.base,
+    seoText: seoConfig.seoText,
   };
 
   const allVars = { ...defaultVars, ...variables };
 
-  // Replace template variables
+  // Replace template variables (including nested seoText properties)
   Object.entries(allVars).forEach(([key, value]) => {
-    const regex = new RegExp(`{${key}}`, 'g');
-    processed = processed.replace(regex, String(value || ''));
+    if (key === 'seoText' && typeof value === 'object') {
+      // Handle nested seoText properties
+      Object.entries(value).forEach(([textKey, textValue]) => {
+        const regex = new RegExp(`{seoText\\.${textKey}}`, 'g');
+        processed = processed.replace(regex, String(textValue || ''));
+      });
+    } else {
+      const regex = new RegExp(`{${key}}`, 'g');
+      processed = processed.replace(regex, String(value || ''));
+    }
   });
 
   // Clean up any remaining unreplaced variables
@@ -111,7 +127,7 @@ export const getMangaTemplate = (variables: {
     title: processTemplate(template.title, variables),
     description: processTemplate(template.description, {
       ...variables,
-      description: variables.description || `${variables.title} manga series`,
+      description: variables.description || `${variables.title} ${seoConfig.seoText.manga} ${seoConfig.seoText.series}`,
     }),
     keywords: processKeywords(template.keywords, {
       ...variables,
@@ -152,7 +168,7 @@ export const getGenreTemplate = (variables: {
     title: processTemplate(template.title, variables),
     description: processTemplate(template.description, {
       ...variables,
-      mangaCount: variables.mangaCount || 'many',
+      mangaCount: variables.mangaCount || seoConfig.seoText.many,
     }),
     keywords: processKeywords(template.keywords, variables),
     type: template.type,
@@ -167,9 +183,9 @@ export const getSearchTemplate = (variables: {
 
   if (!variables.query) {
     return {
-      title: `Search Manga | ${seoConfig.site.name}`,
-      description: `Search for manga series on ${seoConfig.site.name}. Find your favorite manga and read online for free.`,
-      keywords: ['search', 'find manga', 'manga search'],
+      title: `${seoConfig.seoText.search} ${seoConfig.seoText.manga} | ${seoConfig.site.name}`,
+      description: `${seoConfig.seoText.searchFor} ${seoConfig.seoText.manga} ${seoConfig.seoText.series} ${seoConfig.seoText.on} ${seoConfig.site.name}. ${seoConfig.seoText.findFavorite} ${seoConfig.seoText.manga} ${seoConfig.seoText.and} ${seoConfig.seoText.readOnline} ${seoConfig.seoText.forFree}.`,
+      keywords: [seoConfig.seoText.search, seoConfig.seoText.findManga, seoConfig.seoText.mangaSearch],
       type: template.type,
     };
   }
@@ -178,6 +194,30 @@ export const getSearchTemplate = (variables: {
     title: processTemplate(template.title, variables),
     description: processTemplate(template.description, variables),
     keywords: processKeywords(template.keywords, variables),
+    type: template.type,
+  };
+};
+
+export const getMangaListTemplate = (variables: {
+  pageTitle: string;
+  totalResults?: number;
+  filters?: string[];
+  sort?: string;
+  status?: string;
+  genre?: string;
+}) => {
+  const template = seoTemplates.mangaList;
+  const filtersString = variables.filters?.join(', ') || '';
+
+  return {
+    title: processTemplate(template.title, variables),
+    description: processTemplate(template.description, {
+      ...variables,
+    }),
+    keywords: processKeywords(template.keywords, {
+      ...variables,
+      filters: filtersString,
+    }),
     type: template.type,
   };
 };

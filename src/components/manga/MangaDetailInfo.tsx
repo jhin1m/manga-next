@@ -1,15 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import Image from "next/image";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Eye, BookOpen, Heart, ChevronDown, ChevronUp } from "lucide-react";
-import { FavoriteButton } from "@/components/manga/FavoriteButton";
-import { StarRating } from "@/components/manga/StarRating";
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Eye, BookOpen, Heart, ChevronDown, ChevronUp } from 'lucide-react';
+import { FavoriteButton } from '@/components/manga/FavoriteButton';
+import { StarRating } from '@/components/manga/StarRating';
 import { useTranslations } from 'next-intl';
 import { useFormat } from '@/hooks/useFormat';
 
@@ -52,14 +51,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
       {/* Background Image with Blur Effect */}
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full">
-          <Image
-            src={manga.coverImage}
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover scale-110"
-            priority
-          />
+          <img src={manga.coverImage} alt="" sizes="100vw" className="object-cover scale-110" />
           {/* Overlay gradients for better readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/95" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
@@ -76,14 +68,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
             {/* Cover Image */}
             <div className="group relative aspect-[2/3] w-40 xs:w-48 sm:w-56 lg:w-64 mx-auto sm:mx-0 flex-shrink-0 overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 ring-1 ring-border/20 hover:ring-primary/30">
-              <Image
-                src={manga.coverImage}
-                alt={manga.title}
-                fill
-                sizes="(max-width: 480px) 160px, (max-width: 640px) 192px, (max-width: 768px) 224px, 256px"
-                className="object-cover transition-transform duration-300 group-hover:scale-110"
-                priority
-              />
+              <img src={manga.coverImage} alt={manga.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
               {/* Subtle overlay for depth */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
@@ -91,7 +76,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
             <div className="flex-1 flex flex-col text-center sm:text-left space-y-3 sm:space-y-4">
               {/* Status Label - Mobile/Tablet hidden, Desktop visible */}
               <div className="hidden lg:block text-sm text-muted-foreground font-medium tracking-wider uppercase">
-                {manga.status}
+                {manga.status === 'ongoing' ? t('ongoing') : t('completed')}
               </div>
 
               {/* Title Section */}
@@ -150,7 +135,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
                 <div className="hidden lg:block">
                   <h3 className="text-lg font-semibold mb-3">{t('synopsis')}</h3>
                   <div className="text-sm text-muted-foreground">
-                    <span>{manga.description.slice(0, 150)}...</span>
+                    <span>{manga.description.replace(/<[^>]*>/g, '').slice(0, 100)}...</span>
                     <Dialog>
                       <DialogTrigger asChild>
                         <button className="text-primary underline underline-offset-4 ml-1 hover:text-primary/80 transition-colors">
@@ -162,7 +147,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
                           <DialogTitle>{t('synopsis')}</DialogTitle>
                         </DialogHeader>
                         <div className="text-sm text-muted-foreground whitespace-pre-line mt-4">
-                          {manga.description}
+                          {manga.description.replace(/<[^>]*>/g, '')}
                         </div>
                       </DialogContent>
                     </Dialog>
@@ -181,7 +166,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
             <div className="lg:hidden">
               <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-center">{t('synopsis')}</h3>
               <div className="text-xs sm:text-sm text-muted-foreground text-center">
-                <span>{manga.description.slice(0, 150)}...</span>
+                <span> {manga.description.replace(/<[^>]*>/g, '').slice(0, 100)}...</span>
                 <Dialog>
                   <DialogTrigger asChild>
                     <button className="text-primary underline underline-offset-4 ml-1 hover:text-primary/80 transition-colors">
@@ -193,7 +178,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
                       <DialogTitle>{t('synopsis')}</DialogTitle>
                     </DialogHeader>
                     <div className="text-sm text-muted-foreground whitespace-pre-line mt-4">
-                      {manga.description}
+                      {manga.description.replace(/<[^>]*>/g, '')}
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -275,7 +260,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
                 {manga.status && (
                   <div>
                     <span className="text-muted-foreground">{t('statusLabel')} </span>
-                    <span className="font-medium">{manga.status}</span>
+                    <span className="font-medium">{manga.status === 'ongoing' ? t('ongoing') : t('completed')}</span>
                   </div>
                 )}
                 {manga.publishedYear && (

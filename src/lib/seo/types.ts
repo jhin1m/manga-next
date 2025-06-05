@@ -190,6 +190,7 @@ export interface SeoTemplates {
   chapter: SeoTemplate;
   genre: SeoTemplate;
   search: SeoTemplate;
+  mangaList: SeoTemplate;
   profile: SeoTemplate;
 }
 

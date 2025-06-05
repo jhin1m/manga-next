@@ -9,10 +9,11 @@ import Script from "next/script";
 import { generateHomeJsonLd, generateOrganizationJsonLd } from "@/lib/seo/jsonld";
 import { constructMetadata } from "@/lib/seo/metadata";
 import { AuthProvider } from "@/components/providers/auth-provider";
-import { seoConfig } from "@/config/seo.config";
+import { seoConfig, getGoogleSiteVerification } from "@/config/seo.config";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { MainContent } from "@/components/layout/MainContent";
+import Analytics from "@/components/analytics/Analytics";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -21,6 +22,19 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = constructMetadata();
+
+// Add Google Site Verification if configured
+const googleSiteVerification = getGoogleSiteVerification();
+if (googleSiteVerification && metadata.verification) {
+  metadata.verification = {
+    ...metadata.verification,
+    google: googleSiteVerification,
+  };
+} else if (googleSiteVerification) {
+  metadata.verification = {
+    google: googleSiteVerification,
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -48,6 +62,9 @@ export default async function RootLayout({
               </MainContent>
               <Footer />
               <Toaster />
+
+            {/* Analytics Components */}
+            <Analytics />
 
             {/* Enhanced JSON-LD Schema */}
             <Script

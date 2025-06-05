@@ -215,7 +215,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
             </SheetDescription>
           </SheetHeader>
 
-          <div className="py-4 flex flex-col gap-6">
+          <div className="p-4 flex flex-col gap-6">
             {/* Status Filter */}
             <div className="space-y-2">
               <Label htmlFor="status">{t('status')}</Label>

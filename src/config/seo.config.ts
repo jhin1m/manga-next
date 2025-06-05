@@ -82,36 +82,276 @@ const defaultSeoConfig = {
       },
     },
   },
+
+  // Analytics and tracking configuration
+  analytics: {
+    googleAnalytics: {
+      id: '', // Will be overridden by environment variable
+      enabled: false,
+    },
+    googleTagManager: {
+      id: '', // Will be overridden by environment variable
+      enabled: false,
+    },
+    googleSiteVerification: '', // Will be overridden by environment variable
+    facebookPixel: {
+      id: '', // Will be overridden by environment variable
+      enabled: false,
+    },
+    tracking: {
+      enablePageViews: true,
+      enableEvents: true,
+      enableConversions: false,
+    },
+  },
+
+  // Page titles configuration for different filters
+  pageTitles: {
+    manga: {
+      default: 'Latest Manga',
+      sort: {
+        latest: 'Latest Manga',
+        popular: 'Popular Manga',
+        rating: 'Top Rated Manga',
+        views: 'Most Viewed Manga',
+        updated: 'Recently Updated Manga',
+        alphabetical: 'Manga A-Z',
+      },
+      status: {
+        all: 'All Manga',
+        ongoing: 'Ongoing Manga',
+        completed: 'Completed Manga',
+        hiatus: 'Manga on Hiatus',
+        cancelled: 'Cancelled Manga',
+      },
+      combined: {
+        'popular+completed': 'Popular Completed Manga',
+        'rating+ongoing': 'Top Rated Ongoing Manga',
+        'views+completed': 'Most Viewed Completed Manga',
+      },
+    },
+  },
+
+  // SEO Templates Text Configuration
+  seoText: {
+    // Common action words
+    read: 'Read',
+    online: 'online',
+    forFree: 'for free',
+    manga: 'manga',
+    chapter: 'Chapter',
+    comics: 'comics',
+    series: 'series',
+
+    // Template phrases
+    latestChapters: 'Latest chapters available',
+    highQualityPages: 'High quality manga pages',
+    discoverBest: 'Discover the best',
+    browse: 'Browse',
+    findWithKeyword: 'Find manga with keyword',
+    browseSearchResults: 'Browse search results and discover new manga series',
+    updatedDaily: 'Updated daily with latest chapters',
+    viewProfile: 'View',
+    profile: 'profile',
+    bookmarks: 'bookmarks',
+    readingHistory: 'reading history',
+
+    // Search related text
+    search: 'Search',
+    searchResults: 'Search Results',
+    findManga: 'find manga',
+    mangaSearch: 'manga search',
+    userProfile: 'user profile',
+    searchFor: 'Search for',
+    findFavorite: 'Find your favorite',
+
+    // List and genre text
+    mangaList: 'manga list',
+    browseManga: 'browse manga',
+    readMangaOnline: 'read manga online',
+    freeManga: 'free manga',
+    mangaGenre: 'manga genre',
+    readOnline: 'read online',
+    and: 'and',
+    on: 'on',
+    many: 'many',
+  },
 } as const;
 
 // Environment-based overrides
 const getEnvironmentConfig = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                  process.env.NEXT_PUBLIC_API_URL || 
+  // Base URL configuration
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ||
+                  process.env.NEXT_PUBLIC_API_URL ||
                   defaultSeoConfig.urls.base;
-  
+
+  // Site basic information
   const siteName = process.env.NEXT_PUBLIC_SITE_NAME || defaultSeoConfig.site.name;
   const siteDescription = process.env.NEXT_PUBLIC_SITE_DESCRIPTION || defaultSeoConfig.site.description;
-  
+  const siteTagline = process.env.NEXT_PUBLIC_SITE_TAGLINE || defaultSeoConfig.site.tagline;
+  const siteLanguage = process.env.NEXT_PUBLIC_SITE_LANGUAGE || defaultSeoConfig.site.language;
+  const siteLocale = process.env.NEXT_PUBLIC_SITE_LOCALE || defaultSeoConfig.site.locale;
+
+  // Keywords configuration
+  const siteKeywords = process.env.NEXT_PUBLIC_SITE_KEYWORDS
+    ? process.env.NEXT_PUBLIC_SITE_KEYWORDS.split(',').map(k => k.trim())
+    : defaultSeoConfig.site.keywords;
+
+  // Assets configuration
+  const logoUrl = process.env.NEXT_PUBLIC_LOGO_URL || defaultSeoConfig.urls.logo;
+  const faviconUrl = process.env.NEXT_PUBLIC_FAVICON_URL || defaultSeoConfig.urls.favicon;
+  const ogImageUrl = process.env.NEXT_PUBLIC_OG_IMAGE || defaultSeoConfig.urls.ogImage;
+
+  // Social media configuration
+  const twitterHandle = process.env.NEXT_PUBLIC_TWITTER_HANDLE || defaultSeoConfig.social.twitter.site;
+  const twitterCreator = process.env.NEXT_PUBLIC_TWITTER_CREATOR || defaultSeoConfig.social.twitter.creator;
+  const twitterCard = process.env.NEXT_PUBLIC_TWITTER_CARD || defaultSeoConfig.social.twitter.card;
+  const ogType = process.env.NEXT_PUBLIC_OG_TYPE || defaultSeoConfig.social.openGraph.type;
+
+  // SEO templates configuration
+  const titleTemplate = process.env.NEXT_PUBLIC_TITLE_TEMPLATE || defaultSeoConfig.seo.titleTemplate;
+  const defaultTitle = process.env.NEXT_PUBLIC_DEFAULT_TITLE || defaultSeoConfig.seo.defaultTitle;
+  const titleSeparator = process.env.NEXT_PUBLIC_TITLE_SEPARATOR || defaultSeoConfig.seo.titleSeparator;
+
+  // Robots configuration
+  const robotsIndex = process.env.NEXT_PUBLIC_ROBOTS_INDEX !== 'false';
+  const robotsFollow = process.env.NEXT_PUBLIC_ROBOTS_FOLLOW !== 'false';
+
+  // Organization schema configuration
+  const orgName = process.env.NEXT_PUBLIC_ORG_NAME || defaultSeoConfig.schema.organization.name;
+  const orgLegalName = process.env.NEXT_PUBLIC_ORG_LEGAL_NAME || defaultSeoConfig.schema.organization.legalName;
+  const orgFoundingDate = process.env.NEXT_PUBLIC_ORG_FOUNDING_DATE || defaultSeoConfig.schema.organization.foundingDate;
+  const orgCountry = process.env.NEXT_PUBLIC_ORG_COUNTRY || defaultSeoConfig.schema.organization.address.addressCountry;
+
+  // Analytics configuration
+  const googleAnalyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || '';
+  const googleTagManagerId = process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID || '';
+  const googleSiteVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '';
+  const facebookPixelId = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || '';
+
+  // SEO Text configuration from environment variables
+  const seoText = {
+    // Common action words
+    read: process.env.NEXT_PUBLIC_SEO_TEXT_READ || defaultSeoConfig.seoText.read,
+    online: process.env.NEXT_PUBLIC_SEO_TEXT_ONLINE || defaultSeoConfig.seoText.online,
+    forFree: process.env.NEXT_PUBLIC_SEO_TEXT_FOR_FREE || defaultSeoConfig.seoText.forFree,
+    manga: process.env.NEXT_PUBLIC_SEO_TEXT_MANGA || defaultSeoConfig.seoText.manga,
+    chapter: process.env.NEXT_PUBLIC_SEO_TEXT_CHAPTER || defaultSeoConfig.seoText.chapter,
+    comics: process.env.NEXT_PUBLIC_SEO_TEXT_COMICS || defaultSeoConfig.seoText.comics,
+    series: process.env.NEXT_PUBLIC_SEO_TEXT_SERIES || defaultSeoConfig.seoText.series,
+
+    // Template phrases
+    latestChapters: process.env.NEXT_PUBLIC_SEO_TEXT_LATEST_CHAPTERS || defaultSeoConfig.seoText.latestChapters,
+    highQualityPages: process.env.NEXT_PUBLIC_SEO_TEXT_HIGH_QUALITY_PAGES || defaultSeoConfig.seoText.highQualityPages,
+    discoverBest: process.env.NEXT_PUBLIC_SEO_TEXT_DISCOVER_BEST || defaultSeoConfig.seoText.discoverBest,
+    browse: process.env.NEXT_PUBLIC_SEO_TEXT_BROWSE || defaultSeoConfig.seoText.browse,
+    findWithKeyword: process.env.NEXT_PUBLIC_SEO_TEXT_FIND_WITH_KEYWORD || defaultSeoConfig.seoText.findWithKeyword,
+    browseSearchResults: process.env.NEXT_PUBLIC_SEO_TEXT_BROWSE_SEARCH_RESULTS || defaultSeoConfig.seoText.browseSearchResults,
+    updatedDaily: process.env.NEXT_PUBLIC_SEO_TEXT_UPDATED_DAILY || defaultSeoConfig.seoText.updatedDaily,
+    viewProfile: process.env.NEXT_PUBLIC_SEO_TEXT_VIEW_PROFILE || defaultSeoConfig.seoText.viewProfile,
+    profile: process.env.NEXT_PUBLIC_SEO_TEXT_PROFILE || defaultSeoConfig.seoText.profile,
+    bookmarks: process.env.NEXT_PUBLIC_SEO_TEXT_BOOKMARKS || defaultSeoConfig.seoText.bookmarks,
+    readingHistory: process.env.NEXT_PUBLIC_SEO_TEXT_READING_HISTORY || defaultSeoConfig.seoText.readingHistory,
+
+    // Search related text
+    search: process.env.NEXT_PUBLIC_SEO_TEXT_SEARCH || defaultSeoConfig.seoText.search,
+    searchResults: process.env.NEXT_PUBLIC_SEO_TEXT_SEARCH_RESULTS || defaultSeoConfig.seoText.searchResults,
+    findManga: process.env.NEXT_PUBLIC_SEO_TEXT_FIND_MANGA || defaultSeoConfig.seoText.findManga,
+    mangaSearch: process.env.NEXT_PUBLIC_SEO_TEXT_MANGA_SEARCH || defaultSeoConfig.seoText.mangaSearch,
+    userProfile: process.env.NEXT_PUBLIC_SEO_TEXT_USER_PROFILE || defaultSeoConfig.seoText.userProfile,
+    searchFor: process.env.NEXT_PUBLIC_SEO_TEXT_SEARCH_FOR || defaultSeoConfig.seoText.searchFor,
+    findFavorite: process.env.NEXT_PUBLIC_SEO_TEXT_FIND_FAVORITE || defaultSeoConfig.seoText.findFavorite,
+
+    // List and genre text
+    mangaList: process.env.NEXT_PUBLIC_SEO_TEXT_MANGA_LIST || defaultSeoConfig.seoText.mangaList,
+    browseManga: process.env.NEXT_PUBLIC_SEO_TEXT_BROWSE_MANGA || defaultSeoConfig.seoText.browseManga,
+    readMangaOnline: process.env.NEXT_PUBLIC_SEO_TEXT_READ_MANGA_ONLINE || defaultSeoConfig.seoText.readMangaOnline,
+    freeManga: process.env.NEXT_PUBLIC_SEO_TEXT_FREE_MANGA || defaultSeoConfig.seoText.freeManga,
+    mangaGenre: process.env.NEXT_PUBLIC_SEO_TEXT_MANGA_GENRE || defaultSeoConfig.seoText.mangaGenre,
+    readOnline: process.env.NEXT_PUBLIC_SEO_TEXT_READ_ONLINE || defaultSeoConfig.seoText.readOnline,
+    and: process.env.NEXT_PUBLIC_SEO_TEXT_AND || defaultSeoConfig.seoText.and,
+    on: process.env.NEXT_PUBLIC_SEO_TEXT_ON || defaultSeoConfig.seoText.on,
+    many: process.env.NEXT_PUBLIC_SEO_TEXT_MANY || defaultSeoConfig.seoText.many,
+  };
+
   return {
     urls: {
       ...defaultSeoConfig.urls,
       base: baseUrl,
-      logo: `${baseUrl}/logo.png`,
-      ogImage: `${baseUrl}/images/og-image.jpg`,
+      logo: logoUrl.startsWith('http') ? logoUrl : `${baseUrl}${logoUrl}`,
+      favicon: faviconUrl.startsWith('http') ? faviconUrl : `${baseUrl}${faviconUrl}`,
+      ogImage: ogImageUrl.startsWith('http') ? ogImageUrl : `${baseUrl}${ogImageUrl}`,
     },
     site: {
       ...defaultSeoConfig.site,
       name: siteName,
+      tagline: siteTagline,
       description: siteDescription,
+      keywords: siteKeywords,
+      language: siteLanguage,
+      locale: siteLocale,
     },
     social: {
       ...defaultSeoConfig.social,
+      twitter: {
+        ...defaultSeoConfig.social.twitter,
+        card: twitterCard as 'summary_large_image',
+        site: twitterHandle,
+        creator: twitterCreator,
+      },
       openGraph: {
         ...defaultSeoConfig.social.openGraph,
+        type: ogType as 'website',
         siteName,
+        locale: siteLocale,
       },
     },
+    seo: {
+      ...defaultSeoConfig.seo,
+      titleTemplate,
+      defaultTitle,
+      titleSeparator,
+      robots: {
+        ...defaultSeoConfig.seo.robots,
+        index: robotsIndex,
+        follow: robotsFollow,
+        googleBot: {
+          ...defaultSeoConfig.seo.robots.googleBot,
+          index: robotsIndex,
+          follow: robotsFollow,
+        },
+      },
+    },
+    schema: {
+      ...defaultSeoConfig.schema,
+      organization: {
+        ...defaultSeoConfig.schema.organization,
+        name: orgName,
+        legalName: orgLegalName,
+        foundingDate: orgFoundingDate,
+        address: {
+          ...defaultSeoConfig.schema.organization.address,
+          addressCountry: orgCountry,
+        },
+      },
+    },
+    analytics: {
+      ...defaultSeoConfig.analytics,
+      googleAnalytics: {
+        id: googleAnalyticsId,
+        enabled: !!googleAnalyticsId,
+      },
+      googleTagManager: {
+        id: googleTagManagerId,
+        enabled: !!googleTagManagerId,
+      },
+      googleSiteVerification,
+      facebookPixel: {
+        id: facebookPixelId,
+        enabled: !!facebookPixelId,
+      },
+    },
+    seoText,
   };
 };
 
@@ -127,6 +367,8 @@ export type SiteConfig = typeof seoConfig.site;
 export type UrlConfig = typeof seoConfig.urls;
 export type SocialConfig = typeof seoConfig.social;
 export type SchemaConfig = typeof seoConfig.schema;
+export type AnalyticsConfig = typeof seoConfig.analytics;
+export type SeoTextConfig = typeof seoConfig.seoText;
 
 // Validation function
 export const validateSeoConfig = (): boolean => {
@@ -149,6 +391,67 @@ export const getSiteUrl = (path: string = ''): string => {
 export const getPageTitle = (title?: string): string => {
   if (!title) return seoConfig.seo.defaultTitle;
   return seoConfig.seo.titleTemplate.replace('%s', title);
+};
+
+// Analytics helper functions
+export const getGoogleAnalyticsId = (): string | null => {
+  return seoConfig.analytics.googleAnalytics.enabled
+    ? seoConfig.analytics.googleAnalytics.id
+    : null;
+};
+
+export const getGoogleTagManagerId = (): string | null => {
+  return seoConfig.analytics.googleTagManager.enabled
+    ? seoConfig.analytics.googleTagManager.id
+    : null;
+};
+
+export const getFacebookPixelId = (): string | null => {
+  return seoConfig.analytics.facebookPixel.enabled
+    ? seoConfig.analytics.facebookPixel.id
+    : null;
+};
+
+export const getGoogleSiteVerification = (): string | null => {
+  return seoConfig.analytics.googleSiteVerification || null;
+};
+
+// SEO validation with analytics
+export const validateSeoConfigExtended = (): {
+  isValid: boolean;
+  missing: string[];
+  warnings: string[];
+} => {
+  const missing: string[] = [];
+  const warnings: string[] = [];
+
+  // Required fields
+  if (!seoConfig.site.name) missing.push('site.name');
+  if (!seoConfig.site.description) missing.push('site.description');
+  if (!seoConfig.urls.base) missing.push('urls.base');
+
+  // Analytics warnings
+  if (!seoConfig.analytics.googleAnalytics.enabled) {
+    warnings.push('Google Analytics not configured');
+  }
+  if (!seoConfig.analytics.googleSiteVerification) {
+    warnings.push('Google Site Verification not configured');
+  }
+
+  return {
+    isValid: missing.length === 0,
+    missing,
+    warnings,
+  };
+};
+
+// Environment detection helper
+export const isProduction = (): boolean => {
+  return process.env.NODE_ENV === 'production';
+};
+
+export const isDevelopment = (): boolean => {
+  return process.env.NODE_ENV === 'development';
 };
 
 export default seoConfig;
