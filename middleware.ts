@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 import createIntlMiddleware from 'next-intl/middleware'
 import { locales, defaultLocale } from './src/i18n/config'
+import { getCorsHeaders, handlePreflight } from './src/lib/cors'
 
 // List of routes that require authentication
 const protectedRoutes = [
@@ -29,9 +30,27 @@ const intlMiddleware = createIntlMiddleware({
 })
 
 export async function middleware(req: NextRequest) {
+  // Handle CORS for API routes
+  if (req.nextUrl.pathname.startsWith('/api/')) {
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      return handlePreflight(req)
+    }
+
+    // For other API requests, we'll add CORS headers in the response
+    // This is handled by the withCors wrapper in individual routes
+  }
+
   // First, handle internationalization
   const intlResponse = intlMiddleware(req)
   if (intlResponse) {
+    // Add CORS headers to intl response if it's an API route
+    if (req.nextUrl.pathname.startsWith('/api/')) {
+      const corsHeaders = getCorsHeaders(req)
+      Object.entries(corsHeaders).forEach(([key, value]) => {
+        intlResponse.headers.set(key, value)
+      })
+    }
     return intlResponse
   }
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
@@ -65,7 +84,17 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  return NextResponse.next()
+  // Create response and add CORS headers for API routes
+  const response = NextResponse.next()
+
+  if (req.nextUrl.pathname.startsWith('/api/')) {
+    const corsHeaders = getCorsHeaders(req)
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+  }
+
+  return response
 }
 
 // Specify which paths should be processed by the middleware
@@ -77,10 +106,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public (public files)
-     * - api/auth (NextAuth.js API routes)
-     * - api (API routes)
      * - _vercel (Vercel internals)
+     * Note: We now include API routes for CORS handling
      */
-    '/((?!api|_next/static|_next/image|_vercel|favicon.ico|public|.*\\..*).*)'
+    '/((?!_next/static|_next/image|_vercel|favicon.ico|public|.*\\..*).*)'
   ],
 }

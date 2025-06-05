@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { withCors } from '@/lib/cors'
 
-export async function GET(request: Request) {
+export const GET = withCors(async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -88,4 +89,4 @@ export async function GET(request: Request) {
       { status: 500 }
     )
   }
-}
+})

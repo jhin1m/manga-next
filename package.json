@@ -13,6 +13,7 @@
     "generate:icons": "node scripts/generate-icons.js",
     "test:revalidation": "node scripts/test-revalidation.js",
     "test:view-stats": "node scripts/test-view-statistics.js",
+    "test:cors": "node scripts/test-cors.js",
     "test:rankings": "node scripts/test-manga-rankings.js",
     "test:api-client": "node scripts/test-api-client-rankings.js",
     "test:db-migration": "node scripts/verify-database-migration.js",
