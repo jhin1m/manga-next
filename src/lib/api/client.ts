@@ -1073,8 +1073,9 @@ export const rankingsApi = {
     } = params;
 
     // Get appropriate cache options based on period
-    const cacheOptions = API_CONFIG.defaultCacheOptions.rankings[period] ||
-                        API_CONFIG.defaultCacheOptions.rankings.weekly;
+    const cacheOptions = period === 'all_time'
+      ? API_CONFIG.defaultCacheOptions.rankings.monthly // Use monthly cache for all_time
+      : API_CONFIG.defaultCacheOptions.rankings[period] || API_CONFIG.defaultCacheOptions.rankings.weekly;
 
     return apiClient(API_ENDPOINTS.manga.rankings, {
       params: { category, period, page, limit },
