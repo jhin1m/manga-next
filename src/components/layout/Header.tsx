@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, User, Heart, Settings, LogOut, History, Bell } from 'lucide-react';
+import { Menu, User, Heart, Settings, LogOut, History, Bell, BookOpen, TrendingUp } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { SearchButton, DesktopSearchButton } from '@/components/feature/SearchBar';
-import { Home, Clock, } from 'lucide-react';
+import { Home } from 'lucide-react';
 import { UserMenu } from '@/components/layout/user-menu';
 import { useSession, signOut } from 'next-auth/react';
 import { GenreDropdown, MobileGenreDropdown } from '@/components/feature/GenreDropdown';
@@ -67,15 +67,24 @@ export default function Header() {
           <nav className='hidden md:flex items-center space-x-6'>
             <Link
               href='/'
-              className='text-sm font-medium transition-colors hover:text-primary'
+              className='flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary'
             >
+              <Home className="h-4 w-4" />
               {t('home')}
             </Link>
             <Link
               href='/manga'
-              className='text-sm font-medium transition-colors hover:text-primary'
+              className='flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary'
             >
+              <BookOpen className="h-4 w-4" />
               {t('latest')}
+            </Link>
+            <Link
+              href='/ranking'
+              className='flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary'
+            >
+              <TrendingUp className="h-4 w-4" />
+              {t('ranking')}
             </Link>
 
             <GenreDropdown />
@@ -152,8 +161,15 @@ export default function Header() {
                       href='/manga'
                       className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                     >
-                      <Clock className="mr-3 h-5 w-5" />
+                      <BookOpen className="mr-3 h-5 w-5" />
                       {t('latest')}
+                    </Link>
+                    <Link
+                      href='/ranking'
+                      className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                    >
+                      <TrendingUp className="mr-3 h-5 w-5" />
+                      {t('ranking')}
                     </Link>
                     <MobileGenreDropdown />
                   </div>

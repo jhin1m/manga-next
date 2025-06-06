@@ -6,6 +6,7 @@ import { constructSearchMetadata } from '@/lib/seo/metadata';
 import { generateSearchJsonLd } from '@/lib/seo/jsonld';
 import JsonLdScript from '@/components/seo/JsonLdScript';
 import { seoConfig, getSiteUrl } from '@/config/seo.config';
+import { getTranslations } from 'next-intl/server';
 
 // Fetch all genres for filter options
 async function fetchGenres() {
@@ -127,13 +128,15 @@ export async function generateMetadata(
 
 
 // Enhanced MangaCard component that can display highlighted content
-function EnhancedMangaCard({
+async function EnhancedMangaCard({
   item,
   showHighlights = false
 }: {
   item: any,
   showHighlights?: boolean
 }) {
+  const tManga = await getTranslations('manga');
+
   return (
     <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
       <a href={`/manga/${item.slug}`} className="block">
@@ -177,8 +180,8 @@ function EnhancedMangaCard({
           )}
 
           <div className="flex justify-between items-center text-xs text-muted-foreground">
-            <span>{item.chapterCount} chapters</span>
-            <span>{item.views} views</span>
+            <span>{item.chapterCount} {tManga('chapters')}</span>
+            <span>{item.views} {tManga('views')}</span>
           </div>
 
           {showHighlights && item.highlightedDescription && (
@@ -194,7 +197,7 @@ function EnhancedMangaCard({
 }
 
 // Search filters component
-function SearchFilters({
+async function SearchFilters({
   genres,
   currentGenre,
   currentStatus,
@@ -207,24 +210,26 @@ function SearchFilters({
   currentSort: string | null,
   query: string
 }) {
-  // Status options
+  const tFilter = await getTranslations('filterSort');
+
+  // Status options with translations
   const statusOptions = [
-    { value: 'ongoing', label: 'Ongoing' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'hiatus', label: 'Hiatus' }
+    { value: 'ongoing', label: tFilter('statusOptions.ongoing') },
+    { value: 'completed', label: tFilter('statusOptions.completed') },
+    { value: 'hiatus', label: tFilter('statusOptions.hiatus') }
   ];
 
-  // Sort options
+  // Sort options with translations
   const sortOptions = [
-    { value: 'relevance', label: 'Relevance' },
-    { value: 'latest', label: 'Latest Update' },
-    { value: 'views', label: 'Most Views' },
-    { value: 'title', label: 'Title (A-Z)' }
+    { value: 'relevance', label: tFilter('sortOptions.relevance') },
+    { value: 'latest', label: tFilter('sortOptions.latest') },
+    { value: 'views', label: tFilter('sortOptions.views') },
+    { value: 'title', label: tFilter('sortOptions.title') }
   ];
 
   return (
     <div className="bg-card rounded-lg p-4 mb-6 shadow-sm">
-      <h2 className="font-semibold mb-3">Filter Results</h2>
+      <h2 className="font-semibold mb-3">{tFilter('filterResults')}</h2>
 
       <form action="/search" method="get" className="space-y-4">
         {/* Hidden query field */}
@@ -232,14 +237,14 @@ function SearchFilters({
 
         {/* Genre filter */}
         <div>
-          <label htmlFor="genre" className="block text-sm font-medium mb-1">Genre</label>
+          <label htmlFor="genre" className="block text-sm font-medium mb-1">{tFilter('genre')}</label>
           <select
             id="genre"
             name="genre"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             defaultValue={currentGenre || ''}
           >
-            <option value="">All Genres</option>
+            <option value="">{tFilter('allGenres')}</option>
             {genres.map(genre => (
               <option key={genre.id} value={genre.slug}>
                 {genre.name}
@@ -250,14 +255,14 @@ function SearchFilters({
 
         {/* Status filter */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium mb-1">Status</label>
+          <label htmlFor="status" className="block text-sm font-medium mb-1">{tFilter('status')}</label>
           <select
             id="status"
             name="status"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             defaultValue={currentStatus || ''}
           >
-            <option value="">All Status</option>
+            <option value="">{tFilter('allStatus')}</option>
             {statusOptions.map(status => (
               <option key={status.value} value={status.value}>
                 {status.label}
@@ -268,7 +273,7 @@ function SearchFilters({
 
         {/* Sort order */}
         <div>
-          <label htmlFor="sort" className="block text-sm font-medium mb-1">Sort By</label>
+          <label htmlFor="sort" className="block text-sm font-medium mb-1">{tFilter('sort')}</label>
           <select
             id="sort"
             name="sort"
@@ -288,7 +293,7 @@ function SearchFilters({
           type="submit"
           className="w-full bg-primary text-primary-foreground rounded-md py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
         >
-          Apply Filters
+          {tFilter('applyFilters')}
         </button>
       </form>
     </div>
@@ -305,6 +310,10 @@ export default async function SearchPage({ searchParams }: Props) {
   const genre = typeof params.genre === 'string' ? params.genre : null;
   const status = typeof params.status === 'string' ? params.status : null;
   const sort = typeof params.sort === 'string' ? params.sort : null;
+
+  // Get translations
+  const tSearch = await getTranslations('search');
+  const tCommon = await getTranslations('common');
 
   // Fetch genres for filters
   const genres = await fetchGenres();
@@ -334,7 +343,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 type="text"
                 name="q"
                 defaultValue={query}
-                placeholder="Search manga..."
+                placeholder={tSearch('placeholderSimple')}
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <button
@@ -345,7 +354,7 @@ export default async function SearchPage({ searchParams }: Props) {
                   <circle cx="11" cy="11" r="8"></circle>
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <span className="sr-only">Search</span>
+                <span className="sr-only">{tCommon('search')}</span>
               </button>
             </form>
           </div>
@@ -353,10 +362,10 @@ export default async function SearchPage({ searchParams }: Props) {
 
         {query && (
           <h1 className="text-2xl font-bold mb-6">
-            Search results for: <span className="text-primary">{query}</span>
+            {tSearch('searchResultsFor')} <span className="text-primary">{query}</span>
             {results.totalResults > 0 && (
               <span className="text-muted-foreground text-sm font-normal ml-2">
-                ({results.totalResults} results)
+                ({results.totalResults} {tSearch('results')})
               </span>
             )}
           </h1>
@@ -402,15 +411,15 @@ export default async function SearchPage({ searchParams }: Props) {
                 {query ? (
                   <div>
                     <p className="text-muted-foreground mb-2">
-                      No results found for &quot;{query}&quot;.
+                      {tSearch('noResultsFound')} &quot;{query}&quot;.
                     </p>
                     <p className="text-sm">
-                      Try a different search term or adjusting your filters.
+                      {tSearch('tryDifferentSearch')}
                     </p>
                   </div>
                 ) : (
                   <p className="text-muted-foreground">
-                    Enter a search term to find manga.
+                    {tSearch('enterSearchTerm')}
                   </p>
                 )}
               </div>
@@ -431,7 +440,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 type="text"
                 name="q"
                 defaultValue={query}
-                placeholder="Search manga..."
+                placeholder={tSearch('placeholderSimple')}
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <button
@@ -442,17 +451,17 @@ export default async function SearchPage({ searchParams }: Props) {
                   <circle cx="11" cy="11" r="8"></circle>
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <span className="sr-only">Search</span>
+                <span className="sr-only">{tCommon('search')}</span>
               </button>
             </form>
           </div>
         </div>
 
         <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-          <h2 className="text-lg font-semibold text-red-700 mb-2">Error Loading Search Results</h2>
-          <p className="text-red-600 mb-2">{error instanceof Error ? error.message : 'An unknown error occurred'}</p>
+          <h2 className="text-lg font-semibold text-red-700 mb-2">{tSearch('errorLoadingResults')}</h2>
+          <p className="text-red-600 mb-2">{error instanceof Error ? error.message : tCommon('error')}</p>
           <p className="text-sm text-muted-foreground">
-            Please try again with a different search term or check your connection.
+            {tSearch('checkConnection')}
           </p>
         </div>
       </div>

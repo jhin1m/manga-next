@@ -2,16 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import { removeFromReadingHistoryComplete } from "@/lib/utils/readingHistory";
 import { useSession } from "next-auth/react";
 import { useReadingHistorySync } from "@/hooks/useReadingHistorySync";
+import { useTranslations } from 'next-intl';
+import { useFormat } from '@/hooks/useFormat';
 
 export default function HistoryReading() {
   const [loading, setLoading] = useState(true);
   const { status } = useSession();
+  const t = useTranslations('readingHistory');
+  const { formatDate } = useFormat();
 
   // Use the sync hook for enhanced functionality
   const {
@@ -78,7 +81,7 @@ export default function HistoryReading() {
                             opacity-100 md:opacity-0 md:group-hover:opacity-100
                             transition-opacity min-h-[32px] min-w-[32px] flex items-center justify-center
                             touch-manipulation"
-                  aria-label="Xóa khỏi lịch sử"
+                  aria-label={t('removeFromHistory')}
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -87,9 +90,9 @@ export default function HistoryReading() {
           </>
         ) : (
           <div className="text-center py-2">
-            <p className="text-sm text-muted-foreground">Chưa có đọc truyện nào.</p>
+            <p className="text-sm text-muted-foreground">{t('noHistoryYet')}</p>
             <Link href="/manga" className="text-xs text-primary hover:underline">
-              Khám phá truyện để đọc bạn nhé!
+              {t('exploreToRead')}
             </Link>
           </div>
         )}

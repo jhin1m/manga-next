@@ -4,10 +4,9 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
-import { Star, Eye, BookOpen, AlertCircle } from 'lucide-react'
+import { BookOpen, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FavoriteButton } from '@/components/manga/FavoriteButton'
-import { formatDate } from '@/lib/utils/format'
 import { useRouter } from 'next/navigation'
 
 interface Chapter {
@@ -140,7 +139,7 @@ export default function FavoritesGrid({ favorites }: FavoritesGridProps) {
                           aria-label={`Read Chapter ${latestChapter.chapter_number}${latestChapter.title ? `: ${latestChapter.title}` : ''}`}
                           title={`Chapter ${latestChapter.chapter_number}${latestChapter.title ? `: ${latestChapter.title}` : ''}`}
                         >
-                         ${latestChapter.title}
+                         {latestChapter.title}
                         </Link>
                       </div>
                       {latestChapter.release_date && (
