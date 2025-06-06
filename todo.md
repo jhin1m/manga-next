@@ -132,7 +132,7 @@ For detailed backend implementation tasks and guides, refer to:
   - [x] Spam detection and rate limiting
   - [x] Mobile-responsive comment interface
 - [ ] Admin panel for content management
-- [ ] Notifications for new chapters
+- [x] Notifications for new chapters
 - [ ] Progressive Web App (PWA) features
 
 ## Resources
