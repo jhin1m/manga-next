@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Home, BookOpen, Heart, ArrowLeft } from 'lucide-react';
 import { constructMetadata } from '@/lib/seo/metadata';
+import { defaultViewport } from '@/lib/seo/viewport';
 import { getTranslations } from 'next-intl/server';
 
 // Generate metadata for the 404 page
@@ -12,6 +13,8 @@ export const metadata: Metadata = constructMetadata({
   description: 'The page you are looking for could not be found. Return to our manga collection and discover amazing stories.',
   noIndex: true
 });
+
+export const viewport = defaultViewport;
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');

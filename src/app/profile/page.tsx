@@ -11,11 +11,14 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import FavoritesGrid from '@/components/profile/favorites-grid'
 import ReadingHistoryList from '@/components/profile/reading-history-list'
 import NotificationsList from '@/components/profile/notifications-list'
+import { defaultViewport } from '@/lib/seo/viewport'
 
 export const metadata: Metadata = {
   title: 'Profile',
   description: 'Manage your account',
 }
+
+export const viewport = defaultViewport;
 
 interface ProfilePageProps {
   searchParams: Promise<{

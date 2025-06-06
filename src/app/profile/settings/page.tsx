@@ -7,11 +7,14 @@ import { Separator } from '@/components/ui/separator'
 import { ProfileForm } from '@/components/profile/profile-form'
 import { PasswordForm } from '@/components/profile/password-form'
 import { NotificationSettings } from '@/components/notifications/NotificationSettings'
+import { defaultViewport } from '@/lib/seo/viewport'
 
 export const metadata: Metadata = {
   title: 'Settings',
   description: 'Manage your account settings',
 }
+
+export const viewport = defaultViewport;
 
 export default async function SettingsPage() {
   const session = await getServerSession(authOptions)

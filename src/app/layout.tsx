@@ -14,6 +14,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { MainContent } from "@/components/layout/MainContent";
 import Analytics from "@/components/analytics/Analytics";
+import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
+import OfflineIndicator from "@/components/pwa/OfflineIndicator";
+import { defaultViewport } from "@/lib/seo/viewport";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -21,7 +24,25 @@ const nunito = Nunito({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = constructMetadata();
+const baseMetadata = constructMetadata();
+
+// Remove viewport and themeColor from base metadata to avoid conflicts
+const { viewport: _, themeColor: __, ...cleanMetadata } = baseMetadata as any;
+
+export const metadata: Metadata = {
+  ...cleanMetadata,
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: seoConfig.site.name,
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport = defaultViewport;
 
 // Add Google Site Verification if configured
 const googleSiteVerification = getGoogleSiteVerification();
@@ -62,6 +83,8 @@ export default async function RootLayout({
               </MainContent>
               <Footer />
               <Toaster />
+              <PWAInstallPrompt />
+              <OfflineIndicator />
 
             {/* Analytics Components */}
             <Analytics />

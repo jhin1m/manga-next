@@ -7,6 +7,7 @@ import LatestUpdateMangaList from "@/components/feature/LatestUpdateMangaList";
 import Sidebar from "@/components/feature/Sidebar";
 import ViewMoreButton from "@/components/ui/ViewMoreButton";
 import { seoConfig, getSiteUrl } from "@/config/seo.config";
+import { defaultViewport } from "@/lib/seo/viewport";
 
 import { mangaApi } from '@/lib/api/client';
 
@@ -60,6 +61,8 @@ export const metadata: Metadata = constructMetadata({
   keywords: [...seoConfig.site.keywords, 'latest manga', 'popular manga', 'completed manga'],
   canonical: getSiteUrl(),
 });
+
+export const viewport = defaultViewport;
 
 export default async function Home({
   searchParams,

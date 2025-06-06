@@ -94,7 +94,7 @@ export class MangaRawSource extends BaseSource {
   constructor() {
     super({
       name: 'MangaRaw',
-      baseUrl: 'https://mangaraw.best/api/admin',
+      baseUrl: process.env.MANGARAW_BASE_URL || '',
       perPage: 50,
       supportedFeatures: ['manga', 'chapter'],
       requiresAuth: true,

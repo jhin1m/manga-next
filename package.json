@@ -11,6 +11,7 @@
     "format": "prettier --write .",
     "seed": "npx ts-node prisma/seed.ts",
     "generate:icons": "node scripts/generate-icons.js",
+    "generate:pwa-screenshots": "node scripts/generate-pwa-screenshots.js",
     "test:revalidation": "node scripts/test-revalidation.js",
     "test:view-stats": "node scripts/test-view-statistics.js",
     "test:cors": "node scripts/test-cors.js",

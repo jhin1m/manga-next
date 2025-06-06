@@ -482,6 +482,26 @@
     "trendsComingSoon": "Trends coming soon",
     "trendsDescription": "Historical view trends will be available here"
   },
+  "pwa": {
+    "install": {
+      "title": "Install Manga App",
+      "description": "Get the full app experience with offline reading and faster loading.",
+      "ios-instruction": "Tap the Share button and select 'Add to Home Screen' to install.",
+      "button": "Install",
+      "dismiss": "Not now"
+    },
+    "offline": {
+      "title": "You're offline",
+      "description": "Some features may not be available while offline.",
+      "retry": "Try again"
+    },
+    "update": {
+      "title": "App Update Available",
+      "description": "A new version of the app is available.",
+      "button": "Update",
+      "dismiss": "Later"
+    }
+  },
   "chapterReport": {
     "reportIssue": "Report Issue",
     "reportChapterIssue": "Report Chapter Issue",

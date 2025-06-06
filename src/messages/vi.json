@@ -482,6 +482,26 @@
     "trendsComingSoon": "Xu hướng sẽ có sớm",
     "trendsDescription": "Biểu đồ xu hướng lượt xem sẽ hiển thị ở đây"
   },
+  "pwa": {
+    "install": {
+      "title": "Cài đặt ứng dụng Manga",
+      "description": "Trải nghiệm ứng dụng đầy đủ với đọc offline và tải nhanh hơn.",
+      "ios-instruction": "Nhấn nút Chia sẻ và chọn 'Thêm vào Màn hình chính' để cài đặt.",
+      "button": "Cài đặt",
+      "dismiss": "Để sau"
+    },
+    "offline": {
+      "title": "Bạn đang offline",
+      "description": "Một số tính năng có thể không khả dụng khi offline.",
+      "retry": "Thử lại"
+    },
+    "update": {
+      "title": "Có bản cập nhật ứng dụng",
+      "description": "Phiên bản mới của ứng dụng đã có sẵn.",
+      "button": "Cập nhật",
+      "dismiss": "Để sau"
+    }
+  },
   "chapterReport": {
     "reportIssue": "Báo cáo vấn đề",
     "reportChapterIssue": "Báo cáo lỗi chương",
