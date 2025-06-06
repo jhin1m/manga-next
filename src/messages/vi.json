@@ -15,6 +15,7 @@
   "navigation": {
     "home": "Trang chủ",
     "latest": "Mới nhất",
+    "ranking": "Bảng xếp hạng",
     "search": "Tìm kiếm",
     "searchManga": "Tìm truyện gì nè?",
     "profile": "Trang cá nhân",
@@ -73,13 +74,22 @@
   },
   "search": {
     "placeholder": "Tìm kiếm truyện...",
+    "placeholderSimple": "Tìm truyện...",
     "searching": "Đang tìm kiếm...",
     "noResults": "Không tìm thấy kết quả nào.",
     "searchFor": "Tìm kiếm cho",
+    "searchResultsFor": "Kết quả tìm kiếm cho:",
+    "results": "kết quả",
     "recentSearches": "Tìm kiếm gần đây của bạn",
     "popularSearches": "Tìm kiếm phổ biến",
     "popularManga": "Truyện phổ biến",
-    "suggestions": "Gợi ý cho bạn"
+    "suggestions": "Gợi ý cho bạn",
+    "applyFilters": "Áp dụng bộ lọc",
+    "noResultsFound": "Không tìm thấy kết quả nào cho",
+    "tryDifferentSearch": "Thử từ khóa khác hoặc điều chỉnh bộ lọc.",
+    "enterSearchTerm": "Nhập từ khóa để tìm truyện.",
+    "errorLoadingResults": "Lỗi khi tải kết quả tìm kiếm",
+    "checkConnection": "Vui lòng thử lại với từ khóa khác hoặc kiểm tra kết nối."
   },
   "filterSort": {
     "sort": "Sắp xếp",
@@ -88,9 +98,13 @@
     "applyFilters": "Áp dụng bộ lọc",
     "status": "Trạng thái",
     "genres": "Thể loại",
+    "genre": "Thể loại",
+    "allGenres": "Tất cả thể loại",
+    "allStatus": "Tất cả trạng thái",
     "loadingGenres": "Đang tải thể loại...",
     "reset": "Đặt lại bộ lọc",
     "selectStatus": "Chọn trạng thái",
+    "filterResults": "Lọc kết quả",
     "statusOptions": {
       "all": "Tất cả",
       "ongoing": "Đang tiến hành",
@@ -98,9 +112,12 @@
       "hiatus": "Tạm dừng"
     },
     "sortOptions": {
+      "relevance": "Độ liên quan",
       "latest": "Mới cập nhật",
       "newest": "Mới thêm",
       "popular": "Phổ biến",
+      "views": "Nhiều lượt xem",
+      "title": "Tên truyện (A-Z)",
       "rating": "Đánh giá cao"
     }
   },
@@ -131,11 +148,11 @@
   },
   "notFound": {
     "title": "Không tìm thấy trang",
-    "heading": "404 - Không tìm thấy truyện",
-    "description": "Trang truyện bạn đang tìm có thể không tồn tại hoặc đã bị gỡ rồi.",
-    "subDescription": "Đừng lo lắng, chúng tôi sẽ giúp bạn quay lại đúng hướng ngay!",
+    "heading": "404 - Không tìm thấy cái gì hết",
+    "description": "Trang truyện bạn đang tìm có thể không tồn tại hoặc đã bị xoá rồi hic hic.",
+    "subDescription": "Đừng lo lắng, bọn mình sẽ dẫn bạn quay lại đúng hướng ngay!",
     "homeButton": "Về trang chủ",
-    "browseButton": "Duyệt truyện",
+    "browseButton": "Xem truyện",
     "suggestions": "Gợi ý cho bạn nè:",
     "checkLatest": "Xem các truyện mới nhất",
     "exploreGenres": "Khám phá các thể loại truyện",
@@ -347,8 +364,109 @@
       "monthly": "Tháng này",
       "trending": "Hot",
       "errorLoading": "Không thể tải bảng xếp hạng",
-      "noRankings": "Chưa có dữ liệu xếp hạng"
+      "noRankings": "Chưa có dữ liệu xếp hạng",
+      "viewAllRankings": "Xem toàn bộ BXH"
+    },
+    "viewAllRankings": "Xem toàn bộ BXH"
+  },
+  "rankings": {
+    "title": "Bảng Xếp Hạng Manga",
+    "subtitle": "Khám phá những bộ manga phổ biến nhất theo các danh mục và khoảng thời gian khác nhau",
+    "categories": {
+      "mostViewed": "Nhiều Lượt Xem Nhất",
+      "highestRated": "Đánh Giá Cao Nhất",
+      "mostBookmarked": "Được Yêu Thích Nhất",
+      "trending": "Đang Thịnh Hành",
+      "most_viewed": "Xem nhiều",
+      "most_bookmarked": "Yêu thích nhiều",
+      "highest_rated": "Đánh giá cao"
+    },
+    "categoryDescriptions": {
+      "mostViewed": "Dựa trên số lượt xem",
+      "highestRated": "Dựa trên đánh giá người dùng",
+      "mostBookmarked": "Dựa trên số lượt yêu thích",
+      "trending": "Dựa theo trends"
+    },
+    "periods": {
+      "daily": "Hôm Nay",
+      "weekly": "Tuần Này",
+      "monthly": "Tháng Này",
+      "allTime": "Tất cả",
+      "all_time": "Tất cả"
+    },
+    "stats": {
+      "views": "lượt xem",
+      "rating": "đánh giá",
+      "bookmarks": "lượt yêu thích",
+      "rank": "Hạng #{rank}",
+      "topRanked": "Xếp Hạng Cao",
+      "newEntry": "Mới Lên Bảng",
+      "rising": "Đang Tăng"
+    },
+    "filters": {
+      "category": "Danh Mục",
+      "timePeriod": "Khoảng Thời Gian",
+      "selectCategory": "Chọn loại bảng xếp hạng bạn muốn xem",
+      "selectPeriod": "Chọn khoảng thời gian cho bảng xếp hạng",
+      "applyFilters": "Áp Dụng Bộ Lọc",
+      "resetFilters": "Đặt Lại Bộ Lọc"
+    },
+    "pagination": {
+      "showingResults": "Hiển thị {start}-{end} trong tổng số {total} truyện",
+      "loadMore": "Tải Thêm Bảng Xếp Hạng",
+      "previousPage": "Trang Trước",
+      "nextPage": "Trang Sau",
+      "goToPage": "Đi đến trang {page}"
+    },
+    "empty": {
+      "title": "Không Có Bảng Xếp Hạng",
+      "description": "Không có bảng xếp hạng manga nào cho danh mục và khoảng thời gian này.",
+      "suggestion": "Thử chọn danh mục hoặc khoảng thời gian khác."
+    },
+    "error": {
+      "title": "Không Thể Tải Bảng Xếp Hạng",
+      "description": "Chúng tôi không thể tải bảng xếp hạng manga lúc này.",
+      "retry": "Thử Lại",
+      "goBack": "Quay Lại"
+    },
+    "loading": {
+      "title": "Đang Tải Bảng Xếp Hạng...",
+      "description": "Vui lòng đợi trong khi chúng tôi tải bảng xếp hạng manga mới nhất."
+    },
+    "actions": {
+      "viewDetails": "Xem Chi Tiết",
+      "readNow": "Đọc Ngay",
+      "addToFavorites": "Thêm Vào Yêu Thích",
+      "viewAllRankings": "Xem Tất Cả Bảng Xếp Hạng",
+      "backToRankings": "Quay Lại Bảng Xếp Hạng"
+    },
+    "mobile": {
+      "showStats": "Hiện Thống Kê",
+      "hideStats": "Ẩn Thống Kê",
+      "moreInfo": "Thêm Thông Tin",
+      "quickActions": "Thao Tác Nhanh"
+    },
+    "seo": {
+      "metaTitle": {
+        "default": "Bảng Xếp Hạng Manga - Top Manga Theo Lượt Xem, Đánh Giá & Yêu Thích",
+        "mostViewed": "Bảng Xếp Hạng Manga Nhiều Lượt Xem Nhất {period}",
+        "highestRated": "Bảng Xếp Hạng Manga Đánh Giá Cao Nhất {period}",
+        "mostBookmarked": "Bảng Xếp Hạng Manga Được Yêu Thích Nhất {period}",
+        "trending": "Bảng Xếp Hạng Manga Đang Thịnh Hành {period}"
+      },
+      "metaDescription": {
+        "default": "Khám phá những bộ manga phổ biến nhất với bảng xếp hạng toàn diện của chúng tôi. Tìm top manga theo lượt xem, đánh giá, yêu thích và xu hướng theo ngày, tuần, tháng và mọi thời đại.",
+        "mostViewed": "Khám phá bảng xếp hạng manga nhiều lượt xem nhất {period}. Tìm hiểu những bộ manga mà độc giả đang thích nhất với thống kê lượt xem thời gian thực.",
+        "highestRated": "Tìm những bộ manga đánh giá cao nhất {period} dựa trên đánh giá và xếp hạng của người dùng. Khám phá những manga được giới phê bình đánh giá cao.",
+        "mostBookmarked": "Duyệt những bộ manga được yêu thích nhất {period}. Xem những manga mà độc giả đang lưu vào danh sách yêu thích và thêm vào danh sách đọc.",
+        "trending": "Xem những bộ manga đang thịnh hành {period} đang trở nên phổ biến. Khám phá những ngôi sao mới nổi và những phát hành hot trong thế giới manga."
+      }
     }
+  },
+  "readingHistory": {
+    "removeFromHistory": "Xóa khỏi lịch sử",
+    "noHistoryYet": "Chưa có đọc truyện nào.",
+    "exploreToRead": "Khám phá truyện để đọc bạn nhé!"
   },
   "viewStats": {
     "title": "Thống kê lượt xem {type}",

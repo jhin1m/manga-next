@@ -80,7 +80,7 @@ export default function Header() {
               {t('latest')}
             </Link>
             <Link
-              href='/ranking'
+              href='/rankings'
               className='flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary'
             >
               <TrendingUp className="h-4 w-4" />
@@ -165,7 +165,7 @@ export default function Header() {
                       {t('latest')}
                     </Link>
                     <Link
-                      href='/ranking'
+                      href='/rankings'
                       className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
                     >
                       <TrendingUp className="mr-3 h-5 w-5" />

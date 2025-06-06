@@ -15,6 +15,7 @@
   "navigation": {
     "home": "Home",
     "latest": "Latest Releases",
+    "ranking": "Rankings",
     "search": "Search",
     "searchManga": "Looking for manga?",
     "profile": "Your Profile",
@@ -73,13 +74,22 @@
   },
   "search": {
     "placeholder": "Search for your next manga...",
+    "placeholderSimple": "Search manga...",
     "searching": "Searching for you...",
     "noResults": "No results found. Maybe try a different search?",
     "searchFor": "Searching for",
+    "searchResultsFor": "Search results for:",
+    "results": "results",
     "recentSearches": "Your Recent Searches",
     "popularSearches": "Popular Searches",
     "popularManga": "Popular Manga",
-    "suggestions": "Suggestions for you:"
+    "suggestions": "Suggestions for you:",
+    "applyFilters": "Apply Filters",
+    "noResultsFound": "No results found for",
+    "tryDifferentSearch": "Try a different search term or adjusting your filters.",
+    "enterSearchTerm": "Enter a search term to find manga.",
+    "errorLoadingResults": "Error Loading Search Results",
+    "checkConnection": "Please try again with a different search term or check your connection."
   },
   "filterSort": {
     "sort": "Sort By",
@@ -88,19 +98,26 @@
     "applyFilters": "Apply Filters",
     "status": "Status",
     "genres": "Genres",
+    "genre": "Genre",
+    "allGenres": "All Genres",
+    "allStatus": "All Status",
     "loadingGenres": "Loading genres...",
     "reset": "Reset Filters",
     "selectStatus": "Select a status",
+    "filterResults": "Filter Results",
     "statusOptions": {
       "all": "All",
       "ongoing": "Ongoing",
       "completed": "Completed",
-      "hiatus": "On Hiatus"
+      "hiatus": "Hiatus"
     },
     "sortOptions": {
+      "relevance": "Relevance",
       "latest": "Latest Update",
       "newest": "Newest Added",
       "popular": "Most Popular",
+      "views": "Most Views",
+      "title": "Title (A-Z)",
       "rating": "Highest Rating"
     }
   },
@@ -347,8 +364,109 @@
       "monthly": "Monthly",
       "trending": "Hot",
       "errorLoading": "Failed to load rankings",
-      "noRankings": "No rankings available"
+      "noRankings": "No rankings available",
+      "viewAllRankings": "View All Rankings"
+    },
+    "viewAllRankings": "View All Rankings"
+  },
+  "rankings": {
+    "title": "Manga Rankings",
+    "subtitle": "Discover the most popular manga across different categories and time periods",
+    "categories": {
+      "mostViewed": "Most Viewed",
+      "highestRated": "Highest Rated",
+      "mostBookmarked": "Most Bookmarked",
+      "trending": "Trending Now",
+      "most_viewed": "Most Viewed",
+      "most_bookmarked": "Most Bookmarked",
+      "highest_rated": "Highest Rated"
+    },
+    "categoryDescriptions": {
+      "mostViewed": "Based on view counts",
+      "highestRated": "Based on user ratings",
+      "mostBookmarked": "Based on favorites count",
+      "trending": "Rising in popularity"
+    },
+    "periods": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "allTime": "All Time",
+      "all_time": "All Time"
+    },
+    "stats": {
+      "views": "views",
+      "rating": "rating",
+      "bookmarks": "bookmarks",
+      "rank": "Rank #{rank}",
+      "topRanked": "Top Ranked",
+      "newEntry": "New Entry",
+      "rising": "Rising"
+    },
+    "filters": {
+      "category": "Category",
+      "timePeriod": "Time Period",
+      "selectCategory": "Choose what type of rankings you want to see",
+      "selectPeriod": "Select the time range for the rankings",
+      "applyFilters": "Apply Filters",
+      "resetFilters": "Reset Filters"
+    },
+    "pagination": {
+      "showingResults": "Showing {start}-{end} of {total} manga",
+      "loadMore": "Load More Rankings",
+      "previousPage": "Previous Page",
+      "nextPage": "Next Page",
+      "goToPage": "Go to page {page}"
+    },
+    "empty": {
+      "title": "No Rankings Available",
+      "description": "There are no manga rankings available for this category and time period.",
+      "suggestion": "Try selecting a different category or time period."
+    },
+    "error": {
+      "title": "Failed to Load Rankings",
+      "description": "We couldn't load the manga rankings at this time.",
+      "retry": "Try Again",
+      "goBack": "Go Back"
+    },
+    "loading": {
+      "title": "Loading Rankings...",
+      "description": "Please wait while we fetch the latest manga rankings."
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "readNow": "Read Now",
+      "addToFavorites": "Add to Favorites",
+      "viewAllRankings": "View All Rankings",
+      "backToRankings": "Back to Rankings"
+    },
+    "mobile": {
+      "showStats": "Show Stats",
+      "hideStats": "Hide Stats",
+      "moreInfo": "More Info",
+      "quickActions": "Quick Actions"
+    },
+    "seo": {
+      "metaTitle": {
+        "default": "Manga Rankings - Top Manga by Views, Ratings & Bookmarks",
+        "mostViewed": "{period} Most Viewed Manga Rankings",
+        "highestRated": "{period} Highest Rated Manga Rankings",
+        "mostBookmarked": "{period} Most Bookmarked Manga Rankings",
+        "trending": "{period} Trending Manga Rankings"
+      },
+      "metaDescription": {
+        "default": "Discover the most popular manga with our comprehensive rankings. Find top manga by views, ratings, bookmarks, and trending status across daily, weekly, monthly, and all-time periods.",
+        "mostViewed": "Explore the {period} most viewed manga rankings. Discover what manga readers are enjoying most with real-time view statistics and trending data.",
+        "highestRated": "Find the {period} highest rated manga based on user reviews and ratings. Discover critically acclaimed manga with the best reader scores.",
+        "mostBookmarked": "Browse the {period} most bookmarked manga. See what manga readers are saving to their favorites and adding to their reading lists.",
+        "trending": "Check out the {period} trending manga that are gaining popularity. Discover rising stars and hot new releases in the manga world."
+      }
     }
+  },
+  "readingHistory": {
+    "removeFromHistory": "Remove from history",
+    "noHistoryYet": "No reading history yet.",
+    "exploreToRead": "Explore manga to start reading!"
   },
   "viewStats": {
     "title": "View Statistics for {type}",

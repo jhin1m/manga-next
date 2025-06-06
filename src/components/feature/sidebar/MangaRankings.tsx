@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Crown, Medal, Award, TrendingUp, Eye } from 'lucide-react'
+import { Crown, Medal, Award, TrendingUp, Eye, ExternalLink } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { useFormat } from '@/hooks/useFormat'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
@@ -46,7 +47,7 @@ export default function MangaRankings({ className }: MangaRankingsProps) {
     setError(prev => ({ ...prev, [period]: null }))
 
     try {
-      const data: MangaRankingsResponse = await rankingsApi.getRankings({
+      const data: MangaRankingsResponse = await rankingsApi.getSidebarRankings({
         period,
         limit: 10
       })
@@ -240,8 +241,24 @@ export default function MangaRankings({ className }: MangaRankingsProps) {
             ) : rankings[period].length === 0 ? (
               renderEmpty()
             ) : (
-              <div className="space-y-1">
-                {rankings[period].map((manga) => renderRankingItem(manga, period))}
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  {rankings[period].map((manga) => renderRankingItem(manga, period))}
+                </div>
+
+                {/* View All Rankings Button */}
+                <div className="pt-2 border-t">
+                  <Link href="/rankings" className="block">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs"
+                    >
+                      <ExternalLink className="w-3 h-3 mr-2" />
+                      {t('viewAllRankings')}
+                    </Button>
+                  </Link>
+                </div>
               </div>
             )}
           </TabsContent>

@@ -1058,22 +1058,50 @@ export const ratingApi = {
 
 // Rankings API functions
 export const rankingsApi = {
-  // Get manga rankings by period
+  // Get manga rankings by category and period
   getRankings: async (params: {
+    category?: 'most_viewed' | 'highest_rated' | 'most_bookmarked' | 'trending';
+    period?: 'daily' | 'weekly' | 'monthly' | 'all_time';
+    page?: number;
+    limit?: number;
+  } = {}) => {
+    const {
+      category = 'most_viewed',
+      period = 'weekly',
+      page = 1,
+      limit = 10
+    } = params;
+
+    // Get appropriate cache options based on period
+    const cacheOptions = API_CONFIG.defaultCacheOptions.rankings[period] ||
+                        API_CONFIG.defaultCacheOptions.rankings.weekly;
+
+    return apiClient(API_ENDPOINTS.manga.rankings, {
+      params: { category, period, page, limit },
+      next: {
+        ...cacheOptions,
+        tags: [
+          'rankings',
+          `rankings-${category}`,
+          `rankings-${period}`,
+          `rankings-${category}-${period}`,
+          'manga-rankings'
+        ],
+      },
+    });
+  },
+
+  // Get rankings for sidebar (simplified)
+  getSidebarRankings: async (params: {
     period?: 'daily' | 'weekly' | 'monthly';
     limit?: number;
   } = {}) => {
     const { period = 'weekly', limit = 10 } = params;
 
-    // Get appropriate cache options based on period
-    const cacheOptions = API_CONFIG.defaultCacheOptions.rankings[period];
-
-    return apiClient(API_ENDPOINTS.manga.rankings, {
-      params: { period, limit },
-      next: {
-        ...cacheOptions,
-        tags: ['rankings', `rankings-${period}`, 'manga-rankings'],
-      },
+    return rankingsApi.getRankings({
+      category: 'most_viewed',
+      period,
+      limit
     });
   },
 
