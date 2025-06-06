@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, User, Heart, Settings, LogOut, History, Bell, BookOpen, TrendingUp } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -35,6 +35,15 @@ export default function Header() {
   const { shouldHeaderBeSticky } = useRouteDetection();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Prevent hydration mismatch by only applying route-based styling after mount
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Use safe defaults during SSR/hydration
+  const safeShouldHeaderBeSticky = isMounted ? shouldHeaderBeSticky : true;
 
   const handleMobileSignOut = async () => {
     setIsLoggingOut(true);
@@ -53,7 +62,7 @@ export default function Header() {
 
   return (
     <header className={`border-b border-border/40 bg-background/40 backdrop-blur-sm top-0 z-50 ${
-      shouldHeaderBeSticky ? 'sticky' : 'relative'
+      safeShouldHeaderBeSticky ? 'sticky' : 'relative'
     }`}>
       <div className='container mx-auto px-4 py-3'>
         <div className='flex justify-between items-center sm:px-14 2xl:px-21'>

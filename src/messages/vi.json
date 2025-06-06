@@ -168,25 +168,25 @@
     "allRightsReserved": "Tất cả quyền được bảo lưu",
     "siteInfo": {
       "title": "Manga Next",
-      "description": "Điểm đến tuyệt vời để đọc manga trực tuyến miễn phí. Khám phá hàng nghìn bộ manga với những cập nhật mới nhất.",
+      "description": "Nơi lý tưởng để cày manga miễn phí mà không bị “tổ trưởng dân phố” hỏi thăm!",
       "tagline": "Đọc Manga Trực Tuyến Miễn Phí"
     },
     "navigation": {
-      "title": "Điều hướng",
-      "browse": "Duyệt",
-      "popular": "Truyện Hot",
-      "latest": "Truyện mới",
-      "search": "Tìm kiếm",
-      "genres": "Thể loại"
+      "title": "Đi chơi nè!",
+      "browse": "Lướt xem truyện",
+      "popular": "Truyện hot hit",
+      "latest": "Mới ra lò",
+      "search": "Tìm kiếm thêm",
+      "genres": "Menu thể loại"
     },
     "legal": {
-      "title": "Pháp lý",
-      "about": "Về chúng tôi",
-      "help": "Trợ giúp & Hỗ trợ"
+      "title": "Mục nghiêm túc",
+      "about": "Tụi mình là ai?",
+      "help": "Cần cứu? Ấn vào đây"
     },
     "social": {
-      "title": "Kết nối",
-      "followUs": "Theo dõi chúng tôi"
+      "title": "Giao lưu kết bạn",
+      "followUs": "Follow tụi mình nhen"
     },
     "stats": {
       "title": "Thống kê",
@@ -195,7 +195,7 @@
       "totalUsers": "Tổng số người dùng",
       "totalComments": "Tổng số bình luận"
     },
-    "backToTop": "Về đầu trang",
+    "backToTop": "Đi lên nào~ senpai~ 🌸",
     "copyright": "© {year} {siteName}. {allRightsReserved}"
   },
   "format": {
@@ -244,21 +244,21 @@
     }
   },
   "comments": {
-    "noRecentComments": "Chưa có bình luận nào đâu.",
+    "noRecentComments": "Chưa có bình luận nào. Lâu lâu cũng cần người mở hàng mà!",
     "chapter": "Chương",
     "title": "Bình luận",
     "chapterComments": "Bình luận chương",
     "allComments": "Tất cả bình luận",
-    "writeComment": "Viết bình luận...",
-    "writeReply": "Viết phản hồi...",
-    "shareThoughts": "Chia sẻ suy nghĩ của bạn về truyện này nhé...",
-    "noCommentsYet": "Chưa có bình luận nào. Hãy là người đầu tiên để lại bình luận nha!",
-    "signInToComment": "Vui lòng {signInLink} để bình luận.",
+    "writeComment": "Nhập nội dung bình luận...",
+    "writeReply": "Trả lời bình luận này...",
+    "shareThoughts": "Bạn nghĩ sao về truyện? Đừng giữ trong lòng nhé.",
+    "noCommentsYet": "Chưa có ai bình luận. Bạn có muốn làm người đầu tiên không?",
+    "signInToComment": "Hãy {signInLink} để tham gia góp vui nha.",
     "signIn": "đăng nhập",
     "sortBy": {
       "newest": "Mới nhất",
       "oldest": "Cũ nhất",
-      "mostLiked": "Nhiều lượt thích nhất"
+      "mostLiked": "Nhiều lượt thích"
     },
     "actions": {
       "reply": "Phản hồi",
@@ -273,37 +273,37 @@
       "postComment": "Đăng bình luận",
       "posting": "Đang đăng...",
       "updating": "Đang cập nhật...",
-      "loadMore": "Tải thêm bình luận",
-      "loadingMore": "Đang tải thêm bình luận...",
+      "loadMore": "Xem thêm bình luận",
+      "loadingMore": "Đang tải...",
       "showReplies": "Hiện {count} phản hồi",
       "hideReplies": "Ẩn {count} phản hồi"
     },
     "form": {
       "placeholder": {
-        "comment": "Chia sẻ suy nghĩ của bạn về truyện này nhé...",
-        "reply": "Viết phản hồi..."
+        "comment": "Chia sẻ suy nghĩ của bạn...",
+        "reply": "Nhập phản hồi..."
       },
       "validation": {
-        "required": "Bình luận không được để trống",
-        "maxLength": "Bình luận không được vượt quá {max} ký tự",
-        "whitespace": "Bình luận không được chỉ chứa khoảng trắng",
-        "inappropriateContent": "Nội dung chứa từ ngữ không phù hợp: {words}",
-        "excessiveCaps": "Nội dung chứa quá nhiều chữ in hoa",
-        "excessiveRepetition": "Nội dung chứa quá nhiều từ lặp lại",
-        "tooManyLinks": "Nội dung chứa quá nhiều liên kết"
+        "required": "Nội dung không được để trống đâu nhé.",
+        "maxLength": "Tối đa {max} ký tự thôi, dài quá người ta mệt.",
+        "whitespace": "Chỉ toàn khoảng trắng thì cũng... chưa ổn.",
+        "inappropriateContent": "Có từ ngữ hơi nhạy cảm: {words}. Thử lại nhé.",
+        "excessiveCaps": "Đừng la hét quá nhé, bình luận thì nên nhẹ nhàng.",
+        "excessiveRepetition": "Lặp từ hơi nhiều rồi, đổi từ đi chút nha.",
+        "tooManyLinks": "Nhiều link quá, bình luận biến thành quảng cáo rồi."
       },
       "characterCount": "{current}/{max}",
       "guidelines": {
-        "title": "Quy tắc cộng đồng",
-        "respectful": "Vui lòng giữ thái độ tôn trọng và xây dựng trong các bình luận.",
-        "spoilers": "Tránh tiết lộ nội dung (spoilers) mà không cảnh báo trước nhé.",
-        "noSpam": "Không spam hoặc quảng cáo.",
-        "stayOnTopic": "Giữ bình luận đúng chủ đề."
+        "title": "Quy tắc nhỏ thôi mà",
+        "respectful": "Lịch sự tí, đừng để ai phải khó chịu.",
+        "spoilers": "Có tiết lộ nội dung thì nhớ cảnh báo nha.",
+        "noSpam": "Không spam hay quảng cáo, không phải chợ mà.",
+        "stayOnTopic": "Giữ chủ đề, đừng lan man lung tung."
       }
     },
     "status": {
-      "pending": "Đang chờ duyệt",
-      "flagged": "Bị gắn cờ",
+      "pending": "Chờ duyệt",
+      "flagged": "Bình luận bị báo cáo",
       "edited": "(đã chỉnh sửa)"
     },
     "badges": {
@@ -312,45 +312,45 @@
       "chapter": "Chương {number}"
     },
     "messages": {
-      "commentPosted": "Bình luận của bạn đã được đăng thành công!",
-      "commentUpdated": "Bình luận đã được cập nhật rồi đó!",
-      "commentDeleted": "Bình luận đã được xóa.",
-      "commentPending": "Bình luận đang chờ được duyệt nhé.",
-      "signInToLike": "Vui lòng đăng nhập để thích bình luận.",
-      "failedToLoad": "Không thể tải bình luận.",
-      "failedToPost": "Không thể đăng bình luận. Vui lòng thử lại.",
-      "failedToUpdate": "Không thể cập nhật bình luận. Vui lòng thử lại.",
-      "failedToDelete": "Không thể xóa bình luận. Vui lòng thử lại.",
-      "failedToLike": "Không thể thích bình luận. Vui lòng thử lại.",
-      "failedToLoadMore": "Không thể tải thêm bình luận. Vui lòng thử lại.",
-      "tryAgain": "Vui lòng thử lại."
+      "commentPosted": "Bình luận của bạn đã lên sóng rồi đó!",
+      "commentUpdated": "Bình luận đã được cập nhật.",
+      "commentDeleted": "Bình luận đã bay màu.",
+      "commentPending": "Bình luận của bạn đang chờ được duyệt.",
+      "signInToLike": "Đăng nhập để tương tác nhé.",
+      "failedToLoad": "Không tải được bình luận, thử lại nhé.",
+      "failedToPost": "Gửi bình luận thất bại, thử lại nha.",
+      "failedToUpdate": "Cập nhật không thành công.",
+      "failedToDelete": "Xóa bình luận không được rồi.",
+      "failedToLike": "Hành động chưa thành công.",
+      "failedToLoadMore": "Không tải thêm bình luận được.",
+      "tryAgain": "Thử lại đi bạn ơi."
     },
     "deleteDialog": {
       "title": "Xóa bình luận",
-      "description": "Bạn có chắc chắn muốn xóa bình luận này không? Hành động này không thể hoàn tác đâu nhé.",
+      "description": "Bạn chắc chưa? Xóa rồi không lấy lại được đâu.",
       "cancel": "Hủy",
       "delete": "Xóa"
     },
     "reportDialog": {
       "title": "Báo cáo bình luận",
-      "description": "Giúp chúng tôi duy trì một cộng đồng an toàn và tôn trọng bằng cách báo cáo nội dung không phù hợp nhé.",
+      "description": "Thấy bình luận không ổn? Gửi báo cáo cho mình nhé.",
       "reasonLabel": "Lý do báo cáo",
-      "detailsLabel": "Chi tiết bổ sung",
-      "detailsPlaceholder": "Vui lòng cung cấp thêm chi tiết về lý do báo cáo bình luận này...",
+      "detailsLabel": "Chi tiết thêm (nếu muốn)",
+      "detailsPlaceholder": "Mô tả lý do báo cáo...",
       "cancel": "Hủy",
       "submit": "Gửi báo cáo",
-      "submitting": "Đang gửi báo cáo...",
+      "submitting": "Đang gửi...",
       "reasons": {
         "spam": "Spam hoặc quảng cáo",
         "harassment": "Quấy rối",
         "inappropriate_content": "Nội dung không phù hợp",
-        "spoilers": "Tiết lộ nội dung (spoilers)",
+        "spoilers": "Tiết lộ nội dung",
         "off_topic": "Lạc đề",
-        "other": "Lý do khác (vui lòng nêu rõ)"
+        "other": "Khác (ghi rõ nhé)"
       },
-      "note": "Việc báo cáo không đúng có thể dẫn đến các hạn chế tài khoản. Vui lòng chỉ báo cáo nội dung vi phạm nguyên tắc cộng đồng của chúng tôi nhé.",
-      "success": "Bình luận đã được báo cáo thành công. Cảm ơn bạn đã giúp chúng tôi duy trì một cộng đồng an toàn và tôn trọng.",
-      "error": "Không thể báo cáo bình luận"
+      "note": "Chỉ báo cáo khi thực sự cần thiết, đừng phá vui nhé.",
+      "success": "Cảm ơn bạn đã góp phần giữ cộng đồng sạch sẽ.",
+      "error": "Gửi báo cáo thất bại, thử lại nhé."
     }
   },
   "sidebar": {
@@ -486,32 +486,32 @@
     "reportIssue": "Báo cáo vấn đề",
     "reportChapterIssue": "Báo cáo lỗi chương",
     "reportChapterIssueTitle": "Báo cáo lỗi chương",
-    "reportChapterIssueDescription": "Báo cáo các vấn đề kỹ thuật với chương này. Phản hồi của bạn sẽ giúp chúng tôi duy trì chất lượng nội dung.",
+    "reportChapterIssueDescription": "Chương này có gì trục trặc à? Báo cho tụi mình biết để còn fix kịp, đọc không bị gián đoạn nhé!",
     "issueType": "Loại vấn đề",
-    "issueTypeRequired": "Loại vấn đề *",
+    "issueTypeRequired": "Chọn hộ mình loại vấn đề với nha *",
     "selectIssueType": "Chọn loại vấn đề",
     "additionalDetails": "Chi tiết bổ sung",
-    "additionalDetailsRequired": "Chi tiết bổ sung *",
-    "additionalDetailsOptional": "Cung cấp thêm ngữ cảnh về vấn đề (không bắt buộc)...",
-    "additionalDetailsPlaceholder": "Vui lòng mô tả chi tiết vấn đề...",
+    "additionalDetailsRequired": "Mô tả thêm chút nữa đi *",
+    "additionalDetailsOptional": "Thêm tí chi tiết cho rõ ràng (không bắt buộc)...",
+    "additionalDetailsPlaceholder": "Mô tả chi tiết vấn đề bạn gặp phải...",
     "cancel": "Hủy",
     "submitReport": "Gửi báo cáo",
-    "submitting": "Đang gửi...",
-    "reportSuccess": "Chương đã được báo cáo thành công. Cảm ơn bạn đã giúp chúng tôi cải thiện chất lượng nội dung nhé.",
-    "reportError": "Không thể báo cáo chương. Vui lòng thử lại.",
-    "loginRequired": "Vui lòng đăng nhập để báo cáo lỗi chương.",
-    "wordLimitExceeded": "Chi tiết không được vượt quá 50 từ.",
-    "characterLimitExceeded": "Chi tiết không được vượt quá 50 từ (khoảng 300 ký tự).",
+    "submitting": "Đang gửi, đợi tí nhé...",
+    "reportSuccess": "Cảm ơn bạn đã báo cáo! Tụi mình sẽ xử lý sớm, đảm bảo chương mượt mà không “lag” nữa.",
+    "reportError": "Gửi báo cáo không thành công rồi, thử lại nha.",
+    "loginRequired": "Bạn cần đăng nhập trước khi báo cáo lỗi, đừng “ẩn danh” nữa nhé!",
+    "wordLimitExceeded": "Mô tả hơi dài rồi, gói gọn trong 50 từ thôi nha.",
+    "characterLimitExceeded": "Mô tả không được quá 50 từ (khoảng 300 ký tự), mình biết bạn muốn nói nhiều nhưng ngắn gọn thôi!",
     "words": "từ",
     "reasons": {
-      "broken_images": "Hình ảnh bị hỏng hoặc thiếu",
-      "missing_pages": "Thiếu trang",
-      "wrong_order": "Trang sai thứ tự",
-      "duplicate_pages": "Trang bị trùng",
-      "poor_quality": "Chất lượng hình ảnh kém",
-      "wrong_chapter": "Nội dung chương không đúng",
-      "corrupted_content": "Nội dung bị lỗi hoặc không đọc được",
-      "other": "Vấn đề khác"
+      "broken_images": "Hình ảnh hỏng hoặc thiếu, coi mà bực mình lắm!",
+      "missing_pages": "Thiếu trang, đọc không nổi rồi!",
+      "wrong_order": "Trang sai thứ tự, rối loạn hết cả lên.",
+      "duplicate_pages": "Trang bị trùng, đọc mãi một trang thôi.",
+      "poor_quality": "Hình mờ nhòe, coi không đã mắt chút nào.",
+      "wrong_chapter": "Chương này bị sai nội dung rồi nha.",
+      "corrupted_content": "Nội dung lỗi hoặc không đọc được, chịu không nổi!",
+      "other": "Vấn đề khác, ghi rõ để tụi mình biết nha."
     }
   },
   "notifications": {
