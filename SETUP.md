@@ -189,10 +189,13 @@ npx prisma migrate deploy
 # Build application
 pnpm build
 
-# Start với PM2
-pm2 start ecosystem.config.js
-pm2 save
-pm2 startup
+# Start với PM2 (Production-ready configuration)
+pnpm pm2:start
+pnpm pm2:save
+pnpm pm2:startup
+
+# Or use automated deployment script
+pnpm deploy:script
 ```
 
 ### 4. Setup Nginx
@@ -347,13 +350,21 @@ npx prisma db push
 pnpm dev
 ```
 
-### Production
+### Production (PM2)
 ```bash
+# Quick deployment
+pnpm deploy:script
+
+# Manual steps
 pnpm install --frozen-lockfile
 npx prisma generate
 npx prisma migrate deploy
 pnpm build
-pm2 start ecosystem.config.js
+pnpm pm2:start
+pnpm pm2:save
+
+# Health monitoring
+pnpm health:check
 ```
 
 **Lưu ý**: Đảm bảo PostgreSQL đang chạy và database đã được tạo trước khi chạy các lệnh Prisma.
