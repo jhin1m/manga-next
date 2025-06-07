@@ -6,12 +6,12 @@
 // Default configuration that works for all environments
 const defaultSeoConfig = {
   site: {
-    name: 'Manga Next',
-    tagline: 'Read Manga Online for Free',
-    description: 'Read Manga Online for Free on Manga Next. Discover popular manga series and latest updates.',
-    keywords: ['manga', 'comic', 'read manga', 'free manga', 'online manga', 'Manga Next'],
-    language: 'en',
-    locale: 'en_US',
+    name: 'TruyentranhNuru',
+    tagline: 'Thế Giới Truyện Tranh Hentai và Manga 18+ Chất Lượng Cao',
+    description: 'Đọc Truyện Tranh Hentai và Manga 18+ Online Miễn Phí - Nội Dung Người Lớn',
+    keywords: ['hentai', 'truyện hentai', 'truyện tranh 18+', 'truyện tranh người lớn', 'manga 18+', 'adult manga', 'doujinshi', 'TruyentranhNuru'],
+    language: 'vi',
+    locale: 'vi_VN',
   },
   
   urls: {
@@ -24,19 +24,19 @@ const defaultSeoConfig = {
   social: {
     twitter: {
       card: 'summary_large_image' as const,
-      site: '@Manga Next',
-      creator: '@Manga Next',
+      site: '@TruyentranhNuru',
+      creator: '@TruyentranhNuru',
     },
     openGraph: {
       type: 'website' as const,
-      siteName: 'Manga Next',
-      locale: 'en_US',
+      siteName: 'TruyentranhNuru',
+      locale: 'vi_VN',
     },
   },
   
   seo: {
     titleTemplate: '%s',
-    defaultTitle: 'Manga Next - Read Manga Online for Free',
+    defaultTitle: 'TruyentranhNuru - Đọc Truyện Tranh Hentai và Manga 18+ Online Miễn Phí',
     titleSeparator: ' | ',
     robots: {
       index: true,
@@ -53,32 +53,32 @@ const defaultSeoConfig = {
   
   schema: {
     organization: {
-      name: 'Manga Next',
-      legalName: 'Manga Next Manga Platform',
+      name: 'TruyentranhNuru',
+      legalName: 'TruyentranhNuru',
       foundingDate: '2024',
       founders: [
         {
           '@type': 'Person',
-          name: 'Manga Next Team',
+          name: 'TruyentranhNuru Team',
         },
       ],
       address: {
         '@type': 'PostalAddress',
-        addressCountry: 'JP',
+        addressCountry: 'VN',
       },
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer support',
-        availableLanguage: ['Japanese', 'English'],
+        availableLanguage: ['Vietnamese', 'English'],
       },
     },
     website: {
-      inLanguage: 'en',
+      inLanguage: 'vi',
       isAccessibleForFree: true,
-      isFamilyFriendly: true,
+      isFamilyFriendly: false,
       audience: {
         '@type': 'Audience',
-        audienceType: 'manga readers',
+        audienceType: 'adult manga readers',
       },
     },
   },
@@ -108,26 +108,26 @@ const defaultSeoConfig = {
   // Page titles configuration for different filters
   pageTitles: {
     manga: {
-      default: 'Latest Manga',
+      default: 'Truyện Tranh Hentai Mới Nhất',
       sort: {
-        latest: 'Latest Manga',
-        popular: 'Popular Manga',
-        rating: 'Top Rated Manga',
-        views: 'Most Viewed Manga',
-        updated: 'Recently Updated Manga',
-        alphabetical: 'Manga A-Z',
+        latest: 'Truyện Tranh Hentai Mới Nhất',
+        popular: 'Truyện Tranh Hentai Phổ Biến',
+        rating: 'Truyện Tranh Hentai Đánh Giá Cao',
+        views: 'Truyện Tranh Hentai Xem Nhiều Nhất',
+        updated: 'Truyện Tranh Hentai Cập Nhật Gần Đây',
+        alphabetical: 'Truyện Tranh Hentai A-Z',
       },
       status: {
-        all: 'All Manga',
-        ongoing: 'Ongoing Manga',
-        completed: 'Completed Manga',
-        hiatus: 'Manga on Hiatus',
-        cancelled: 'Cancelled Manga',
+        all: 'Tất Cả Truyện Tranh Hentai',
+        ongoing: 'Truyện Tranh Hentai Đang Tiến Hành',
+        completed: 'Truyện Tranh Hentai Hoàn Thành',
+        hiatus: 'Truyện Tranh Hentai Tạm Ngưng',
+        cancelled: 'Truyện Tranh Hentai Đã Hủy',
       },
       combined: {
-        'popular+completed': 'Popular Completed Manga',
-        'rating+ongoing': 'Top Rated Ongoing Manga',
-        'views+completed': 'Most Viewed Completed Manga',
+        'popular+completed': 'Truyện Tranh Hentai Hoàn Thành Phổ Biến',
+        'rating+ongoing': 'Truyện Tranh Hentai Đang Tiến Hành Đánh Giá Cao',
+        'views+completed': 'Truyện Tranh Hentai Hoàn Thành Xem Nhiều Nhất',
       },
     },
   },
@@ -135,46 +135,46 @@ const defaultSeoConfig = {
   // SEO Templates Text Configuration
   seoText: {
     // Common action words
-    read: 'Read',
-    online: 'online',
-    forFree: 'for free',
-    manga: 'manga',
-    chapter: 'Chapter',
-    comics: 'comics',
-    series: 'series',
+    read: 'Đọc',
+    online: 'trực tuyến',
+    forFree: 'miễn phí',
+    manga: 'truyện tranh hentai',
+    chapter: 'Chương',
+    comics: 'truyện tranh 18+',
+    series: 'bộ truyện',
 
     // Template phrases
-    latestChapters: 'Latest chapters available',
-    highQualityPages: 'High quality manga pages',
-    discoverBest: 'Discover the best',
-    browse: 'Browse',
-    findWithKeyword: 'Find manga with keyword',
-    browseSearchResults: 'Browse search results and discover new manga series',
-    updatedDaily: 'Updated daily with latest chapters',
-    viewProfile: 'View',
-    profile: 'profile',
-    bookmarks: 'bookmarks',
-    readingHistory: 'reading history',
+    latestChapters: 'Chương mới nhất có sẵn',
+    highQualityPages: 'Trang truyện tranh chất lượng cao',
+    discoverBest: 'Khám phá những bộ truyện hay nhất',
+    browse: 'Duyệt',
+    findWithKeyword: 'Tìm truyện tranh hentai với từ khóa',
+    browseSearchResults: 'Duyệt kết quả tìm kiếm và khám phá bộ truyện mới',
+    updatedDaily: 'Cập nhật hàng ngày với chương mới nhất',
+    viewProfile: 'Xem',
+    profile: 'hồ sơ',
+    bookmarks: 'dấu trang',
+    readingHistory: 'lịch sử đọc',
 
     // Search related text
-    search: 'Search',
-    searchResults: 'Search Results',
-    findManga: 'find manga',
-    mangaSearch: 'manga search',
-    userProfile: 'user profile',
-    searchFor: 'Search for',
-    findFavorite: 'Find your favorite',
+    search: 'Tìm kiếm',
+    searchResults: 'Kết quả tìm kiếm',
+    findManga: 'tìm truyện tranh hentai',
+    mangaSearch: 'tìm kiếm truyện tranh 18+',
+    userProfile: 'hồ sơ người dùng',
+    searchFor: 'Tìm kiếm',
+    findFavorite: 'Tìm bộ truyện yêu thích của bạn',
 
     // List and genre text
-    mangaList: 'manga list',
-    browseManga: 'browse manga',
-    readMangaOnline: 'read manga online',
-    freeManga: 'free manga',
-    mangaGenre: 'manga genre',
-    readOnline: 'read online',
-    and: 'and',
-    on: 'on',
-    many: 'many',
+    mangaList: 'danh sách truyện tranh hentai',
+    browseManga: 'duyệt truyện tranh 18+',
+    readMangaOnline: 'đọc truyện tranh hentai trực tuyến',
+    freeManga: 'truyện tranh 18+ miễn phí',
+    mangaGenre: 'thể loại truyện tranh hentai',
+    readOnline: 'đọc trực tuyến',
+    and: 'và',
+    on: 'trên',
+    many: 'nhiều',
   },
 } as const;
 
