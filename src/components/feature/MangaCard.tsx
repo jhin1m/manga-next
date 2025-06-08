@@ -112,47 +112,40 @@ export default function MangaCard({
           </div>
 
           {/* Chapter và thời gian ở dưới cùng */}
-          <div className='flex flex-col space-y-1 text-xs text-muted-foreground pt-1'>
-            <div className='flex items-center justify-between'>
-              {latestChapter ? (
-                <div className='px-2 py-1 bg-secondary rounded-full whitespace-nowrap'>
-                  {latestChapterSlug ? (
-                    <Link
-                      href={`/manga/${slug}/${latestChapterSlug}`}
-                      className='font-medium hover:text-primary transition-colors block truncate'
-                      aria-label={`Xem ${latestChapter} của ${title}`}
-                      title={latestChapter}
-                    >
-                      {latestChapter}
-                    </Link>
-                  ) : (
-                    <Link
-                      href={`/manga/${slug}#latest-chapter`}
-                      className='font-medium hover:text-primary transition-colors block truncate'
-                      aria-label={`Xem ${latestChapter} của ${title}`}
-                      title={latestChapter}
-                    >
-                      {latestChapter}
-                    </Link>
-                  )}
-                </div>
-              ) : (
-                <div className='px-2 py-1 bg-secondary rounded-full'>
-                  <span className='font-medium'>{t('updating')}</span>
-                </div>
-              )}
-              {updatedAt && (
-                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis' title={isClient ? formatDate(updatedAt) : ''}>
-                  {isClient ? formatDate(updatedAt) : '...'}
-                </span>
-              )}
-              {!updatedAt && (
-                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis'>
-                  {t('updating')}
-                </span>
-              )}
+          {(latestChapter || updatedAt) && (
+            <div className='flex flex-col space-y-1 text-xs text-muted-foreground pt-1'>
+              <div className='flex items-center justify-between'>
+                {latestChapter && (
+                  <div className='px-2 py-1 bg-secondary rounded-full whitespace-nowrap'>
+                    {latestChapterSlug ? (
+                      <Link
+                        href={`/manga/${slug}/${latestChapterSlug}`}
+                        className='font-medium hover:text-primary transition-colors block truncate'
+                        aria-label={`Xem ${latestChapter} của ${title}`}
+                        title={latestChapter}
+                      >
+                        {latestChapter}
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/manga/${slug}#latest-chapter`}
+                        className='font-medium hover:text-primary transition-colors block truncate'
+                        aria-label={`Xem ${latestChapter} của ${title}`}
+                        title={latestChapter}
+                      >
+                        {latestChapter}
+                      </Link>
+                    )}
+                  </div>
+                )}
+                {updatedAt && (
+                  <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis' title={isClient ? formatDate(updatedAt) : ''}>
+                    {isClient ? formatDate(updatedAt) : '...'}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>
