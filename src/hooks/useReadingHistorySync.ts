@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import {
   ReadingHistory,
-  DatabaseReadingProgress,
   getReadingHistory,
   convertDbToLocalHistory,
   convertLocalToDbHistory,
@@ -21,19 +20,49 @@ interface SyncStatus {
   skippedCount?: number;
 }
 
+// Constants for sync timing
+const SYNC_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour in milliseconds
+const SYNC_STORAGE_KEY = 'manga-last-sync-timestamp';
+
 interface UseReadingHistorySyncReturn {
   history: ReadingHistory[];
   clearDatabaseHistory: () => Promise<void>;
   refreshHistory: () => void;
+  forceSync: () => Promise<void>;
+  lastSyncTime: number;
 }
 
 /**
  * Hook for managing reading history synchronization between localStorage and database
  */
 export function useReadingHistorySync(): UseReadingHistorySyncReturn {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [history, setHistory] = useState<ReadingHistory[]>([]);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({ isLoading: false });
+
+  // Helper functions for sync timing
+  const getLastSyncTime = useCallback(() => {
+    try {
+      const timestamp = localStorage.getItem(SYNC_STORAGE_KEY);
+      return timestamp ? parseInt(timestamp) : 0;
+    } catch {
+      return 0;
+    }
+  }, []);
+
+  const setLastSyncTime = useCallback((timestamp: number) => {
+    try {
+      localStorage.setItem(SYNC_STORAGE_KEY, timestamp.toString());
+    } catch {
+      // Ignore localStorage errors
+    }
+  }, []);
+
+  const shouldSync = useCallback(() => {
+    const lastSyncTime = getLastSyncTime();
+    const now = Date.now();
+    return (now - lastSyncTime) >= SYNC_COOLDOWN_MS;
+  }, [getLastSyncTime]);
 
   // Load history from localStorage
   const loadLocalHistory = useCallback(() => {
@@ -75,6 +104,11 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
         skippedCount: result.skippedCount,
       }));
 
+      // Update last sync timestamp if items were actually synced
+      if (result.syncedCount > 0) {
+        setLastSyncTime(Date.now());
+      }
+
     } catch (error: any) {
       // Only log unexpected errors, not conflicts
       if (!error.message?.includes('409') && !error.message?.includes('already exists')) {
@@ -86,7 +120,7 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
         error: error instanceof Error ? error.message : 'Sync failed',
       }));
     }
-  }, [status, loadLocalHistory]);
+  }, [status, setLastSyncTime]);
 
   // Sync database data to localStorage
   const syncFromDatabase = useCallback(async () => {
@@ -114,6 +148,9 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
         lastSyncAt: new Date().toISOString(),
       }));
 
+      // Update last sync timestamp
+      setLastSyncTime(Date.now());
+
     } catch (error: any) {
       // Only log unexpected errors, not conflicts
       if (!error.message?.includes('409') && !error.message?.includes('already exists')) {
@@ -125,11 +162,17 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
         error: error instanceof Error ? error.message : 'Sync failed',
       }));
     }
-  }, [status]);
+  }, [status, setLastSyncTime]);
 
-  // Full bidirectional sync
-  const fullSync = useCallback(async () => {
+  // Full bidirectional sync with cooldown check
+  const fullSync = useCallback(async (forceSync: boolean = false) => {
     if (status !== 'authenticated') {
+      return;
+    }
+
+    // Check if we should sync based on cooldown period
+    if (!forceSync && !shouldSync()) {
+      console.log('Sync skipped - within cooldown period');
       return;
     }
 
@@ -138,13 +181,16 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
       await syncFromDatabase();
       // Then sync any unsynced local items to database
       await syncToDatabase();
+
+      // Update last sync timestamp
+      setLastSyncTime(Date.now());
     } catch (error: any) {
       // Only log unexpected errors, not conflicts
       if (!error.message?.includes('409') && !error.message?.includes('already exists')) {
         console.error('Error during full sync:', error);
       }
     }
-  }, [status, syncFromDatabase, syncToDatabase]);
+  }, [status, syncFromDatabase, syncToDatabase, shouldSync, setLastSyncTime]);
 
   // Clear all database history
   const clearDatabaseHistory = useCallback(async () => {
@@ -177,6 +223,11 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
   const refreshHistory = useCallback(() => {
     loadLocalHistory();
   }, [loadLocalHistory]);
+
+  // Force sync function for manual sync
+  const forceSync = useCallback(async () => {
+    await fullSync(true);
+  }, [fullSync]);
 
   // Auto-sync on login with longer delay to avoid conflicts
   useEffect(() => {
@@ -211,5 +262,7 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
     history,
     clearDatabaseHistory,
     refreshHistory,
+    forceSync,
+    lastSyncTime: getLastSyncTime(),
   };
 }
