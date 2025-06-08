@@ -94,6 +94,26 @@ export async function middleware(req: NextRequest) {
     })
   }
 
+  // Add BFCache optimization headers for pages
+  if (!req.nextUrl.pathname.startsWith('/api/') &&
+      !req.nextUrl.pathname.startsWith('/_next/') &&
+      !req.nextUrl.pathname.includes('.')) {
+
+    // BFCache friendly headers
+    response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate')
+    response.headers.set('Vary', 'Accept-Encoding, Accept-Language')
+
+    // Prevent unload event blocking
+    response.headers.set('X-BFCache-Optimized', '1')
+  }
+
+  // Optimize static assets for BFCache
+  if (req.nextUrl.pathname.startsWith('/_next/static/') ||
+      req.nextUrl.pathname.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/)) {
+    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+    response.headers.set('Vary', 'Accept-Encoding')
+  }
+
   return response
 }
 
