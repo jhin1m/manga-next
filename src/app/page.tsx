@@ -76,28 +76,35 @@ export default async function Home({
   // Tạo JSON-LD cho trang chủ
   const jsonLd = generateHomeJsonLd();
 
-  // Fetch data for the latest manga with pagination
-  await fetchMangaData('latest', 24, currentPage);
+  // ✅ OPTIMIZED: Parallel data fetching for faster loading
+  const [hotMangaData, latestMangaData] = await Promise.all([
+    fetchMangaData('popular', 10, 1), // Hot manga for slider
+    fetchMangaData('latest', 24, currentPage), // Latest manga for main content
+  ]);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
       <JsonLdScript id="home-jsonld" jsonLd={jsonLd} />
 
-      {/* Hot Manga Slider */}
-      <HotMangaSlider />
+      {/* Hot Manga Slider - Pass pre-fetched data */}
+      <HotMangaSlider preloadedData={hotMangaData.manga} />
 
       {/* Main Content + Sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mt-8">
         {/* Main Content */}
         <section className="space-y-6">
-          {/* Latest Update Manga List */}
-          <LatestUpdateMangaList page={currentPage} limit={24} />
+          {/* Latest Update Manga List - Pass pre-fetched data */}
+          <LatestUpdateMangaList
+            page={currentPage}
+            limit={24}
+            preloadedData={latestMangaData.manga}
+          />
 
           {/* View More Button */}
           <ViewMoreButton href="/manga?page=2" />
         </section>
 
-        {/* Sidebar */}
+        {/* Sidebar - Load independently for better UX */}
         <aside className="space-y-6 lg:block">
           <Sidebar />
         </aside>

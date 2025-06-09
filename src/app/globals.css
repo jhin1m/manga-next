@@ -198,27 +198,4 @@
   .scrollbar-hidden::-webkit-scrollbar {
     display: none; /* WebKit */
   }
-
-  /* Navigation Progress Bar Animations */
-  .navigation-progress {
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .navigation-progress-shimmer {
-    animation: shimmer 1.5s ease-in-out infinite;
-  }
-
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
 }

@@ -16,7 +16,6 @@ import { MainContent } from "@/components/layout/MainContent";
 import Analytics from "@/components/analytics/Analytics";
 import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
 import OfflineIndicator from "@/components/pwa/OfflineIndicator";
-import { SimpleNavigationProgress } from "@/components/navigation/NavigationProgress";
 import { defaultViewport } from "@/lib/seo/viewport";
 
 const nunito = Nunito({
@@ -78,9 +77,6 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>
-              {/* Navigation Progress Bar */}
-              <SimpleNavigationProgress />
-
               <Header />
               <MainContent>
                 {children}

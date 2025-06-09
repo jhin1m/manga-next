@@ -15,6 +15,16 @@ export const prisma =
           'warn'
         ] as any
       : ['error'],
+    // ✅ OPTIMIZED: Connection pool settings for production
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
+    // ✅ Connection pool optimization
+    ...(process.env.NODE_ENV === 'production' && {
+      datasourceUrl: process.env.DATABASE_URL + '&connection_limit=10&pool_timeout=20',
+    }),
   })
 
 // Slow query monitoring in development
