@@ -16,7 +16,6 @@ import { MainContent } from "@/components/layout/MainContent";
 import Analytics from "@/components/analytics/Analytics";
 import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
 import OfflineIndicator from "@/components/pwa/OfflineIndicator";
-import BFCacheProvider from "@/components/providers/bfcache-provider";
 import { defaultViewport } from "@/lib/seo/viewport";
 
 const nunito = Nunito({
@@ -40,11 +39,6 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
-  },
-  // BFCache optimization
-  other: {
-    'Cache-Control': 'public, max-age=0, must-revalidate',
-    'Vary': 'Accept-Encoding, Accept-Language',
   },
 };
 
@@ -82,16 +76,15 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <BFCacheProvider>
-              <AuthProvider>
-                <Header />
-                <MainContent>
-                  {children}
-                </MainContent>
-                <Footer />
-                <Toaster />
-                <PWAInstallPrompt />
-                <OfflineIndicator />
+            <AuthProvider>
+              <Header />
+              <MainContent>
+                {children}
+              </MainContent>
+              <Footer />
+              <Toaster />
+              <PWAInstallPrompt />
+              <OfflineIndicator />
 
             {/* Analytics Components */}
             <Analytics />
@@ -107,8 +100,7 @@ export default async function RootLayout({
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: generateOrganizationJsonLd() }}
             />
-              </AuthProvider>
-            </BFCacheProvider>
+            </AuthProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
