@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X } from "lucide-react";
 import { removeFromReadingHistoryComplete } from "@/lib/utils/readingHistory";
@@ -57,7 +58,13 @@ export default function HistoryReading() {
             {history.map((item) => (
               <div key={item.id} className="flex gap-3 group relative">
                 <div className="relative h-16 w-12 rounded-md overflow-hidden shrink-0">
-                  <img src={item.manga.coverImage} alt={item.manga.title} className="w-full h-full object-cover" />
+                  <Image
+                    src={item.manga.coverImage}
+                    alt={item.manga.title}
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                  />
                 </div>
                 <div className="space-y-1 flex-1">
                   <h4 className="font-medium text-sm line-clamp-1">

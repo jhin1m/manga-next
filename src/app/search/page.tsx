@@ -1,11 +1,12 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 import PaginationWrapper from '@/components/feature/PaginationWrapper';
 // Removed formatDate import since it's not used for display in search results
 import { prisma } from '@/lib/db';
 import { constructSearchMetadata } from '@/lib/seo/metadata';
 import { generateSearchJsonLd } from '@/lib/seo/jsonld';
 import JsonLdScript from '@/components/seo/JsonLdScript';
-import { seoConfig, getSiteUrl } from '@/config/seo.config';
+import { getSiteUrl } from '@/config/seo.config';
 import { getTranslations } from 'next-intl/server';
 
 // Fetch all genres for filter options
@@ -141,10 +142,12 @@ async function EnhancedMangaCard({
     <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
       <a href={`/manga/${item.slug}`} className="block">
         <div className="relative aspect-[2/3] bg-muted">
-          <img
+          <Image
             src={item.coverImage}
             alt={item.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+            className="object-cover"
             loading="lazy"
           />
           {item.status && (

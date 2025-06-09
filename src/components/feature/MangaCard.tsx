@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Eye } from 'lucide-react';
 import { FavoriteButton } from '@/components/manga/FavoriteButton';
@@ -60,10 +61,13 @@ export default function MangaCard({
         <Link href={`/manga/${slug}`} className='block'>
           {/* Ảnh bìa manga ở phía trên với kích thước cố định */}
           <div className='relative w-full h-[220px] lg:h-[200px] xl:h-[200px] overflow-hidden'>
-            <img
+            <Image
               src={coverImage}
               alt={title}
-              className='w-full h-full object-cover transition-transform group-hover:scale-105'
+              fill
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className='object-cover transition-transform group-hover:scale-105'
+              priority={false}
             />
             {/* Trạng thái manga ở góc trái trên ảnh bìa */}
             {status && (

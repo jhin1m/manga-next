@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -51,7 +52,14 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
       {/* Background Image with Blur Effect */}
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full">
-          <img src={manga.coverImage} alt="" sizes="100vw" className="object-cover scale-110" />
+          <Image
+            src={manga.coverImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover scale-110"
+            priority={false}
+          />
           {/* Overlay gradients for better readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/95" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
@@ -68,7 +76,14 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
             {/* Cover Image */}
             <div className="group relative aspect-[2/3] w-40 xs:w-48 sm:w-56 lg:w-64 mx-auto sm:mx-0 flex-shrink-0 overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 ring-1 ring-border/20 hover:ring-primary/30">
-              <img src={manga.coverImage} alt={manga.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              <Image
+                src={manga.coverImage}
+                alt={manga.title}
+                fill
+                sizes="(max-width: 640px) 160px, (max-width: 768px) 192px, (max-width: 1024px) 224px, 256px"
+                className="object-cover transition-transform duration-300 group-hover:scale-110"
+                priority={true}
+              />
               {/* Subtle overlay for depth */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>

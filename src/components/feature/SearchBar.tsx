@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Search, BookOpen, Clock, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -358,12 +359,14 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
                     onClick={() => handleSelect(manga.slug)}
                     className="w-full flex items-start gap-3 p-3 rounded-md hover:bg-accent transition-colors text-left"
                   >
-                    <div className="flex-shrink-0 w-12 h-16 bg-muted rounded-md overflow-hidden">
+                    <div className="flex-shrink-0 w-12 h-16 bg-muted rounded-md overflow-hidden relative">
                       {manga.cover_image_url ? (
-                        <img
+                        <Image
                           src={manga.cover_image_url}
                           alt={manga.title}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="48px"
+                          className="object-cover"
                           loading="lazy"
                         />
                       ) : (
@@ -480,12 +483,14 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
                       onClick={() => handleSelect(manga.slug)}
                       className="w-full flex items-start gap-3 p-3 rounded-md hover:bg-accent transition-colors text-left"
                     >
-                      <div className="flex-shrink-0 w-12 h-16 bg-muted rounded-md overflow-hidden">
+                      <div className="flex-shrink-0 w-12 h-16 bg-muted rounded-md overflow-hidden relative">
                         {manga.cover_image_url ? (
-                          <img
+                          <Image
                             src={manga.cover_image_url}
                             alt={manga.title}
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="48px"
+                            className="object-cover"
                             loading="lazy"
                           />
                         ) : (
