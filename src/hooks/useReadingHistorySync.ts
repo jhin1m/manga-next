@@ -172,7 +172,6 @@ export function useReadingHistorySync(): UseReadingHistorySyncReturn {
 
     // Check if we should sync based on cooldown period
     if (!forceSync && !shouldSync()) {
-      console.log('Sync skipped - within cooldown period');
       return;
     }
 
