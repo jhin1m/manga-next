@@ -2,57 +2,172 @@ import { Metadata } from "next";
 import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateHomeJsonLd } from "@/lib/seo/jsonld";
-import HotMangaSlider from "@/components/feature/HotMangaSlider";
-import LatestUpdateMangaList from "@/components/feature/LatestUpdateMangaList";
-import Sidebar from "@/components/feature/Sidebar";
+import HotMangaSliderClient from "@/components/feature/HotMangaSliderClient";
+import LatestUpdateMangaListClient from "@/components/feature/LatestUpdateMangaListClient";
+import SidebarServer from "@/components/feature/SidebarServer";
 import ViewMoreButton from "@/components/ui/ViewMoreButton";
 import { seoConfig, getSiteUrl } from "@/config/seo.config";
 import { defaultViewport } from "@/lib/seo/viewport";
 
-import { mangaApi } from '@/lib/api/client';
+import { mangaApi, rankingsApi, commentApi } from '@/lib/api/client';
 
-// Fetch manga data from API using centralized API client
-async function fetchMangaData(sort: string = 'latest', limit: number = 20, page: number = 1) {
+// Parallel data fetching for all homepage components
+async function fetchAllHomePageData(page: number = 1) {
   try {
-    const sortParam = sort === 'latest' ? 'latest' :
-                      sort === 'popular' ? 'popular' : 'alphabetical';
+    // Fetch all data in parallel for maximum performance
+    const [
+      hotMangaData,
+      latestMangaData,
+      sidebarRankingsData,
+      recentCommentsData,
+      recommendedMangaData
+    ] = await Promise.all([
+      // Hot manga for slider
+      mangaApi.getList({
+        sort: 'popular',
+        limit: 10,
+      }).catch(err => {
+        console.error('Error fetching hot manga:', err);
+        return { comics: [] };
+      }),
 
-    // Use centralized API client with built-in ISR caching
-    const data = await mangaApi.getList({
-      sort: sortParam,
-      limit,
-      page,
-    });
+      // Latest manga for main list
+      mangaApi.getList({
+        sort: 'latest',
+        limit: 24,
+        page,
+      }).catch(err => {
+        console.error('Error fetching latest manga:', err);
+        return { comics: [], totalPages: 1, currentPage: 1, total: 0 };
+      }),
 
-    // Transform API data to match component needs (preserve existing logic)
+      // Sidebar rankings data
+      rankingsApi.getSidebarRankings({
+        period: 'weekly',
+        limit: 10
+      }).catch(err => {
+        console.error('Error fetching rankings:', err);
+        return { success: false, data: { rankings: [] } };
+      }),
+
+      // Recent comments for sidebar
+      commentApi.getRecent({ limit: 5 }).catch(err => {
+        console.error('Error fetching recent comments:', err);
+        return { comments: [] };
+      }),
+
+      // Recommended manga for sidebar
+      mangaApi.getList({
+        sort: 'popular',
+        limit: 5,
+      }).catch(err => {
+        console.error('Error fetching recommended manga:', err);
+        return { comics: [] };
+      })
+    ]);
+
     return {
-      manga: data.comics.map((comic: any) => ({
-        id: comic.id.toString(),
-        title: comic.title,
-        coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
-        slug: comic.slug,
-        latestChapter: comic.Chapters && comic.Chapters.length > 0
-          ? comic.Chapters[0].title
-          : undefined,
-        latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
-          ? comic.Chapters[0].slug
-          : undefined,
-        genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
-        rating: comic.rating,
-        views: comic.total_views || 0,
-        chapterCount: comic._chapterCount || 0,
-        updatedAt: comic.last_chapter_uploaded_at || undefined,
-        status: comic.status || 'Ongoing',
-      })),
-      totalPages: data.totalPages,
-      currentPage: data.currentPage,
+      hotManga: transformHotMangaData(hotMangaData.comics),
+      latestManga: transformLatestMangaData(latestMangaData.comics),
+      latestMangaPagination: {
+        totalPages: latestMangaData.totalPages || 1,
+        currentPage: latestMangaData.currentPage || 1,
+        totalResults: latestMangaData.total || 0
+      },
+      sidebarData: {
+        rankings: transformRankingsData(sidebarRankingsData.success ? sidebarRankingsData.data.rankings : []),
+        recentComments: recentCommentsData.comments || [],
+        recommendedManga: transformRecommendedMangaData(recommendedMangaData.comics)
+      }
     };
   } catch (error) {
-    console.error('Error fetching manga data:', error);
-    return { manga: [], totalPages: 1, currentPage: 1 };
+    console.error('Error fetching homepage data:', error);
+    return {
+      hotManga: [],
+      latestManga: [],
+      latestMangaPagination: { totalPages: 1, currentPage: 1, totalResults: 0 },
+      sidebarData: {
+        rankings: [],
+        recentComments: [],
+        recommendedManga: []
+      }
+    };
   }
 }
 
+// Transform functions for data consistency
+function transformHotMangaData(comics: any[]) {
+  return comics.map((comic: any) => ({
+    id: comic.id.toString(),
+    title: comic.title,
+    slug: comic.slug,
+    coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
+    rating: comic.rating || 8.0,
+    views: comic.total_views || 0,
+    status: comic.status || 'Ongoing',
+    chapterCount: comic._chapterCount || 0,
+    latestChapter: comic.Chapters && comic.Chapters.length > 0
+      ? comic.Chapters[0].title
+      : undefined,
+    latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
+      ? comic.Chapters[0].slug
+      : undefined,
+    updatedAt: comic.last_chapter_uploaded_at || comic.Chapters?.[0]?.release_date || undefined,
+    genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || []
+  }));
+}
+
+function transformLatestMangaData(comics: any[]) {
+  return comics.map((comic: any) => ({
+    id: comic.id.toString(),
+    title: comic.title,
+    coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
+    slug: comic.slug,
+    latestChapter: comic.Chapters && comic.Chapters.length > 0
+      ? comic.Chapters[0].title
+      : undefined,
+    latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
+      ? comic.Chapters[0].slug
+      : undefined,
+    genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
+    rating: comic.rating,
+    views: comic.total_views || 0,
+    chapterCount: comic._chapterCount || 0,
+    updatedAt: comic.last_chapter_uploaded_at || undefined,
+    status: comic.status || 'Ongoing',
+  }));
+}
+
+function transformRankingsData(rankings: any[]) {
+  return rankings.map((manga: any, index: number) => ({
+    id: manga.id?.toString() || manga.comic_id?.toString() || index.toString(),
+    title: manga.title,
+    slug: manga.slug,
+    coverImage: manga.cover_image_url || manga.coverImage || 'https://placehold.co/100x150/png',
+    views: manga.total_views || manga.views || 0,
+    rank: index + 1
+  }));
+}
+
+function transformRecommendedMangaData(comics: any[]) {
+  return comics.map((comic: any) => ({
+    id: comic.id.toString(),
+    title: comic.title,
+    slug: comic.slug,
+    coverImage: comic.cover_image_url || 'https://placehold.co/100x150/png',
+    rating: comic.rating || 0,
+    status: comic.status || 'Updating',
+    views: comic.total_views || 0,
+    genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || ['Action', 'Adventure'],
+    latestChapter: comic.Chapters && comic.Chapters.length > 0
+      ? {
+          number: parseFloat(comic.Chapters[0].chapter_number),
+          title: comic.Chapters[0].title,
+          updatedAt: comic.Chapters[0].release_date || new Date().toISOString()
+        }
+      : null
+  }));
+}
 
 // Tạo metadata cho trang chủ
 export const metadata: Metadata = constructMetadata({
@@ -76,37 +191,30 @@ export default async function Home({
   // Tạo JSON-LD cho trang chủ
   const jsonLd = generateHomeJsonLd();
 
-  // ✅ OPTIMIZED: Parallel data fetching for faster loading
-  const [hotMangaData, latestMangaData] = await Promise.all([
-    fetchMangaData('popular', 10, 1), // Hot manga for slider
-    fetchMangaData('latest', 24, currentPage), // Latest manga for main content
-  ]);
+  // Fetch all homepage data in parallel
+  const { hotManga, latestManga, latestMangaPagination, sidebarData } = await fetchAllHomePageData(currentPage);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
       <JsonLdScript id="home-jsonld" jsonLd={jsonLd} />
 
-      {/* Hot Manga Slider - Pass pre-fetched data */}
-      <HotMangaSlider preloadedData={hotMangaData.manga} />
+      {/* Hot Manga Slider */}
+      <HotMangaSliderClient hotManga={hotManga} />
 
       {/* Main Content + Sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mt-8">
         {/* Main Content */}
         <section className="space-y-6">
-          {/* Latest Update Manga List - Pass pre-fetched data */}
-          <LatestUpdateMangaList
-            page={currentPage}
-            limit={24}
-            preloadedData={latestMangaData.manga}
-          />
+          {/* Latest Update Manga List */}
+          <LatestUpdateMangaListClient manga={latestManga} />
 
           {/* View More Button */}
           <ViewMoreButton href="/manga?page=2" />
         </section>
 
-        {/* Sidebar - Load independently for better UX */}
+        {/* Sidebar */}
         <aside className="space-y-6 lg:block">
-          <Sidebar />
+          <SidebarServer sidebarData={sidebarData} />
         </aside>
       </div>
     </div>

@@ -35,30 +35,11 @@ export const GET = withCors(async (request: NextRequest) => {
         ? { total_views: 'desc' as const }
         : { title: 'asc' as const }
 
-    // ✅ OPTIMIZED: Use database-level sorting and pagination
-    const skip = (page - 1) * limit;
-
-    // Build optimized orderBy for database-level sorting
-    let dbOrderBy;
-    if (sort === 'latest') {
-      // Use COALESCE-like behavior: sort by last_chapter_uploaded_at DESC NULLS LAST, then created_at DESC
-      dbOrderBy = [
-        { last_chapter_uploaded_at: { sort: 'desc', nulls: 'last' } },
-        { created_at: 'desc' }
-      ];
-    } else if (sort === 'popular') {
-      dbOrderBy = { total_views: 'desc' };
-    } else {
-      dbOrderBy = { title: 'asc' };
-    }
-
-    // ✅ OPTIMIZED: Single query with aggregation to get chapter counts
-    const [comics, totalComics] = await Promise.all([
+    // Execute query - we'll handle null sorting in post-processing for latest
+    const [allComics, totalComics] = await Promise.all([
       prisma.comics.findMany({
         where,
-        orderBy: dbOrderBy,
-        skip,
-        take: limit,
+        orderBy: sort === 'latest' ? { created_at: 'desc' } : orderBy, // temporary sort for latest
         include: {
           Comic_Genres: {
             include: {
@@ -77,23 +58,53 @@ export const GET = withCors(async (request: NextRequest) => {
               slug: true,
               release_date: true
             }
-          },
-          // ✅ Include chapter count in single query
-          _count: {
-            select: {
-              Chapters: true
-            }
           }
         }
       }),
       prisma.comics.count({ where })
-    ]);
+    ])
 
-    // ✅ Transform data without additional queries
-    const comicsWithChapterCounts = comics.map(comic => ({
-      ...comic,
-      _chapterCount: comic._count.Chapters
-    }));
+    // For latest sort, manually sort to put null last_chapter_uploaded_at at the end
+    let comics
+    if (sort === 'latest') {
+      const sortedComics = allComics.sort((a, b) => {
+        // If both have dates, sort by date desc
+        if (a.last_chapter_uploaded_at && b.last_chapter_uploaded_at) {
+          return new Date(b.last_chapter_uploaded_at).getTime() - new Date(a.last_chapter_uploaded_at).getTime()
+        }
+        // If only a has date, a comes first
+        if (a.last_chapter_uploaded_at && !b.last_chapter_uploaded_at) {
+          return -1
+        }
+        // If only b has date, b comes first
+        if (!a.last_chapter_uploaded_at && b.last_chapter_uploaded_at) {
+          return 1
+        }
+        // If both are null, sort by created_at desc (both should have created_at)
+        const aCreatedAt = a.created_at ? new Date(a.created_at).getTime() : 0
+        const bCreatedAt = b.created_at ? new Date(b.created_at).getTime() : 0
+        return bCreatedAt - aCreatedAt
+      })
+
+      // Apply pagination after sorting
+      comics = sortedComics.slice((page - 1) * limit, page * limit)
+    } else {
+      // Apply pagination for other sorts
+      comics = allComics.slice((page - 1) * limit, page * limit)
+    }
+
+    // Get chapter counts for each manga
+    const comicsWithChapterCounts = await Promise.all(
+      comics.map(async (comic) => {
+        const chapterCount = await prisma.chapters.count({
+          where: { comic_id: comic.id }
+        });
+        return {
+          ...comic,
+          _chapterCount: chapterCount
+        };
+      })
+    );
 
     return NextResponse.json({
       comics: comicsWithChapterCounts,

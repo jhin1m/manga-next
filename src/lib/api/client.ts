@@ -364,6 +364,8 @@ export const genreApi = {
 };
 
 // Revalidation API functions
+
+
 export const revalidationApi = {
   // Basic revalidation trigger
   trigger: async (options: {
@@ -681,6 +683,17 @@ export const searchApi = {
 
 // Comment API functions
 export const commentApi = {
+  // Get recent comments
+  getRecent: async (params: { limit?: number } = {}) => {
+    return apiClient(API_ENDPOINTS.comments.recent, {
+      params,
+      next: {
+        revalidate: 300, // 5 minutes
+        tags: ['comments', 'recent-comments'],
+      },
+    });
+  },
+
   // Get comments list
   getList: async (params: {
     comic_id?: number;
@@ -694,15 +707,10 @@ export const commentApi = {
   } = {}) => {
     return apiClient(API_ENDPOINTS.comments.list, {
       params,
-      cache: 'no-store', // Comments should be fresh
-    });
-  },
-
-  // Get recent comments
-  getRecent: async (params: { limit?: number } = {}) => {
-    return apiClient(API_ENDPOINTS.comments.recent, {
-      params,
-      cache: 'no-store', // Comments should be fresh
+      next: {
+        revalidate: 300, // 5 minutes
+        tags: ['comments'],
+      },
     });
   },
 
