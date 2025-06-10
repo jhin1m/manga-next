@@ -13,7 +13,8 @@ module.exports = {
         foreground: 'var(--foreground)',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)'],
+        sans: ['var(--font-nunito)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-staatliches)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-geist-mono)'],
       },
     },
