@@ -196,6 +196,79 @@ export function CommentSectionSkeleton() {
   );
 }
 
+// Manga Chapter Reader Skeleton Components
+export function ChapterReaderNavigationSkeleton() {
+  return (
+    <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-sm shadow-md p-2 border-b w-full">
+      <div className="flex items-center gap-1 justify-center md:container md:mx-auto overflow-x-auto">
+        {/* Home button skeleton */}
+        <Skeleton className="h-9 w-9 rounded-md flex-shrink-0" />
+
+        {/* List button skeleton */}
+        <Skeleton className="h-9 w-9 rounded-md flex-shrink-0" />
+
+        {/* Previous chapter button skeleton */}
+        <Skeleton className="h-9 w-9 rounded-md flex-shrink-0" />
+
+        {/* Chapter dropdown skeleton */}
+        <Skeleton className="flex-1 h-9 rounded-md max-w-[150px] md:max-w-[250px]" />
+
+        {/* Next chapter button skeleton */}
+        <Skeleton className="h-9 w-9 rounded-md flex-shrink-0" />
+
+        {/* Favorite button skeleton */}
+        <Skeleton className="h-9 w-9 rounded-md flex-shrink-0" />
+
+        {/* Report button skeleton */}
+        <Skeleton className="h-9 w-9 rounded-md flex-shrink-0" />
+      </div>
+    </header>
+  );
+}
+
+export function ChapterImagesSkeleton() {
+  const DEFAULT_PLACEHOLDER_HEIGHT = 800;
+  const WEBTOON_ASPECT_RATIO = 0.7;
+
+  // Calculate responsive height based on screen width
+  const getPlaceholderHeight = () => {
+    if (typeof window !== 'undefined') {
+      const screenWidth = window.innerWidth;
+      const maxWidth = Math.min(screenWidth * 0.9, 1280); // Max container width
+      return Math.floor(maxWidth / WEBTOON_ASPECT_RATIO);
+    }
+    return DEFAULT_PLACEHOLDER_HEIGHT;
+  };
+
+  return (
+    <main className="pt-2 pb-16">
+      <div className="flex flex-col items-center w-full sm:max-w-5xl sm:mx-auto">
+        {/* Generate multiple image skeletons */}
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div key={index} className="w-full mb-1">
+            <Skeleton
+              className="w-full rounded-none"
+              style={{ height: `${DEFAULT_PLACEHOLDER_HEIGHT}px` }}
+            />
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}
+
+export function ChapterReaderSkeleton() {
+  return (
+    <div className="min-h-screen bg-black">
+      {/* Navigation skeleton */}
+      <ChapterReaderNavigationSkeleton />
+
+      {/* Chapter images skeleton */}
+      <ChapterImagesSkeleton />
+    </div>
+  );
+}
+
 export function MangaDetailPageSkeleton() {
   return (
     <div className="space-y-8">

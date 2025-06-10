@@ -151,3 +151,68 @@ export function AnimatedRelatedMangaSkeleton() {
     </Card>
   );
 }
+
+// Animated Chapter Reader Skeleton Components
+export function AnimatedChapterReaderNavigationSkeleton() {
+  return (
+    <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-sm shadow-md p-2 border-b w-full">
+      <div className="flex items-center gap-1 justify-center md:container md:mx-auto overflow-x-auto">
+        {/* Navigation buttons with staggered animation */}
+        {Array.from({ length: 7 }).map((_, index) => (
+          <Skeleton
+            key={index}
+            className={`h-9 rounded-md flex-shrink-0 animate-pulse ${
+              index === 3 ? 'flex-1 max-w-[150px] md:max-w-[250px]' : 'w-9'
+            }`}
+            style={{
+              animationDelay: `${index * 100}ms`,
+              animationDuration: '1.5s'
+            }}
+          />
+        ))}
+      </div>
+    </header>
+  );
+}
+
+export function AnimatedChapterImagesSkeleton() {
+  const DEFAULT_PLACEHOLDER_HEIGHT = 800;
+
+  return (
+    <main className="pt-2 pb-16">
+      <div className="flex flex-col items-center w-full sm:max-w-5xl sm:mx-auto">
+        {/* Generate multiple image skeletons with staggered animation */}
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div
+            key={index}
+            className="w-full mb-1"
+            style={{
+              animationDelay: `${index * 150}ms`
+            }}
+          >
+            <Skeleton
+              className="w-full rounded-none animate-pulse"
+              style={{
+                height: `${DEFAULT_PLACEHOLDER_HEIGHT}px`,
+                animationDuration: '2s',
+                animationDelay: `${index * 150}ms`
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}
+
+export function AnimatedChapterReaderSkeleton() {
+  return (
+    <div className="min-h-screen bg-black">
+      {/* Navigation skeleton */}
+      <AnimatedChapterReaderNavigationSkeleton />
+
+      {/* Chapter images skeleton */}
+      <AnimatedChapterImagesSkeleton />
+    </div>
+  );
+}

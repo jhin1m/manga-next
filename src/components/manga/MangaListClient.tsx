@@ -56,18 +56,18 @@ export default function MangaListClient({
 
   const t = useTranslations('search');
 
-  // Progressive loading effect
+  // Faster, more conservative loading effect to prevent scroll issues
   useEffect(() => {
     const timeouts = [
       setTimeout(() => {
         setLoadingStates(prev => ({ ...prev, filterBar: false }));
-      }, 100),
+      }, 50), // Reduced from 100ms
       setTimeout(() => {
         setLoadingStates(prev => ({ ...prev, mangaGrid: false }));
-      }, 300),
+      }, 150), // Reduced from 300ms
       setTimeout(() => {
         setLoadingStates(prev => ({ ...prev, pagination: false }));
-      }, 600),
+      }, 200), // Reduced from 600ms
     ];
 
     return () => {
@@ -84,46 +84,53 @@ export default function MangaListClient({
       <div className="mb-6">
         <FilterSortBarClient
           showLoadingEffect={loadingStates.filterBar}
-          loadingDelay={100}
+          loadingDelay={50}
         />
       </div>
 
-      {/* Manga grid with loading state */}
-      {manga.length > 0 ? (
-        <>
-          {loadingStates.mangaGrid ? (
-            <MangaGridSkeleton itemCount={24} showStaggered={true} />
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 mb-8">
-              {manga.map((item: MangaItem, index) => (
-                <div
-                  key={item.id}
-                  className="transition-all duration-300"
-                  style={{
-                    opacity: loadingStates.mangaGrid ? 0 : 1,
-                    transform: loadingStates.mangaGrid ? 'translateY(10px)' : 'translateY(0)',
-                    transitionDelay: `${index * 30}ms`
-                  }}
-                >
-                  <MangaCard
-                    title={item.title}
-                    coverImage={item.coverImage}
-                    slug={item.slug}
-                    latestChapter={item.latestChapter}
-                    latestChapterSlug={item.latestChapterSlug}
-                    genres={item.genres}
-                    rating={item.rating}
-                    views={item.views}
-                    chapterCount={item.chapterCount}
-                    updatedAt={item.updatedAt}
-                    status={item.status}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Manga grid with loading state - Fixed container to prevent scroll jumping */}
+      <div className="skeleton-container">
+        {manga.length > 0 ? (
+          <>
+            {loadingStates.mangaGrid ? (
+              <MangaGridSkeleton itemCount={Math.min(manga.length, 12)} showStaggered={false} />
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 mb-8 smooth-fade">
+                {manga.map((item: MangaItem) => (
+                  <div
+                    key={item.id}
+                    className="no-transform-animation"
+                  >
+                    <MangaCard
+                      title={item.title}
+                      coverImage={item.coverImage}
+                      slug={item.slug}
+                      latestChapter={item.latestChapter}
+                      latestChapterSlug={item.latestChapterSlug}
+                      genres={item.genres}
+                      rating={item.rating}
+                      views={item.views}
+                      chapterCount={item.chapterCount}
+                      updatedAt={item.updatedAt}
+                      status={item.status}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              {t('noResults')}
+            </p>
+          </div>
+        )}
+      </div>
 
-          {/* Pagination with loading state */}
+      {/* Pagination with loading state */}
+      {manga.length > 0 && (
+        <>
           {loadingStates.pagination ? (
             <PaginationSkeleton />
           ) : (
@@ -134,12 +141,6 @@ export default function MangaListClient({
             />
           )}
         </>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">
-            {t('noResults')}
-          </p>
-        </div>
       )}
     </div>
   );

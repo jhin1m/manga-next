@@ -157,18 +157,31 @@
   animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Progressive loading animation */
+/* Progressive loading animation - reduced motion to prevent scroll issues */
 @keyframes progressiveLoad {
   0% {
     opacity: 0;
-    transform: translateY(10px) scale(0.95);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
 .progressive-load {
-  animation: progressiveLoad 0.6s ease-out forwards;
+  animation: progressiveLoad 0.3s ease-out forwards;
+}
+
+/* Prevent layout shifts during skeleton loading */
+.skeleton-container {
+  min-height: 600px; /* Reserve space to prevent layout shifts */
+}
+
+/* Smooth transition without transform to prevent scroll jumping */
+.smooth-fade {
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Disable transform animations that cause scroll issues */
+.no-transform-animation {
+  transform: none !important;
 }

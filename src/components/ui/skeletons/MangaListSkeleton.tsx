@@ -34,47 +34,15 @@ export function FilterSortBarSkeleton() {
 }
 
 export function MangaCardSkeleton({ index = 0, showAnimation = true }: { index?: number; showAnimation?: boolean }) {
-  const [isVisible, setIsVisible] = useState(!showAnimation);
-
-  useEffect(() => {
-    if (showAnimation) {
-      const timeout = setTimeout(() => {
-        setIsVisible(true);
-      }, index * 50); // Staggered animation
-
-      return () => clearTimeout(timeout);
-    }
-  }, [index, showAnimation]);
-
   return (
-    <Card
-      className={`group hover:shadow-lg transition-all duration-500 border-0 bg-card/50 backdrop-blur-sm ${
-        isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'
-      }`}
-      style={{
-        transition: 'opacity 0.5s ease, transform 0.5s ease',
-        transitionDelay: showAnimation ? `${index * 50}ms` : '0ms'
-      }}
-    >
+    <Card className="group border-0 bg-card/50 backdrop-blur-sm">
       <CardContent className="p-0">
-        {/* Cover Image Skeleton */}
+        {/* Cover Image Skeleton - Fixed height to prevent layout shift */}
         <div className="relative overflow-hidden rounded-t-lg">
-          <Skeleton className="w-full aspect-[2/3] object-cover animate-pulse" />
-
-          {/* Shimmer effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"
-               style={{
-                 background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
-                 animation: 'shimmer 2s infinite'
-               }} />
-
-          {/* Favorite button skeleton */}
-          <div className="absolute top-2 right-2">
-            <Skeleton className="h-8 w-8 rounded-full animate-pulse" />
-          </div>
+          <Skeleton className="w-full aspect-[2/3] object-cover" />
         </div>
 
-        {/* Card content skeleton */}
+        {/* Card content skeleton - Simplified to reduce height */}
         <div className="p-3 space-y-2">
           {/* Title skeleton */}
           <Skeleton className="h-4 w-full" />
@@ -91,18 +59,6 @@ export function MangaCardSkeleton({ index = 0, showAnimation = true }: { index?:
             </div>
             <Skeleton className="h-3 w-12" />
           </div>
-
-          {/* Genres skeleton */}
-          <div className="flex flex-wrap gap-1">
-            <Skeleton className="h-5 w-12 rounded-full" />
-            <Skeleton className="h-5 w-16 rounded-full" />
-          </div>
-
-          {/* Status and updated date skeleton */}
-          <div className="flex items-center justify-between text-xs">
-            <Skeleton className="h-3 w-16" />
-            <Skeleton className="h-3 w-20" />
-          </div>
         </div>
       </CardContent>
     </Card>
@@ -110,8 +66,8 @@ export function MangaCardSkeleton({ index = 0, showAnimation = true }: { index?:
 }
 
 export function MangaGridSkeleton({
-  itemCount = 24,
-  showStaggered = true
+  itemCount = 12, // Reduced from 24 to prevent excessive height
+  showStaggered = false // Disabled staggered animation to prevent layout shifts
 }: {
   itemCount?: number;
   showStaggered?: boolean;
@@ -121,8 +77,8 @@ export function MangaGridSkeleton({
       {Array.from({ length: itemCount }).map((_, i) => (
         <MangaCardSkeleton
           key={i}
-          index={showStaggered ? i : 0}
-          showAnimation={showStaggered}
+          index={0}
+          showAnimation={false}
         />
       ))}
     </div>
@@ -201,7 +157,7 @@ export function MangaListPageSkeleton() {
   );
 }
 
-// Compact version for faster loading
+// Compact version for faster loading - prevents scroll issues
 export function MangaListPageSkeletonCompact() {
   return (
     <div className="container mx-auto py-8">
@@ -213,11 +169,32 @@ export function MangaListPageSkeletonCompact() {
         <FilterSortBarSkeleton />
       </div>
 
-      {/* Manga grid skeleton - no staggered animation for faster loading */}
-      <MangaGridSkeleton showStaggered={false} />
+      {/* Manga grid skeleton - conservative height to prevent layout shifts */}
+      <MangaGridSkeleton itemCount={8} showStaggered={false} />
 
       {/* Pagination skeleton */}
       <PaginationSkeleton />
+    </div>
+  );
+}
+
+// Minimal skeleton that matches actual content height more closely
+export function MangaGridSkeletonMinimal({
+  itemCount = 6
+}: {
+  itemCount?: number;
+}) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 mb-8">
+      {Array.from({ length: itemCount }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          {/* Just the cover image skeleton */}
+          <Skeleton className="w-full aspect-[2/3]" />
+          {/* Title skeleton */}
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-3 w-2/3" />
+        </div>
+      ))}
     </div>
   );
 }
