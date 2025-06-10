@@ -2,10 +2,7 @@ import { Metadata } from "next";
 import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateHomeJsonLd } from "@/lib/seo/jsonld";
-import HotMangaSliderClient from "@/components/feature/HotMangaSliderClient";
-import LatestUpdateMangaListClient from "@/components/feature/LatestUpdateMangaListClient";
-import SidebarServer from "@/components/feature/SidebarServer";
-import ViewMoreButton from "@/components/ui/ViewMoreButton";
+import ProgressiveHomePage from "@/components/feature/ProgressiveHomePage";
 import { seoConfig, getSiteUrl } from "@/config/seo.config";
 import { defaultViewport } from "@/lib/seo/viewport";
 
@@ -194,29 +191,17 @@ export default async function Home({
   // Fetch all homepage data in parallel
   const { hotManga, latestManga, latestMangaPagination, sidebarData } = await fetchAllHomePageData(currentPage);
 
+  const initialData = {
+    hotManga,
+    latestManga,
+    latestMangaPagination,
+    sidebarData
+  };
+
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <>
       <JsonLdScript id="home-jsonld" jsonLd={jsonLd} />
-
-      {/* Hot Manga Slider */}
-      <HotMangaSliderClient hotManga={hotManga} />
-
-      {/* Main Content + Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mt-8">
-        {/* Main Content */}
-        <section className="space-y-6">
-          {/* Latest Update Manga List */}
-          <LatestUpdateMangaListClient manga={latestManga} />
-
-          {/* View More Button */}
-          <ViewMoreButton href="/manga?page=2" />
-        </section>
-
-        {/* Sidebar */}
-        <aside className="space-y-6 lg:block">
-          <SidebarServer sidebarData={sidebarData} />
-        </aside>
-      </div>
-    </div>
+      <ProgressiveHomePage initialData={initialData} />
+    </>
   );
 }

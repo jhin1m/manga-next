@@ -17,6 +17,7 @@ import Analytics from "@/components/analytics/Analytics";
 import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
 import OfflineIndicator from "@/components/pwa/OfflineIndicator";
 import { defaultViewport } from "@/lib/seo/viewport";
+import { NavigationLoadingProvider } from "@/contexts/NavigationLoadingContext";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -77,14 +78,16 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>
-              <Header />
-              <MainContent>
-                {children}
-              </MainContent>
-              <Footer />
-              <Toaster />
-              <PWAInstallPrompt />
-              <OfflineIndicator />
+              <NavigationLoadingProvider>
+                <Header />
+                <MainContent>
+                  {children}
+                </MainContent>
+                <Footer />
+                <Toaster />
+                <PWAInstallPrompt />
+                <OfflineIndicator />
+              </NavigationLoadingProvider>
 
             {/* Analytics Components */}
             <Analytics />
