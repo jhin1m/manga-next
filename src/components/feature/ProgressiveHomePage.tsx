@@ -10,7 +10,6 @@ import {
   LatestMangaListSkeleton,
   SidebarSkeleton
 } from '@/components/ui/skeletons/HomePageSkeleton';
-import { useNavigationLoading } from '@/hooks/useNavigationLoading';
 
 interface ProgressiveHomePageProps {
   initialData: {
@@ -30,7 +29,6 @@ interface ProgressiveHomePageProps {
 }
 
 export default function ProgressiveHomePage({ initialData }: ProgressiveHomePageProps) {
-  const { isLoading: navigationLoading } = useNavigationLoading();
   const [loadingStates, setLoadingStates] = useState({
     hotManga: true,
     latestManga: true,
@@ -41,16 +39,6 @@ export default function ProgressiveHomePage({ initialData }: ProgressiveHomePage
 
   // Progressive loading effect
   useEffect(() => {
-    // Reset loading states khi navigation loading hoặc component mount
-    if (navigationLoading) {
-      setLoadingStates({
-        hotManga: true,
-        latestManga: true,
-        sidebar: true,
-      });
-      return;
-    }
-
     // Simulate progressive loading for better UX
     const timeouts = [
       setTimeout(() => {
@@ -67,7 +55,7 @@ export default function ProgressiveHomePage({ initialData }: ProgressiveHomePage
     return () => {
       timeouts.forEach(timeout => clearTimeout(timeout));
     };
-  }, [navigationLoading]);
+  }, []);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
