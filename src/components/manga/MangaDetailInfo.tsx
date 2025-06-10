@@ -60,24 +60,6 @@ export function MangaDetailInfo({
 
   return (
     <section className="relative overflow-hidden">
-      {/* Background Image with Blur Effect */}
-      <div className="absolute inset-0 z-0">
-        <div className="relative w-full h-full">
-          <Image
-            src={manga.coverImage}
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover scale-110"
-            priority={false}
-          />
-          {/* Overlay gradients for better readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/95" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
-          <div className="absolute inset-0 backdrop-blur-sm" />
-        </div>
-      </div>
-
       <Card className="relative z-10 bg-card/80 backdrop-blur-md border-border/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:bg-card/85">
         <CardContent className="p-4 sm:p-6 lg:p-8">
           {/* Responsive Layout */}

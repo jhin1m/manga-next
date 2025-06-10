@@ -4,11 +4,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 export function MangaDetailInfoSkeleton() {
   return (
     <section className="relative overflow-hidden">
-      {/* Background skeleton */}
-      <div className="absolute inset-0 z-0">
-        <Skeleton className="w-full h-full" />
-      </div>
-
       <Card className="relative z-10 bg-card/80 backdrop-blur-md border-border/50 shadow-xl">
         <CardContent className="p-4 sm:p-6 lg:p-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 relative z-10">
