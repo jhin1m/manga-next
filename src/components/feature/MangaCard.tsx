@@ -19,6 +19,7 @@ interface MangaCardProps {
   views?: number;
   chapterCount?: number;
   updatedAt?: string;
+  status?: string;
 }
 
 export default function MangaCard({
@@ -31,6 +32,7 @@ export default function MangaCard({
   views = 0,
   chapterCount = 0,
   updatedAt,
+  status,
 }: MangaCardProps) {
   const { formatViews, formatDate } = useFormat();
   const t = useTranslations('manga');
@@ -60,7 +62,6 @@ export default function MangaCard({
               className='object-cover transition-transform group-hover:scale-105'
               priority={false}
             />
-
             {/* Số chapter ở góc phải dưới ảnh bìa */}
             {chapterCount > 0 && (
               <div className='absolute bottom-0 right-0 bg-black/70 text-white text-xs py-1 px-2 rounded-tl'>

@@ -79,6 +79,7 @@ async function fetchMangaByGenre({
         title: comic.title,
         slug: comic.slug,
         coverImage: comic.cover_image_url,
+        status: comic.status,
         genres: genres,
         views: comic.total_views || 0,
         rating: 0, // Not implemented in the API yet
@@ -185,6 +186,7 @@ export default async function GenrePage({
                 views={item.views}
                 chapterCount={item.chapterCount}
                 updatedAt={item.updatedAt}
+                status={item.status}
               />
             ))}
           </div>
