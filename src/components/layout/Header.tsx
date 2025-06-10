@@ -27,7 +27,6 @@ import { useRouteDetection } from '@/hooks/useRouteDetection';
 import { toast } from 'sonner';
 import { seoConfig } from '@/config/seo.config';
 import HomeLink from './HomeLink';
-import MangaIcon from '@/components/icons/MangaIcon';
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -70,10 +69,6 @@ export default function Header() {
         <div className='flex justify-between items-center sm:px-14 2xl:px-21'>
           <HomeLink className='group relative flex items-center gap-2 sm:gap-3 hover:opacity-90 transition-all duration-300'>
             <div className="relative">
-              <MangaIcon
-                size={28}
-                className="sm:w-8 sm:h-8 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 drop-shadow-sm"
-              />
               <div className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
             </div>
             <div className="flex flex-col">

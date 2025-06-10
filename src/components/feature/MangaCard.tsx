@@ -19,7 +19,6 @@ interface MangaCardProps {
   views?: number;
   chapterCount?: number;
   updatedAt?: string;
-  status?: string;
 }
 
 export default function MangaCard({
@@ -32,7 +31,6 @@ export default function MangaCard({
   views = 0,
   chapterCount = 0,
   updatedAt,
-  status,
 }: MangaCardProps) {
   const { formatViews, formatDate } = useFormat();
   const t = useTranslations('manga');
@@ -62,12 +60,6 @@ export default function MangaCard({
               className='object-cover transition-transform group-hover:scale-105'
               priority={false}
             />
-            {/* Trạng thái manga ở góc trái trên ảnh bìa */}
-            {status && (
-              <div className='absolute top-0 left-0 bg-primary text-primary-foreground text-xs py-1 px-2 rounded-br'>
-                {status === 'ongoing' ? t('ongoing') : t('completed')}
-              </div>
-            )}
 
             {/* Số chapter ở góc phải dưới ảnh bìa */}
             {chapterCount > 0 && (
