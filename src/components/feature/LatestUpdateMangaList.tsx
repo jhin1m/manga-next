@@ -76,7 +76,19 @@ export default async function LatestUpdateMangaList({
       {manga.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {manga.map((item: Manga) => (
-            <MangaCard key={item.id} {...item} />
+            <MangaCard
+              key={item.id}
+              title={item.title}
+              coverImage={item.coverImage}
+              slug={item.slug}
+              latestChapter={item.latestChapter}
+              genres={item.genres}
+              rating={item.rating}
+              views={item.views}
+              chapterCount={item.chapterCount}
+              updatedAt={item.updatedAt}
+              status={item.status}
+            />
           ))}
         </div>
       ) : (

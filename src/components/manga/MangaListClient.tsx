@@ -106,8 +106,17 @@ export default function MangaListClient({
                   }}
                 >
                   <MangaCard
-                    {...item as any}
-                    showFavoriteButton={true}
+                    title={item.title}
+                    coverImage={item.coverImage}
+                    slug={item.slug}
+                    latestChapter={item.latestChapter}
+                    latestChapterSlug={item.latestChapterSlug}
+                    genres={item.genres}
+                    rating={item.rating}
+                    views={item.views}
+                    chapterCount={item.chapterCount}
+                    updatedAt={item.updatedAt}
+                    status={item.status}
                   />
                 </div>
               ))}

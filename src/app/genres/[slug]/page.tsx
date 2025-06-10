@@ -174,7 +174,20 @@ export default async function GenrePage({
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
             {manga.map((item: any) => (
-              <MangaCard key={item.id} {...item} />
+              <MangaCard
+                key={item.id}
+                title={item.title}
+                coverImage={item.coverImage}
+                slug={item.slug}
+                latestChapter={item.latestChapter}
+                latestChapterSlug={item.latestChapterSlug}
+                genres={item.genres}
+                rating={item.rating}
+                views={item.views}
+                chapterCount={item.chapterCount}
+                updatedAt={item.updatedAt}
+                status={item.status}
+              />
             ))}
           </div>
 

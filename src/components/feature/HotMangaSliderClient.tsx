@@ -77,7 +77,6 @@ export default function HotMangaSliderClient({ hotManga }: HotMangaSliderClientP
             className="snap-start flex-shrink-0 w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] lg:w-[calc(20%-16px)] 2xl:w-[calc(16.666%-16px)]"
           >
             <MangaCard
-              id={item.id}
               title={item.title}
               coverImage={item.coverImage}
               slug={item.slug}
