@@ -39,6 +39,7 @@ const appleIconSizes = [
   { size: 144, name: 'apple-touch-icon-144x144.png' },
   { size: 152, name: 'apple-touch-icon-152x152.png' },
   { size: 180, name: 'apple-touch-icon-180x180.png' },
+  { size: 180, name: 'apple-icon.png' },
 ];
 
 async function generateIcons() {
