@@ -129,7 +129,8 @@ export async function GET(request: NextRequest) {
       status: httpStatus,
       headers: {
         'X-Response-Time': `${responseTime}ms`,
-        'Cache-Control': 'no-cache, no-store, must-revalidate'
+        // Use shorter cache duration instead of no-store for bfcache compatibility
+        'Cache-Control': 'public, max-age=30, must-revalidate'
       }
     });
 
