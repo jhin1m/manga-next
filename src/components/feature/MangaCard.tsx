@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Star, Eye } from 'lucide-react';
 import { useFormat } from '@/hooks/useFormat';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo, useMemo } from 'react';
 
 interface MangaCardProps {
   title: string;
@@ -26,7 +26,7 @@ interface MangaCardProps {
   loading?: 'lazy' | 'eager';
 }
 
-export default function MangaCard({
+const MangaCard = memo(function MangaCard({
   title,
   coverImage,
   slug,
@@ -39,7 +39,7 @@ export default function MangaCard({
   status,
   priority = false,
   fetchPriority = 'auto',
-  imageSizes = "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw",
+  imageSizes = "(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw",
   loading = 'lazy',
 }: MangaCardProps) {
   const { formatViews, formatDate } = useFormat();
@@ -48,8 +48,15 @@ export default function MangaCard({
   // State để xử lý hydration mismatch
   const [isClient, setIsClient] = useState(false);
 
-  // Hiển thị rating = 8 nếu không có rating thật (0 hoặc null/undefined)
-  const displayRating = rating && rating > 0 ? rating : 8;
+  // Memoize expensive calculations
+  const displayRating = useMemo(() => {
+    return rating && rating > 0 ? rating : 8;
+  }, [rating]);
+
+  // Memoize formatted views to prevent unnecessary recalculations
+  const formattedViews = useMemo(() => {
+    return formatViews(views);
+  }, [formatViews, views]);
 
   // Chỉ format date sau khi component mount trên client
   useEffect(() => {
@@ -71,6 +78,9 @@ export default function MangaCard({
               priority={priority}
               fetchPriority={fetchPriority}
               loading={loading}
+              quality={85}
+              placeholder="blur"
+              blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
             />
             {/* Số chapter ở góc phải dưới ảnh bìa */}
             {chapterCount > 0 && (
@@ -95,7 +105,7 @@ export default function MangaCard({
             </div>
             <div className='flex items-center'>
               <Eye className='h-4 w-4 mr-1' />
-              <span>{formatViews(views)}</span>
+              <span>{formattedViews}</span>
             </div>
           </div>
 
@@ -140,4 +150,6 @@ export default function MangaCard({
       </Card>
     </div>
   );
-}
+});
+
+export default MangaCard;

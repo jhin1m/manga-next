@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
-import CommentSection from "@/components/feature/comments/CommentSection";
 import MangaDetailInfoClient from "@/components/manga/MangaDetailInfoClient";
+
+// Lazy load heavy components
+const CommentSectionLazy = lazy(() => import("@/components/feature/comments/CommentSectionLazy"));
 import {
   CommentSectionSkeleton
 } from "@/components/ui/skeletons/MangaDetailSkeleton";
@@ -118,7 +120,7 @@ export default function MangaDetailClient({
         {loadingStates.comments ? (
           <CommentSectionSkeleton />
         ) : (
-          <CommentSection
+          <CommentSectionLazy
             mangaId={manga.id}
             mangaSlug={manga.slug}
             defaultViewMode="all"

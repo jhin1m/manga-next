@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, memo, useCallback } from 'react'
 import { useFormat } from '@/hooks/useFormat'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -51,7 +51,7 @@ interface CommentItemProps {
   showSourceBadge?: boolean
 }
 
-export default function CommentItem({
+const CommentItem = memo(function CommentItem({
   comment,
   onReply,
   onUpdate,
@@ -91,7 +91,7 @@ export default function CommentItem({
   }
 
   // Handle like/dislike
-  const handleLike = async (isLike: boolean) => {
+  const handleLike = useCallback(async (isLike: boolean) => {
     if (!currentUserId) {
       toast.error(t('messages.signInToLike'))
       return
@@ -106,10 +106,10 @@ export default function CommentItem({
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentUserId, comment.id, onLike, t])
 
   // Handle delete
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     try {
       setLoading(true)
       await commentApi.delete(comment.id)
@@ -120,7 +120,7 @@ export default function CommentItem({
       setLoading(false)
       setShowDeleteDialog(false)
     }
-  }
+  }, [comment.id, onDelete, t])
 
   // Handle edit
   const handleEdit = (updatedComment: Comment) => {
@@ -337,4 +337,6 @@ export default function CommentItem({
       )}
     </div>
   )
-}
+});
+
+export default CommentItem;
