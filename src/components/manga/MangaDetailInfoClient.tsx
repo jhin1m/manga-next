@@ -32,12 +32,20 @@ interface MangaDetailInfoClientProps {
     views: number;
   }>;
   showLoadingEffect?: boolean;
+  initialFavoriteStatus?: boolean;
+  initialRatingData?: {
+    averageRating: number;
+    totalRatings: number;
+    userRating: number;
+  };
 }
 
-export default function MangaDetailInfoClient({ 
-  manga, 
-  chapters, 
-  showLoadingEffect = true 
+export default function MangaDetailInfoClient({
+  manga,
+  chapters,
+  showLoadingEffect = true,
+  initialFavoriteStatus,
+  initialRatingData
 }: MangaDetailInfoClientProps) {
   const [isLoading, setIsLoading] = useState(showLoadingEffect);
 
@@ -55,5 +63,12 @@ export default function MangaDetailInfoClient({
     return <AnimatedMangaDetailSkeleton />;
   }
 
-  return <MangaDetailInfo manga={manga} chapters={chapters} />;
+  return (
+    <MangaDetailInfo
+      manga={manga}
+      chapters={chapters}
+      initialFavoriteStatus={initialFavoriteStatus}
+      initialRatingData={initialRatingData}
+    />
+  );
 }

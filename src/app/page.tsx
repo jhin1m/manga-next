@@ -8,23 +8,23 @@ import { defaultViewport } from "@/lib/seo/viewport";
 
 import { mangaApi, rankingsApi, commentApi } from '@/lib/api/client';
 
-// Parallel data fetching for all homepage components
+// Parallel data fetching for all homepage components - OPTIMIZED to avoid duplicate API calls
 async function fetchAllHomePageData(page: number = 1) {
   try {
     // Fetch all data in parallel for maximum performance
+    // OPTIMIZATION: Fetch popular manga once with higher limit, then split for different components
     const [
-      hotMangaData,
+      popularMangaData, // Single call for both hot manga slider and recommended manga
       latestMangaData,
       sidebarRankingsData,
-      recentCommentsData,
-      recommendedMangaData
+      recentCommentsData
     ] = await Promise.all([
-      // Hot manga for slider
+      // Popular manga - fetch once with limit 10 for both slider and sidebar
       mangaApi.getList({
         sort: 'popular',
-        limit: 10,
+        limit: 10, // Get 10 items, use all for slider, first 5 for recommended
       }).catch(err => {
-        console.error('Error fetching hot manga:', err);
+        console.error('Error fetching popular manga:', err);
         return { comics: [] };
       }),
 
@@ -51,20 +51,16 @@ async function fetchAllHomePageData(page: number = 1) {
       commentApi.getRecent({ limit: 5 }).catch(err => {
         console.error('Error fetching recent comments:', err);
         return { comments: [] };
-      }),
-
-      // Recommended manga for sidebar
-      mangaApi.getList({
-        sort: 'popular',
-        limit: 5,
-      }).catch(err => {
-        console.error('Error fetching recommended manga:', err);
-        return { comics: [] };
       })
     ]);
 
+    // Split popular manga data for different components
+    const allPopularComics = popularMangaData.comics || [];
+    const hotMangaComics = allPopularComics; // Use all 10 for slider
+    const recommendedMangaComics = allPopularComics.slice(0, 5); // Use first 5 for sidebar
+
     return {
-      hotManga: transformHotMangaData(hotMangaData.comics),
+      hotManga: transformHotMangaData(hotMangaComics),
       latestManga: transformLatestMangaData(latestMangaData.comics),
       latestMangaPagination: {
         totalPages: latestMangaData.totalPages || 1,
@@ -74,7 +70,7 @@ async function fetchAllHomePageData(page: number = 1) {
       sidebarData: {
         rankings: transformRankingsData(sidebarRankingsData.success ? sidebarRankingsData.data.rankings : []),
         recentComments: recentCommentsData.comments || [],
-        recommendedManga: transformRecommendedMangaData(recommendedMangaData.comics)
+        recommendedManga: transformRecommendedMangaData(recommendedMangaComics)
       }
     };
   } catch (error) {

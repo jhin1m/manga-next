@@ -33,11 +33,17 @@ export function useRating({
 
   const isAuthenticated = status === 'authenticated'
 
-  // Fetch current rating data
+  // Fetch current rating data - optimized to prevent duplicate calls
   useEffect(() => {
+    let isMounted = true
+
     const fetchRatingData = async () => {
       try {
         const data = await ratingApi.get(mangaId)
+
+        // Only update if component is still mounted
+        if (!isMounted) return
+
         setRatingData({
           averageRating: data.averageRating || 0,
           totalRatings: data.totalRatings || 0,
@@ -49,10 +55,15 @@ export function useRating({
       }
     }
 
-    if (mangaId) {
+    // Only fetch if we don't have initial data (undefined means no server-side data was provided)
+    if (mangaId && initialRating === undefined && initialTotalRatings === undefined && initialUserRating === undefined) {
       fetchRatingData()
     }
-  }, [mangaId])
+
+    return () => {
+      isMounted = false
+    }
+  }, [mangaId, initialRating, initialTotalRatings, initialUserRating])
 
   const submitRating = async (rating: number) => {
     if (!isAuthenticated) {

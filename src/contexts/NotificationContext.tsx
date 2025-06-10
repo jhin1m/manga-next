@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import React, { createContext, useContext, useCallback, useRef, useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { notificationApi } from '@/lib/api/client'
@@ -21,24 +21,40 @@ interface NotificationSettings {
   new_chapter_alerts: boolean
 }
 
-interface UseNotificationsOptions {
-  autoRefresh?: boolean
-  refreshInterval?: number
-}
-
 interface CacheEntry {
   data: any
   timestamp: number
   expiry: number
 }
 
-/**
- * Custom hook for managing user notifications with caching
- */
-export function useNotifications({
+interface NotificationContextType {
+  notifications: Notification[]
+  unreadCount: number
+  settings: NotificationSettings | null
+  isLoading: boolean
+  error: string | null
+  pagination: any
+  fetchNotifications: (params?: any) => Promise<any>
+  fetchSettings: () => Promise<any>
+  updateSettings: (newSettings: Partial<NotificationSettings>) => Promise<any>
+  markAsRead: (notificationIds?: number[], markAll?: boolean) => Promise<any>
+  fetchUnreadCount: () => Promise<any>
+  isAuthenticated: boolean
+}
+
+const NotificationContext = createContext<NotificationContextType | undefined>(undefined)
+
+interface NotificationProviderProps {
+  children: React.ReactNode
+  autoRefresh?: boolean
+  refreshInterval?: number
+}
+
+export function NotificationProvider({
+  children,
   autoRefresh = false,
   refreshInterval = 30000
-}: UseNotificationsOptions = {}) {
+}: NotificationProviderProps) {
   const { data: session, status } = useSession()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState<number>(0)
@@ -52,27 +68,27 @@ export function useNotifications({
   const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
   const UNREAD_COUNT_CACHE_DURATION = 30 * 1000 // 30 seconds
 
-  // Cache helper functions
-  const getCacheKey = useCallback((key: string, params?: any) => {
+  // Cache helper functions - STABLE REFERENCES
+  const getCacheKey = (key: string, params?: any) => {
     return params ? `${key}_${JSON.stringify(params)}` : key
-  }, [])
+  }
 
-  const getCachedData = useCallback((key: string) => {
+  const getCachedData = (key: string) => {
     const entry = cache.current.get(key)
     if (entry && Date.now() < entry.expiry) {
       return entry.data
     }
     cache.current.delete(key)
     return null
-  }, [])
+  }
 
-  const setCachedData = useCallback((key: string, data: any, duration: number) => {
+  const setCachedData = (key: string, data: any, duration: number) => {
     cache.current.set(key, {
       data,
       timestamp: Date.now(),
       expiry: Date.now() + duration
     })
-  }, [])
+  }
 
   // Clear cache when user changes
   useEffect(() => {
@@ -113,12 +129,11 @@ export function useNotifications({
 
       return data
     } catch (err) {
-      console.error('Error fetching notifications:', err)
       setError('Failed to fetch notifications')
     } finally {
       setIsLoading(false)
     }
-  }, [status, getCacheKey, getCachedData, setCachedData])
+  }, [status]) // FIXED: Remove unstable dependencies
 
   // Fetch notification settings with caching
   const fetchSettings = useCallback(async () => {
@@ -143,10 +158,9 @@ export function useNotifications({
 
       return data.settings
     } catch (err) {
-      console.error('Error fetching notification settings:', err)
       setError('Failed to fetch notification settings')
     }
-  }, [status, getCachedData, setCachedData])
+  }, [status]) // FIXED: Remove unstable dependencies
 
   // Update notification settings
   const updateSettings = useCallback(async (newSettings: Partial<NotificationSettings>) => {
@@ -168,7 +182,6 @@ export function useNotifications({
       toast.success('Notification settings updated successfully')
       return data.settings
     } catch (err) {
-      console.error('Error updating notification settings:', err)
       setError('Failed to update notification settings')
       toast.error('Failed to update notification settings')
     } finally {
@@ -208,7 +221,6 @@ export function useNotifications({
 
       return data
     } catch (err) {
-      console.error('Error marking notifications as read:', err)
       setError('Failed to mark notifications as read')
     }
   }, [status])
@@ -237,17 +249,17 @@ export function useNotifications({
 
       return data.unread_count
     } catch (err) {
-      console.error('Error fetching unread count:', err)
+      // Silent error handling
+      setError('Failed to fetch unread count')
     }
-  }, [status, getCachedData, setCachedData])
+  }, [status]) // FIXED: Remove unstable dependencies
 
-  // Initial fetch on mount
+  // Initial fetch on authentication
   useEffect(() => {
     if (status === 'authenticated') {
-      fetchNotifications()
-      fetchSettings()
+      fetchUnreadCount() // Initial fetch
     }
-  }, [status, fetchNotifications, fetchSettings])
+  }, [status, fetchUnreadCount])
 
   // Auto-refresh notifications
   useEffect(() => {
@@ -262,7 +274,7 @@ export function useNotifications({
     return () => clearInterval(interval)
   }, [autoRefresh, refreshInterval, status, fetchUnreadCount])
 
-  return {
+  const value: NotificationContextType = {
     notifications,
     unreadCount,
     settings,
@@ -276,4 +288,18 @@ export function useNotifications({
     fetchUnreadCount,
     isAuthenticated: status === 'authenticated',
   }
+
+  return (
+    <NotificationContext.Provider value={value}>
+      {children}
+    </NotificationContext.Provider>
+  )
+}
+
+export function useNotifications() {
+  const context = useContext(NotificationContext)
+  if (context === undefined) {
+    throw new Error('useNotifications must be used within a NotificationProvider')
+  }
+  return context
 }

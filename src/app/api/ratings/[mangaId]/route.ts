@@ -11,7 +11,7 @@ import type { RatingGetResponse, RatingErrorResponse } from '@/types/rating'
  * Returns average rating, total count, and user's rating if authenticated
  */
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ mangaId: string }> }
 ): Promise<NextResponse<RatingGetResponse | RatingErrorResponse>> {
   try {

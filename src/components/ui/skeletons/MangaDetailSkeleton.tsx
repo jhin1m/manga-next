@@ -62,47 +62,26 @@ export function MangaDetailInfoSkeleton() {
               </div>
             </div>
 
-            {/* Right Column - Metadata Skeleton */}
-            <div className="col-span-1 lg:col-span-1 space-y-3 sm:space-y-4 mt-4 sm:mt-12">
-              {/* Description Skeleton - Mobile/Tablet only */}
-              <div className="lg:hidden">
-                <Skeleton className="h-6 w-24 mb-2 mx-auto" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4 mx-auto" />
-                </div>
-              </div>
-
-              {/* Details Header Skeleton - Mobile/Tablet only */}
-              <div className="lg:hidden">
-                <Skeleton className="h-8 w-full" />
-              </div>
-
+            {/* Right Column - Metadata Skeleton - Desktop only */}
+            <div className="hidden lg:block col-span-1 lg:col-span-1 space-y-3 sm:space-y-4 mt-4 sm:mt-12">
               {/* Genres Skeleton */}
-              <div className="flex flex-wrap gap-1 sm:gap-1.5 justify-center lg:justify-start">
+              <div className="flex flex-wrap gap-1 sm:gap-1.5 justify-start">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <Skeleton key={i} className="h-6 w-16" />
                 ))}
               </div>
 
-              {/* Stats Skeleton - Mobile/Tablet */}
-              <div className="lg:hidden flex items-center justify-center gap-4">
-                <Skeleton className="h-4 w-12" />
-                <Skeleton className="h-4 w-8" />
-                <Skeleton className="h-4 w-10" />
-              </div>
-
               {/* Metadata Skeleton */}
               <div className="space-y-1.5 sm:space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="flex justify-center lg:justify-start">
+                  <div key={i} className="flex justify-start">
                     <Skeleton className="h-4 w-32" />
                   </div>
                 ))}
               </div>
 
               {/* Star Rating Skeleton */}
-              <div className="flex justify-center lg:justify-start py-1">
+              <div className="flex justify-start py-1">
                 <Skeleton className="h-8 w-40" />
               </div>
             </div>
@@ -116,26 +95,40 @@ export function MangaDetailInfoSkeleton() {
 export function MangaChapterListSkeleton() {
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-7 w-32" />
-          <Skeleton className="h-9 w-24" />
-        </div>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-5">
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-8 w-24" />
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="flex items-center justify-between p-3 rounded-lg border">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-4 w-16" />
-                <Skeleton className="h-4 w-48" />
+        {/* Search input skeleton */}
+        <div className="mb-4">
+          <Skeleton className="h-10 w-full max-w-sm" />
+        </div>
+
+        {/* Chapters grid skeleton */}
+        <div className="max-h-[600px] overflow-y-auto pr-2">
+          <div className="grid grid-cols-2 gap-3 pb-5 pr-2">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="flex flex-col h-full p-3 rounded-md border">
+                {/* Chapter title */}
+                <div className="font-medium mb-2">
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+
+                {/* Chapter stats */}
+                <div className="mt-auto flex flex-col gap-1">
+                  <div className="flex items-center gap-1">
+                    <Skeleton className="h-3 w-3" />
+                    <Skeleton className="h-3 w-12" />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Skeleton className="h-3 w-3" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-4 w-12" />
-                <Skeleton className="h-4 w-20" />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

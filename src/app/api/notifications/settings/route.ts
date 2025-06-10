@@ -12,7 +12,7 @@ const notificationSettingsSchema = z.object({
 
 /**
  * GET /api/notifications/settings
- * Get user's notification settings
+ * Get user's notification settings - OPTIMIZED
  */
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions)
@@ -24,21 +24,20 @@ export async function GET(request: Request) {
   try {
     const userId = parseInt(session.user.id)
 
-    // Get or create notification settings
-    let settings = await prisma.notificationSettings.findUnique({
+    // OPTIMIZATION: Use upsert to get or create in single query
+    const settings = await prisma.notificationSettings.upsert({
       where: { user_id: userId },
+      update: {}, // No update needed, just return existing
+      create: {
+        user_id: userId,
+        in_app_notifications: true,
+        new_chapter_alerts: true,
+      },
+      select: {
+        in_app_notifications: true,
+        new_chapter_alerts: true,
+      },
     })
-
-    // Create default settings if they don't exist
-    if (!settings) {
-      settings = await prisma.notificationSettings.create({
-        data: {
-          user_id: userId,
-          in_app_notifications: true,
-          new_chapter_alerts: true,
-        },
-      })
-    }
 
     return NextResponse.json({
       settings: {
@@ -47,7 +46,6 @@ export async function GET(request: Request) {
       },
     })
   } catch (error) {
-    console.error('Error fetching notification settings:', error)
     return NextResponse.json(
       { error: 'Failed to fetch notification settings' },
       { status: 500 }
@@ -100,7 +98,6 @@ export async function PATCH(request: Request) {
       )
     }
 
-    console.error('Error updating notification settings:', error)
     return NextResponse.json(
       { error: 'Failed to update notification settings' },
       { status: 500 }

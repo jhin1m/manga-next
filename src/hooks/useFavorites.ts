@@ -25,14 +25,6 @@ export function useFavorites({ comicId, initialIsFavorite = false }: UseFavorite
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Check if the manga is favorited on mount
-  useEffect(() => {
-    // Only check if user is authenticated
-    if (status === 'authenticated' && !initialIsFavorite) {
-      checkFavoriteStatus()
-    }
-  }, [status, comicId])
-
   // Check if the manga is in user's favorites
   const checkFavoriteStatus = useCallback(async () => {
     if (status !== 'authenticated') {
@@ -52,6 +44,24 @@ export function useFavorites({ comicId, initialIsFavorite = false }: UseFavorite
       setIsLoading(false)
     }
   }, [comicId, status])
+
+  // Check if the manga is favorited on mount - optimized to prevent duplicate calls
+  useEffect(() => {
+    let isMounted = true
+
+    // Only check if user is authenticated and we don't have initial data
+    // Skip API call if we have initial data (either true or false)
+    if (status === 'authenticated' && initialIsFavorite === undefined) {
+      checkFavoriteStatus().then(() => {
+        // Only update if component is still mounted
+        if (!isMounted) return
+      })
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [status, comicId, initialIsFavorite, checkFavoriteStatus])
 
   // Toggle favorite status
   const toggleFavorite = useCallback(async () => {

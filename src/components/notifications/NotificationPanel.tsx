@@ -7,7 +7,7 @@ import { vi, enUS } from 'date-fns/locale'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { useNotifications } from '@/hooks/useNotifications'
+import { useNotifications } from '@/contexts/NotificationContext'
 import { Bell, Settings, CheckCheck, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -25,7 +25,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
     unreadCount,
     markAsRead,
     isAuthenticated,
-  } = useNotifications()
+  } = useNotifications() // Now uses shared context
 
   const handleMarkAllRead = async () => {
     if (unreadCount === 0) return

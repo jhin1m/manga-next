@@ -13,7 +13,7 @@ const notificationQuerySchema = z.object({
 
 /**
  * GET /api/notifications
- * Get user's notifications with pagination
+ * Get user's notifications with pagination - OPTIMIZED
  */
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions)
@@ -39,50 +39,74 @@ export async function GET(request: Request) {
       whereClause.is_read = false
     }
 
-    // Get notifications with pagination
-    const notifications = await prisma.userNotification.findMany({
-      where: whereClause,
-      orderBy: {
-        created_at: 'desc',
-      },
-      skip,
-      take: limit,
-    })
+    // OPTIMIZATION: Use Promise.all for parallel queries
+    const [notifications, totalNotifications, unreadCount] = await Promise.all([
+      // Get notifications with pagination
+      prisma.userNotification.findMany({
+        where: whereClause,
+        orderBy: {
+          created_at: 'desc',
+        },
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          type: true,
+          title: true,
+          message: true,
+          data: true,
+          is_read: true,
+          created_at: true,
+          read_at: true,
+        },
+      }),
 
-    // Get total count for pagination
-    const totalNotifications = await prisma.userNotification.count({
-      where: whereClause,
-    })
+      // Get total count for pagination (skip if only getting unread count)
+      unread_only && limit === 1
+        ? Promise.resolve(0) // Skip total count for unread count API
+        : prisma.userNotification.count({ where: whereClause }),
 
-    // Get unread count
-    const unreadCount = await prisma.userNotification.count({
-      where: {
-        user_id: userId,
-        is_read: false,
-      },
-    })
+      // Get unread count (optimize for unread_only queries)
+      unread_only
+        ? prisma.userNotification.count({ where: whereClause }) // Use proper count for unread_only
+        : prisma.userNotification.count({
+            where: {
+              user_id: userId,
+              is_read: false,
+            },
+          }),
+    ])
 
-    // Format notifications
-    const formattedNotifications = notifications.map((notification) => ({
-      id: notification.id,
-      type: notification.type,
-      title: notification.title,
-      message: notification.message,
-      data: notification.data,
-      is_read: notification.is_read,
-      created_at: notification.created_at,
-      read_at: notification.read_at,
-    }))
+    // OPTIMIZATION: Skip formatting if only getting count
+    const formattedNotifications = unread_only && limit === 1
+      ? [] // Don't format notifications for count-only requests
+      : notifications.map((notification) => ({
+          id: notification.id,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          data: notification.data,
+          is_read: notification.is_read,
+          created_at: notification.created_at,
+          read_at: notification.read_at,
+        }))
+
+    // OPTIMIZATION: Calculate unread count from results when possible
+    const finalUnreadCount = unread_only
+      ? totalNotifications // For unread_only, total = unread
+      : unreadCount
 
     return NextResponse.json({
       notifications: formattedNotifications,
-      unread_count: unreadCount,
-      pagination: {
-        total: totalNotifications,
-        currentPage: page,
-        totalPages: Math.ceil(totalNotifications / limit),
-        perPage: limit,
-      },
+      unread_count: finalUnreadCount,
+      pagination: unread_only && limit === 1
+        ? null // Skip pagination for count-only requests
+        : {
+            total: totalNotifications,
+            currentPage: page,
+            totalPages: Math.ceil(totalNotifications / limit),
+            perPage: limit,
+          },
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -92,7 +116,6 @@ export async function GET(request: Request) {
       )
     }
 
-    console.error('Error fetching notifications:', error)
     return NextResponse.json(
       { error: 'Failed to fetch notifications' },
       { status: 500 }
@@ -130,7 +153,6 @@ export async function POST(request: Request) {
       notification,
     })
   } catch (error) {
-    console.error('Error creating notification:', error)
     return NextResponse.json(
       { error: 'Failed to create notification' },
       { status: 500 }

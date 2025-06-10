@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -48,6 +48,7 @@ export default function CommentSection({
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isComponentReady, setIsComponentReady] = useState(false)
   const [pagination, setPagination] = useState<{
     total?: number
     currentPage?: number
@@ -67,8 +68,8 @@ export default function CommentSection({
   const [showForm, setShowForm] = useState(false)
   const [replyingTo, setReplyingTo] = useState<number | null>(null)
 
-  // Fetch comments
-  const fetchComments = async (page = 1, sort = sortBy, mode = viewMode, resetComments = true) => {
+  // Fetch comments - memoized to prevent unnecessary re-renders
+  const fetchComments = useCallback(async (page = 1, sort = sortBy, mode = viewMode, resetComments = true) => {
     try {
       setLoading(true)
       setError(null)
@@ -81,6 +82,11 @@ export default function CommentSection({
         ...(paginationType === 'offset' ? { page } : {}),
         ...(mangaId ? { comic_id: mangaId } : {}),
         ...(chapterId && mode === 'chapter' ? { chapter_id: chapterId } : {}),
+      }
+
+      // Debug log to track API calls
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[CommentSection] Fetching comments with params:', params)
       }
 
       const data: CommentListResponse = await commentApi.getList(params)
@@ -99,7 +105,7 @@ export default function CommentSection({
     } finally {
       setLoading(false)
     }
-  }
+  }, [mangaId, chapterId, sortBy, viewMode, paginationType, t])
 
   // Load more comments for cursor-based pagination
   const handleLoadMoreComments = (newComments: Comment[], hasMore: boolean) => {
@@ -189,22 +195,22 @@ export default function CommentSection({
   }
 
   // Handle sort change
-  const handleSortChange = (newSort: 'newest' | 'oldest' | 'most_liked') => {
+  const handleSortChange = useCallback((newSort: 'newest' | 'oldest' | 'most_liked') => {
     setSortBy(newSort)
     fetchComments(1, newSort, viewMode)
-  }
+  }, [fetchComments, viewMode])
 
   // Handle view mode change
-  const handleViewModeChange = (value: string) => {
+  const handleViewModeChange = useCallback((value: string) => {
     const newMode = value as 'chapter' | 'all'
     setViewMode(newMode)
     fetchComments(1, sortBy, newMode)
-  }
+  }, [fetchComments, sortBy])
 
   // Handle page change
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     fetchComments(page, sortBy, viewMode)
-  }
+  }, [fetchComments, sortBy, viewMode])
 
   // Handle reply
   const handleReply = (commentId: number) => {
@@ -212,9 +218,29 @@ export default function CommentSection({
     setShowForm(true)
   }
 
+  // Set component ready state
   useEffect(() => {
-    fetchComments()
-  }, [mangaId, chapterId, viewMode])
+    setIsComponentReady(true)
+  }, [])
+
+  // Optimized useEffect to prevent duplicate API calls
+  useEffect(() => {
+    let isMounted = true
+
+    const loadComments = async () => {
+      if (!isMounted || !isComponentReady) return
+      await fetchComments()
+    }
+
+    // Only load comments if we have required data and component is ready
+    if (mangaId && isComponentReady) {
+      loadComments()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [fetchComments, mangaId, isComponentReady])
 
   if (error) {
     return (

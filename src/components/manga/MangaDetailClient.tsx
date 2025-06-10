@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy } from 'react';
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
 import MangaDetailInfoClient from "@/components/manga/MangaDetailInfoClient";
 
+
 // Lazy load heavy components
 const CommentSectionLazy = lazy(() => import("@/components/feature/comments/CommentSectionLazy"));
-import {
-  CommentSectionSkeleton
-} from "@/components/ui/skeletons/MangaDetailSkeleton";
 import {
   AnimatedChapterListSkeleton,
   AnimatedRelatedMangaSkeleton
@@ -54,17 +52,24 @@ interface MangaDetailClientProps {
     updatedAt?: string;
     status?: string;
   }>;
+  initialFavoriteStatus?: boolean;
+  initialRatingData?: {
+    averageRating: number;
+    totalRatings: number;
+    userRating: number;
+  };
 }
 
-export default function MangaDetailClient({ 
-  manga, 
-  chapters, 
-  relatedManga 
+export default function MangaDetailClient({
+  manga,
+  chapters,
+  relatedManga,
+  initialFavoriteStatus,
+  initialRatingData
 }: MangaDetailClientProps) {
   const [loadingStates, setLoadingStates] = useState({
     chapters: true,
     relatedManga: true,
-    comments: true,
   });
 
   // Progressive loading effect
@@ -76,9 +81,6 @@ export default function MangaDetailClient({
       setTimeout(() => {
         setLoadingStates(prev => ({ ...prev, relatedManga: false }));
       }, 200),
-      setTimeout(() => {
-        setLoadingStates(prev => ({ ...prev, comments: false }));
-      }, 300),
     ];
 
     return () => {
@@ -89,7 +91,12 @@ export default function MangaDetailClient({
   return (
     <div className="space-y-8">
       {/* Manga Information Section - With loading effect */}
-      <MangaDetailInfoClient manga={manga} chapters={chapters} />
+      <MangaDetailInfoClient
+        manga={manga}
+        chapters={chapters}
+        initialFavoriteStatus={initialFavoriteStatus}
+        initialRatingData={initialRatingData}
+      />
 
       {/* Chapters and Related Manga Section */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -117,17 +124,15 @@ export default function MangaDetailClient({
 
       {/* Comments Section */}
       <section className="mt-8">
-        {loadingStates.comments ? (
-          <CommentSectionSkeleton />
-        ) : (
-          <CommentSectionLazy
-            mangaId={manga.id}
-            mangaSlug={manga.slug}
-            defaultViewMode="all"
-            hideToggle={true}
-            paginationType="cursor"
-          />
-        )}
+        <CommentSectionLazy
+          mangaId={manga.id}
+          mangaSlug={manga.slug}
+          defaultViewMode="all"
+          hideToggle={true}
+          paginationType="cursor"
+          delayMs={300} // Delay loading to prevent race conditions
+          key={`comments-${manga.id}`} // Add key to prevent unnecessary re-mounts
+        />
       </section>
     </div>
   );

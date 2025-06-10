@@ -5,6 +5,76 @@ import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateMangaJsonLd } from "@/lib/seo/jsonld";
 import { mangaApi } from '@/lib/api/client';
 import MangaDetailClient from "@/components/manga/MangaDetailClient";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+
+// Server-side function to get initial favorite status
+async function getInitialFavoriteStatus(mangaId: number) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+      return false;
+    }
+
+    const userId = parseInt(session.user.id);
+    const favorite = await prisma.favorites.findUnique({
+      where: {
+        user_id_comic_id: {
+          user_id: userId,
+          comic_id: mangaId,
+        },
+      },
+    });
+
+    return !!favorite;
+  } catch (error) {
+    console.error('Error fetching initial favorite status:', error);
+    return false;
+  }
+}
+
+// Server-side function to get initial rating data
+async function getInitialRatingData(mangaId: number) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    // Get average rating and total count
+    const ratingStats = await prisma.ratings.aggregate({
+      where: { comic_id: mangaId },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
+
+    let userRating = 0;
+    if (session?.user) {
+      const userId = parseInt(session.user.id);
+      const userRatingRecord = await prisma.ratings.findUnique({
+        where: {
+          user_id_comic_id: {
+            user_id: userId,
+            comic_id: mangaId,
+          },
+        },
+      });
+      userRating = userRatingRecord?.rating || 0;
+    }
+
+    return {
+      averageRating: ratingStats._avg.rating || 0,
+      totalRatings: ratingStats._count.rating || 0,
+      userRating,
+    };
+  } catch (error) {
+    console.error('Error fetching initial rating data:', error);
+    return {
+      averageRating: 0,
+      totalRatings: 0,
+      userRating: 0,
+    };
+  }
+}
 
 // Fetch manga data from API using centralized API client
 async function getMangaBySlug(slug: string) {
@@ -72,8 +142,8 @@ async function fetchAllMangaDetailData(slug: string) {
       return null;
     }
 
-    // Fetch chapters and related manga in parallel
-    const [chapters, relatedManga] = await Promise.all([
+    // Fetch chapters, related manga, and initial user data in parallel
+    const [chapters, relatedManga, initialFavoriteStatus, initialRatingData] = await Promise.all([
       getChapters(slug).catch(err => {
         console.error('Error fetching chapters:', err);
         return [];
@@ -81,6 +151,14 @@ async function fetchAllMangaDetailData(slug: string) {
       getRelatedManga(slug, manga.genres).catch(err => {
         console.error('Error fetching related manga:', err);
         return [];
+      }),
+      getInitialFavoriteStatus(manga.id).catch(err => {
+        console.error('Error fetching initial favorite status:', err);
+        return false;
+      }),
+      getInitialRatingData(manga.id).catch(err => {
+        console.error('Error fetching initial rating data:', err);
+        return { averageRating: 0, totalRatings: 0, userRating: 0 };
       })
     ]);
 
@@ -89,7 +167,9 @@ async function fetchAllMangaDetailData(slug: string) {
     return {
       manga,
       chapters,
-      relatedManga
+      relatedManga,
+      initialFavoriteStatus,
+      initialRatingData
     };
   } catch (error) {
     console.error('Error fetching manga detail data:', error);
@@ -177,7 +257,7 @@ export default async function MangaDetailPage({
     notFound();
   }
 
-  const { manga, chapters, relatedManga } = data;
+  const { manga, chapters, relatedManga, initialFavoriteStatus, initialRatingData } = data;
 
   // Tạo JSON-LD cho trang manga
   const jsonLd = generateMangaJsonLd({
@@ -200,6 +280,8 @@ export default async function MangaDetailPage({
         manga={manga}
         chapters={chapters}
         relatedManga={relatedManga}
+        initialFavoriteStatus={initialFavoriteStatus}
+        initialRatingData={initialRatingData}
       />
     </div>
   );

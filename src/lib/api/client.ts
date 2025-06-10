@@ -173,6 +173,7 @@ export const API_ENDPOINTS = {
   // Notification endpoints
   notifications: {
     list: '/api/notifications',
+    unreadCount: '/api/notifications/unread-count',
     markRead: '/api/notifications/mark-read',
     settings: '/api/notifications/settings',
     trigger: '/api/notifications/trigger',
@@ -275,7 +276,7 @@ export async function apiClient<T = any>(
 
 // Specialized API functions with proper typing and caching
 export const mangaApi = {
-  // Get manga list with filters
+  // Get manga list with filters - OPTIMIZED caching
   getList: async (params: {
     sort?: string;
     status?: string;
@@ -288,16 +289,26 @@ export const mangaApi = {
       ? API_CONFIG.defaultCacheOptions.hotManga
       : API_CONFIG.defaultCacheOptions.manga;
 
+    // Create more specific cache tags to avoid conflicts between different limits
+    const baseTags = params.sort === 'popular' ? ['hot-manga'] : ['manga-list'];
+    const sortTag = `manga-${params.sort || 'latest'}`;
+    const limitTag = params.limit ? `manga-limit-${params.limit}` : '';
+    const genreTag = params.genre ? `manga-genre-${params.genre}` : '';
+    const statusTag = params.status ? `manga-status-${params.status}` : '';
+    const pageTag = params.page && params.page > 1 ? `manga-page-${params.page}` : '';
+
     return apiClient(API_ENDPOINTS.manga.list, {
       params,
       next: {
         ...cacheOptions,
         tags: [
-          ...(params.sort === 'popular' ? ['hot-manga'] : ['manga-list']),
-          `manga-${params.sort || 'latest'}`,
-          ...(params.genre ? [`manga-genre-${params.genre}`] : []),
-          ...(params.status ? [`manga-status-${params.status}`] : []),
-        ],
+          ...baseTags,
+          sortTag,
+          ...(limitTag ? [limitTag] : []),
+          ...(genreTag ? [genreTag] : []),
+          ...(statusTag ? [statusTag] : []),
+          ...(pageTag ? [pageTag] : []),
+        ].filter(Boolean), // Remove empty strings
       },
     });
   },
@@ -949,6 +960,13 @@ export const notificationApi = {
   } = {}) => {
     return apiClient(API_ENDPOINTS.notifications.list, {
       params,
+      cache: 'no-store',
+    });
+  },
+
+  // Get unread count only - OPTIMIZED ENDPOINT
+  getUnreadCount: async () => {
+    return apiClient(API_ENDPOINTS.notifications.unreadCount, {
       cache: 'no-store',
     });
   },

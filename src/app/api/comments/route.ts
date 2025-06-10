@@ -152,7 +152,7 @@ export async function GET(request: Request) {
               } : false,
             },
             orderBy: { created_at: 'asc' },
-            take: 5, // Limit replies shown initially
+            take: 3, // Reduce initial replies to improve performance
           },
           CommentLikes: userId ? {
             where: { user_id: userId },
@@ -228,7 +228,7 @@ export async function GET(request: Request) {
                 } : false,
               },
               orderBy: { created_at: 'asc' },
-              take: 5, // Limit replies shown initially
+              take: 3, // Reduce initial replies to improve performance
             },
             CommentLikes: userId ? {
               where: { user_id: userId },
@@ -272,19 +272,28 @@ export async function GET(request: Request) {
       }))
     }))
 
-    return NextResponse.json({
-      comments: commentsWithUserData,
-      pagination: pagination_type === 'cursor' ? {
-        perPage: query.limit,
-        nextCursor,
-        hasMore: nextCursor !== null,
-      } : {
-        total: totalComments,
-        currentPage: query.page,
-        totalPages: Math.ceil(totalComments! / query.limit),
-        perPage: query.limit,
+    return NextResponse.json(
+      {
+        comments: commentsWithUserData,
+        pagination: pagination_type === 'cursor' ? {
+          perPage: query.limit,
+          nextCursor,
+          hasMore: nextCursor !== null,
+        } : {
+          total: totalComments,
+          currentPage: query.page,
+          totalPages: Math.ceil(totalComments! / query.limit),
+          perPage: query.limit,
+        }
+      },
+      {
+        status: 200,
+        headers: {
+          // Cache comments for 2 minutes
+          'Cache-Control': 'public, max-age=120, stale-while-revalidate=60'
+        }
       }
-    })
+    )
 
   } catch (error) {
     if (error instanceof z.ZodError) {

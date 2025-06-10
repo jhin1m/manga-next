@@ -145,14 +145,23 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
   const tSearch = useTranslations('search');
   const tCommon = useTranslations('common');
 
-  // Load recent searches and popular manga when component mounts
+  // Load recent searches when component mounts, but delay popular manga loading
   useEffect(() => {
     setRecentSearches(getRecentSearches());
-    fetchPopularManga();
   }, []);
 
-  // Fetch popular manga
+  // OPTIMIZED: Lazy load popular manga only when search dialog is opened and no search query
+  useEffect(() => {
+    if (open && !searchQuery && popularManga.length === 0 && !isLoadingPopular) {
+      fetchPopularManga();
+    }
+  }, [open, searchQuery]);
+
+  // Fetch popular manga - OPTIMIZED with better error handling and caching
   const fetchPopularManga = useCallback(async () => {
+    // Avoid duplicate calls
+    if (isLoadingPopular || popularManga.length > 0) return;
+
     setIsLoadingPopular(true);
     try {
       const data = await mangaApi.getList({
@@ -174,10 +183,11 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
       }
     } catch (err) {
       console.error('Error fetching popular manga:', err);
+      // Don't show error to user for popular manga, just log it
     } finally {
       setIsLoadingPopular(false);
     }
-  }, []);
+  }, [isLoadingPopular, popularManga.length]);
 
   // Focus input when dialog opens
   useEffect(() => {

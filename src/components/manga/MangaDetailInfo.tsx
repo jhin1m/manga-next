@@ -38,9 +38,20 @@ interface MangaDetailInfoProps {
     number: number;
     title: string;
   }>;
+  initialFavoriteStatus?: boolean;
+  initialRatingData?: {
+    averageRating: number;
+    totalRatings: number;
+    userRating: number;
+  };
 }
 
-export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
+export function MangaDetailInfo({
+  manga,
+  chapters,
+  initialFavoriteStatus,
+  initialRatingData
+}: MangaDetailInfoProps) {
   const t = useTranslations('manga');
   const { formatDate, formatViews } = useFormat();
 
@@ -120,6 +131,7 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
                 </Button>
                 <FavoriteButton
                   comicId={manga.id}
+                  initialIsFavorite={initialFavoriteStatus}
                   variant="outline"
                   size="default"
                   showText={true}
@@ -305,6 +317,9 @@ export function MangaDetailInfo({ manga, chapters }: MangaDetailInfoProps) {
                   <StarRating
                     mangaId={manga.id}
                     mangaSlug={manga.slug}
+                    initialRating={initialRatingData?.averageRating}
+                    initialUserRating={initialRatingData?.userRating}
+                    initialTotalRatings={initialRatingData?.totalRatings}
                   />
               </div>
             </div>

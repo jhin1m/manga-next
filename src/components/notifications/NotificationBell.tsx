@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { useNotifications } from '@/hooks/useNotifications'
+import { useNotifications } from '@/contexts/NotificationContext'
 import { NotificationPanel } from '@/components/notifications/NotificationPanel'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
@@ -21,31 +21,20 @@ interface NotificationBellProps {
 export function NotificationBell({ className }: NotificationBellProps) {
   const t = useTranslations('notifications')
   const [isOpen, setIsOpen] = useState(false)
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
   const {
     unreadCount,
-    fetchUnreadCount,
     fetchNotifications,
     isAuthenticated
-  } = useNotifications({
-    autoRefresh: true,
-    refreshInterval: 30000
-  })
+  } = useNotifications() // Now uses context - no duplicate instances!
 
   // Ensure component is mounted before rendering dropdown
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // Fetch unread count on mount and when authenticated
-  useEffect(() => {
-    if (isAuthenticated && !hasLoadedOnce) {
-      fetchUnreadCount()
-      setHasLoadedOnce(true)
-    }
-  }, [isAuthenticated, fetchUnreadCount, hasLoadedOnce])
+  // REMOVED: fetchUnreadCount call - now handled by context automatically
 
   // Handle dropdown open - only fetch notifications when opening for the first time
   const handleOpenChange = useCallback((open: boolean) => {

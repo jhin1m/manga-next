@@ -1,6 +1,6 @@
 'use client';
 
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MessageCircle } from 'lucide-react';
@@ -17,6 +17,7 @@ interface CommentSectionLazyProps {
   defaultViewMode?: 'chapter' | 'all';
   hideToggle?: boolean;
   paginationType?: 'offset' | 'cursor';
+  delayMs?: number; // Optional delay before showing the component
 }
 
 // Loading skeleton for CommentSection
@@ -72,7 +73,26 @@ function CommentSectionSkeleton() {
   );
 }
 
-export default function CommentSectionLazy(props: CommentSectionLazyProps) {
+export default function CommentSectionLazy({ delayMs = 0, ...props }: CommentSectionLazyProps) {
+  const [shouldRender, setShouldRender] = useState(delayMs === 0);
+
+  useEffect(() => {
+    if (delayMs > 0) {
+      const timer = setTimeout(() => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[CommentSectionLazy] Rendering after delay:', delayMs + 'ms');
+        }
+        setShouldRender(true);
+      }, delayMs);
+
+      return () => clearTimeout(timer);
+    }
+  }, [delayMs]);
+
+  if (!shouldRender) {
+    return <CommentSectionSkeleton />;
+  }
+
   return (
     <Suspense fallback={<CommentSectionSkeleton />}>
       <CommentSection {...props} />

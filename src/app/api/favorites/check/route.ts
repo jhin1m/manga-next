@@ -36,7 +36,16 @@ export async function POST(request: Request) {
       },
     })
 
-    return NextResponse.json({ isFavorite: !!favorite })
+    return NextResponse.json(
+      { isFavorite: !!favorite },
+      {
+        status: 200,
+        headers: {
+          // Cache for 5 minutes for authenticated users
+          'Cache-Control': 'private, max-age=300, stale-while-revalidate=60'
+        }
+      }
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
