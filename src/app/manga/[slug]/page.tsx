@@ -1,13 +1,10 @@
 import { Metadata } from "next";
-import MangaChapterList from "@/components/manga/MangaChapterList";
-import RelatedManga from "@/components/manga/RelatedManga";
-import CommentSection from "@/components/feature/comments/CommentSection";
-import { MangaDetailInfo } from "@/components/manga/MangaDetailInfo";
 import { notFound } from "next/navigation";
 import { constructMangaMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateMangaJsonLd } from "@/lib/seo/jsonld";
 import { mangaApi } from '@/lib/api/client';
+import MangaDetailClient from "@/components/manga/MangaDetailClient";
 
 // Fetch manga data from API using centralized API client
 async function getMangaBySlug(slug: string) {
@@ -63,6 +60,40 @@ async function getChapters(slug: string) {
   } catch (error) {
     console.error('Error fetching chapters:', error);
     return [];
+  }
+}
+
+// Parallel data fetching for manga detail page
+async function fetchAllMangaDetailData(slug: string) {
+  try {
+    // Fetch manga data first to get genres for related manga
+    const manga = await getMangaBySlug(slug);
+    if (!manga) {
+      return null;
+    }
+
+    // Fetch chapters and related manga in parallel
+    const [chapters, relatedManga] = await Promise.all([
+      getChapters(slug).catch(err => {
+        console.error('Error fetching chapters:', err);
+        return [];
+      }),
+      getRelatedManga(slug, manga.genres).catch(err => {
+        console.error('Error fetching related manga:', err);
+        return [];
+      })
+    ]);
+
+    manga.chapterCount = chapters.length;
+
+    return {
+      manga,
+      chapters,
+      relatedManga
+    };
+  } catch (error) {
+    console.error('Error fetching manga detail data:', error);
+    return null;
   }
 }
 
@@ -138,19 +169,15 @@ export default async function MangaDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const manga = await getMangaBySlug(slug);
 
-  if (!manga) {
+  // Fetch all data in parallel
+  const data = await fetchAllMangaDetailData(slug);
+
+  if (!data) {
     notFound();
   }
 
-  // Fetch chapters and related manga in parallel
-  const [chapters, relatedManga] = await Promise.all([
-    getChapters(slug),
-    getRelatedManga(slug, manga.genres),
-  ]);
-
-  manga.chapterCount = chapters.length;
+  const { manga, chapters, relatedManga } = data;
 
   // Tạo JSON-LD cho trang manga
   const jsonLd = generateMangaJsonLd({
@@ -167,37 +194,13 @@ export default async function MangaDetailPage({
   });
 
   return (
-    <div className="space-y-8">
+    <div>
       <JsonLdScript id="manga-jsonld" jsonLd={jsonLd} />
-      {/* Manga Information Section */}
-      <MangaDetailInfo manga={manga} chapters={chapters} />
-
-      {/* Chapters and Related Manga Section - 2/3 and 1/3 layout for PC */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Chapters Section - 2/3 width on PC */}
-        <section className="lg:col-span-3">
-          <MangaChapterList
-            mangaSlug={manga.slug}
-            chapters={chapters}
-          />
-        </section>
-
-        {/* Related Manga Section - 1/3 width on PC */}
-        <section className="lg:col-span-1">
-          <RelatedManga relatedManga={relatedManga} />
-        </section>
-      </div>
-
-      {/* Comments Section */}
-      <section className="mt-8">
-        <CommentSection
-          mangaId={manga.id}
-          mangaSlug={manga.slug}
-          defaultViewMode="all"
-          hideToggle={true}
-          paginationType="cursor"
-        />
-      </section>
+      <MangaDetailClient
+        manga={manga}
+        chapters={chapters}
+        relatedManga={relatedManga}
+      />
     </div>
   );
 }

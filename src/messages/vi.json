@@ -367,7 +367,9 @@
       "noRankings": "Chưa có dữ liệu xếp hạng",
       "viewAllRankings": "Xem toàn bộ BXH"
     },
-    "viewAllRankings": "Xem toàn bộ BXH"
+    "viewAllRankings": "Xem toàn bộ BXH",
+    "noRankingsAvailable": "Chưa có dữ liệu",
+    "noCommentsYet": "Chưa có bình luận nào"
   },
   "rankings": {
     "title": "Bảng Xếp Hạng Manga",

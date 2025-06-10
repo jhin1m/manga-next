@@ -4,13 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Eye } from 'lucide-react';
-import { FavoriteButton } from '@/components/manga/FavoriteButton';
 import { useFormat } from '@/hooks/useFormat';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface MangaCardProps {
-  id: string;
   title: string;
   coverImage: string;
   slug: string;
@@ -22,12 +20,9 @@ interface MangaCardProps {
   chapterCount?: number;
   updatedAt?: string;
   status?: string;
-  showFavoriteButton?: boolean;
-  initialIsFavorite?: boolean;
 }
 
 export default function MangaCard({
-  id,
   title,
   coverImage,
   slug,
@@ -38,8 +33,6 @@ export default function MangaCard({
   chapterCount = 0,
   updatedAt,
   status,
-  showFavoriteButton = false,
-  initialIsFavorite = false,
 }: MangaCardProps) {
   const { formatViews, formatDate } = useFormat();
   const t = useTranslations('manga');
@@ -73,18 +66,6 @@ export default function MangaCard({
             {status && (
               <div className='absolute top-0 left-0 bg-primary text-primary-foreground text-xs py-1 px-2 rounded-br'>
                 {status === 'ongoing' ? t('ongoing') : t('completed')}
-              </div>
-            )}
-
-            {/* Favorite button ở góc phải trên */}
-            {showFavoriteButton && (
-              <div className='absolute top-2 right-2 z-10' onClick={(e) => e.stopPropagation()}>
-                <FavoriteButton
-                  comicId={parseInt(id)}
-                  initialIsFavorite={initialIsFavorite}
-                  variant="secondary"
-                  className="bg-black/50 hover:bg-black/70"
-                />
               </div>
             )}
 

@@ -367,7 +367,9 @@
       "noRankings": "No rankings available",
       "viewAllRankings": "View All Rankings"
     },
-    "viewAllRankings": "View All Rankings"
+    "viewAllRankings": "View All Rankings",
+    "noRankingsAvailable": "No rankings available yet",
+    "noCommentsYet": "No comments yet."
   },
   "rankings": {
     "title": "Manga Rankings",

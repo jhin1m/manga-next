@@ -1,14 +1,12 @@
 import { Metadata } from 'next';
-import FilterSortBar from '@/components/feature/FilterSortBar';
-import MangaCard from '@/components/feature/MangaCard';
-import PaginationWrapper from '@/components/feature/PaginationWrapper';
 import { constructMangaListMetadata } from '@/lib/seo/metadata';
 import JsonLdScript from '@/components/seo/JsonLdScript';
 import { generateMangaListJsonLd } from '@/lib/seo/jsonld';
 import { mangaApi } from '@/lib/api/client';
 import MangaPageTracker from '@/components/analytics/MangaPageTracker';
 import { getServerPageTitle } from '@/lib/page-titles';
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getLocale } from 'next-intl/server';
+import MangaListClient from '@/components/manga/MangaListClient';
 // Fetch manga from API using centralized API client
 async function fetchManga(params: {
   sort?: string;
@@ -137,20 +135,7 @@ export default async function MangaPage({
   // Get page title using configurable system
   const pageTitle = getServerPageTitle('manga', { sort, status, genre }, currentLocale);
 
-  // Define manga item type
-  interface MangaItem {
-    id: string;
-    title: string;
-    coverImage: string;
-    slug: string;
-    latestChapter?: string;
-    genres?: string[];
-    rating?: number;
-    views?: number;
-    chapterCount?: number;
-    updatedAt?: string;
-    status?: string;
-  }
+
 
   // Helper function to build query string
   function buildQueryString(sort: string, status?: string, genre?: string): string {
@@ -174,10 +159,9 @@ export default async function MangaPage({
 
   // Tạo JSON-LD cho trang danh sách manga
   const jsonLd = generateMangaListJsonLd();
-  const t = await getTranslations('search');
 
   return (
-    <div className="container mx-auto py-8">
+    <div>
       <JsonLdScript id="manga-list-jsonld" jsonLd={jsonLd} />
       <MangaPageTracker
         pageTitle={pageTitle}
@@ -187,38 +171,17 @@ export default async function MangaPage({
         page={currentPage}
         totalResults={results.totalResults}
       />
-      <h1 className="text-2xl font-bold mb-6">{pageTitle}</h1>
-
-      <div className="mb-6">
-        <FilterSortBar />
-      </div>
-
-      {manga.length > 0 ? (
-        <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 mb-8">
-            {manga.map((item: MangaItem) => (
-              <MangaCard
-                key={item.id}
-                {...item as any}
-                showFavoriteButton={true}
-              />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <PaginationWrapper
-            currentPage={currentPage}
-            totalPages={totalPages}
-            baseUrl={`/manga${buildQueryString(sort, status, genre)}`}
-          />
-        </>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">
-            {t('noResults')}
-          </p>
-        </div>
-      )}
+      <MangaListClient
+        manga={manga}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalResults={results.totalResults}
+        sort={sort}
+        status={status}
+        genre={genre}
+        pageTitle={pageTitle}
+        baseUrl={`/manga${buildQueryString(sort, status, genre)}`}
+      />
     </div>
   );
 }
