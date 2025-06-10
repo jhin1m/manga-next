@@ -18,7 +18,6 @@ import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
 import OfflineIndicator from "@/components/pwa/OfflineIndicator";
 import { defaultViewport } from "@/lib/seo/viewport";
 import { NavigationLoadingProvider } from "@/contexts/NavigationLoadingContext";
-import BfcacheOptimizer from "@/components/BfcacheOptimizer";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -95,7 +94,6 @@ export default async function RootLayout({
                 <PWAInstallPrompt />
                 <OfflineIndicator />
               </NavigationLoadingProvider>
-              <BfcacheOptimizer />
 
             {/* Analytics Components */}
             <Analytics />
