@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -48,13 +49,17 @@ export default function Footer() {
           <div className='space-y-4 lg:col-span-2'>
             <div>
               <Link href='/' className='flex items-center space-x-2 mb-3'>
-                <BookOpen className='h-6 w-6 text-primary' />
-                <span className='text-lg font-bold text-foreground'>
-                  {t('siteInfo.title')}
-                </span>
+              <Image
+                src="/logo.svg"
+                alt={seoConfig.site.name}
+                width={120}
+                height={40}
+                className="h-8 sm:h-10 lg:h-12 w-auto"
+                priority
+              />
               </Link>
               <p className='text-sm text-muted-foreground leading-relaxed'>
-                {t('siteInfo.description')}
+                { seoConfig.site.tagline }
               </p>
             </div>
 
@@ -175,7 +180,7 @@ export default function Footer() {
         <div className='flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0'>
           <div className='text-center sm:text-left'>
             <p className='text-xs text-muted-foreground'>
-              {t('siteInfo.tagline')}
+              { seoConfig.site.description }
             </p>
           </div>
 

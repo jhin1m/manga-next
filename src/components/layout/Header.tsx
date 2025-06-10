@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, User, Heart, Settings, LogOut, History, Bell, BookOpen, TrendingUp } from 'lucide-react';
@@ -62,22 +63,22 @@ export default function Header() {
   };
 
   return (
-    <header className={`border-b border-border/40 bg-background/40 backdrop-blur-sm top-0 z-50 ${
+    <header className={`border-b border-border/40 bg-background/90 backdrop-blur-sm top-0 z-50 ${
       safeShouldHeaderBeSticky ? 'sticky' : 'relative'
     }`}>
       <div className='container mx-auto px-4 py-3'>
-        <div className='flex justify-between items-center sm:px-14 2xl:px-21'>
+        <div className='flex justify-between items-center sm:px-14 2xl:px-18'>
           <HomeLink className='group relative flex items-center gap-2 sm:gap-3 hover:opacity-90 transition-all duration-300'>
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-            </div>
-            <div className="flex flex-col">
-              <span className='text-base sm:text-lg lg:text-xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent font-display tracking-wider leading-tight uppercase'>
-                {seoConfig.site.name}
-              </span>
-              <span className='hidden sm:block text-xs text-muted-foreground font-medium tracking-wider uppercase opacity-75'>
-                {seoConfig.site.tagline}
-              </span>
+              <Image
+                src="/logo.svg"
+                alt={seoConfig.site.name}
+                width={120}
+                height={40}
+                className="h-8 sm:h-10 lg:h-12 w-auto"
+                priority
+              />
             </div>
           </HomeLink>
 

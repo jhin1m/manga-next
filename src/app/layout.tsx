@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Nunito, Staatliches } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -26,11 +26,6 @@ const nunito = Nunito({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const staatliches = Staatliches({
-  variable: "--font-staatliches",
-  subsets: ["latin"],
-  weight: ["400"],
-});
 
 const baseMetadata = constructMetadata();
 
@@ -75,7 +70,7 @@ export default async function RootLayout({
   return (
     <html lang={seoConfig.site.language} suppressHydrationWarning className="dark">
       <body
-        className={`${nunito.variable} ${staatliches.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
+        className={`${nunito.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
