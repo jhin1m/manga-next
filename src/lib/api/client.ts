@@ -1,10 +1,7 @@
 /**
  * Centralized API Client for Manga Website
  * Provides type-safe API endpoints and consistent fetch configuration
- * Optimized for Back/Forward Cache (bfcache) compatibility
  */
-
-import { getBfcacheFriendlyFetchOptions, canCacheApiEndpoint } from '@/lib/bfcache-optimization'
 
 // API Configuration
 const API_CONFIG = {
@@ -382,7 +379,7 @@ export const revalidationApi = {
     return apiClient(API_ENDPOINTS.revalidate, {
       method: 'POST',
       body: options,
-      cache: 'no-cache', // Use no-cache instead of no-store for bfcache compatibility
+      cache: 'no-store', // Never cache revalidation requests
     });
   },
 
@@ -456,7 +453,7 @@ export const revalidationApi = {
   health: async () => {
     return apiClient(API_ENDPOINTS.revalidate, {
       method: 'GET',
-      cache: 'no-cache', // Use no-cache for better bfcache compatibility
+      cache: 'no-store',
     });
   },
 };
@@ -660,7 +657,7 @@ export const adminApi = {
       return apiClient(API_ENDPOINTS.admin.users.bulk, {
         method: 'POST',
         body: data,
-        cache: 'no-cache', // Admin operations can use no-cache for better bfcache
+        cache: 'no-store',
       });
     },
   },

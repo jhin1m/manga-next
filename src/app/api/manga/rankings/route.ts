@@ -262,12 +262,12 @@ export async function GET(request: Request): Promise<NextResponse<MangaRankingsR
       {
         status: 200,
         headers: {
-          // Optimized cache headers for bfcache compatibility
+          // Cache for 30 minutes for daily, 1 hour for weekly, 2 hours for monthly
           'Cache-Control': period === 'daily'
-            ? 'public, max-age=1800, s-maxage=1800, stale-while-revalidate=900'
+            ? 'public, s-maxage=1800, stale-while-revalidate=900'
             : period === 'weekly'
-              ? 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=1800'
-              : 'public, max-age=7200, s-maxage=7200, stale-while-revalidate=3600'
+              ? 'public, s-maxage=3600, stale-while-revalidate=1800'
+              : 'public, s-maxage=7200, stale-while-revalidate=3600'
         }
       }
     )

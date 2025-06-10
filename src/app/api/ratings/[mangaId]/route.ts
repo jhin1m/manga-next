@@ -104,8 +104,7 @@ export async function GET(
       {
         status: 200,
         headers: {
-          // Add max-age for better bfcache compatibility
-          'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=3600'
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600'
         }
       }
     )
