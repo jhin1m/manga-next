@@ -2,6 +2,26 @@ import { mangaApi } from '@/lib/api/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import HotMangaSliderClient, { type HotManga } from './HotMangaSliderClient';
 
+// Preload component for critical images
+function PreloadCriticalImages({ hotManga }: { hotManga: HotManga[] }) {
+  // Preload first 2 images for LCP optimization
+  const criticalImages = hotManga.slice(0, 2);
+
+  return (
+    <>
+      {criticalImages.map((manga, index) => (
+        <link
+          key={manga.id}
+          rel="preload"
+          as="image"
+          href={manga.coverImage}
+          fetchPriority={index === 0 ? 'high' : 'auto'}
+        />
+      ))}
+    </>
+  );
+}
+
 // Server-side function to fetch hot manga data
 async function fetchHotManga(): Promise<HotManga[]> {
   try {
@@ -88,5 +108,10 @@ export default async function HotMangaSlider() {
   }
 
   // Main component render - use client component for interactivity
-  return <HotMangaSliderClient hotManga={hotManga} />;
+  return (
+    <>
+      <PreloadCriticalImages hotManga={hotManga} />
+      <HotMangaSliderClient hotManga={hotManga} />
+    </>
+  );
 }

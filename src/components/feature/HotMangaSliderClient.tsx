@@ -71,7 +71,7 @@ export default function HotMangaSliderClient({ hotManga }: HotMangaSliderClientP
         className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x scroll-smooth"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {hotManga.map((item) => (
+        {hotManga.map((item, index) => (
           <div
             key={item.id}
             className="snap-start flex-shrink-0 w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] lg:w-[calc(20%-16px)] 2xl:w-[calc(16.666%-16px)]"
@@ -87,6 +87,10 @@ export default function HotMangaSliderClient({ hotManga }: HotMangaSliderClientP
               latestChapter={item.latestChapter}
               latestChapterSlug={item.latestChapterSlug}
               updatedAt={item.updatedAt}
+              priority={index < 3}
+              fetchPriority={index < 2 ? 'high' : 'auto'}
+              imageSizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 20vw, 16vw"
+              loading={index < 3 ? 'eager' : 'lazy'}
             />
           </div>
         ))}

@@ -20,6 +20,10 @@ interface MangaCardProps {
   chapterCount?: number;
   updatedAt?: string;
   status?: string;
+  priority?: boolean;
+  fetchPriority?: 'high' | 'low' | 'auto';
+  imageSizes?: string;
+  loading?: 'lazy' | 'eager';
 }
 
 export default function MangaCard({
@@ -33,6 +37,10 @@ export default function MangaCard({
   chapterCount = 0,
   updatedAt,
   status,
+  priority = false,
+  fetchPriority = 'auto',
+  imageSizes = "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw",
+  loading = 'lazy',
 }: MangaCardProps) {
   const { formatViews, formatDate } = useFormat();
   const t = useTranslations('manga');
@@ -58,9 +66,11 @@ export default function MangaCard({
               src={coverImage}
               alt={title}
               fill
-              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              sizes={imageSizes}
               className='object-cover transition-transform group-hover:scale-105'
-              priority={false}
+              priority={priority}
+              fetchPriority={fetchPriority}
+              loading={loading}
             />
             {/* Số chapter ở góc phải dưới ảnh bìa */}
             {chapterCount > 0 && (
