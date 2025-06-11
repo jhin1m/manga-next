@@ -1,6 +1,6 @@
 /**
  * Script crawler để chạy từ Next.js CLI
- * 
+ *
  * Cách sử dụng:
  * npx tsx src/scripts/crawler.ts [source] [startPage] [endPage] [options]
  */

@@ -48,7 +48,8 @@
     "analyze": "pnpm build:analyze && open .next/bundle-analyzer-report.html",
     "optimize:images": "node scripts/optimize-images.js",
     "check:unused": "npx depcheck",
-    "performance:test": "node scripts/performance-test.js"
+    "performance:test": "node scripts/performance-test.js",
+    "crawler": "node src/scripts/crawler.js"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -124,6 +125,7 @@
     "prisma": "^6.7.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.0",
     "tw-animate-css": "^1.2.9",
     "typescript": "^5",
     "webpack-bundle-analyzer": "^4.10.2"
