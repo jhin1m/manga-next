@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from "next-intl";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // SVG Icon với animation
 const ViewMoreIcon = () => (
@@ -27,16 +27,29 @@ interface ViewMoreButtonProps {
 
 export default function ViewMoreButton({ href, className = "" }: ViewMoreButtonProps) {
   const t = useTranslations('manga');
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(href, { scroll: false });
+
+    // Scroll to top with smooth animation - similar to PaginationWrapper
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 100); // Slight delay to ensure navigation has processed
+  };
 
   return (
     <div className="flex justify-center mt-8">
-      <Link 
-        href={href} 
+      <button
+        onClick={handleClick}
         className={`group w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-md text-center transition-all duration-300 flex items-center justify-center hover:shadow-lg hover:scale-[1.02] ${className}`}
       >
         {t('viewMoreManga')}
         <ViewMoreIcon />
-      </Link>
+      </button>
     </div>
   );
 }

@@ -1,13 +1,19 @@
 #!/usr/bin/env node
 
 /**
- * Script to generate various icon sizes for the manga website
- * This script creates PNG icons from the base SVG icon
- * 
+ * Script to generate icon sizes matching manifest.ts requirements
+ * This script creates PNG icons from the base SVG icon for PWA compatibility
+ *
+ * Generated icons match src/app/manifest.ts specifications:
+ * - icon-192.png (192x192, maskable)
+ * - icon-512.png (512x512, maskable)
+ * - apple-icon.png (180x180, any)
+ * - Additional favicon sizes for browser compatibility
+ *
  * Usage: node scripts/generate-icons.js
- * 
+ *
  * Requirements:
- * - Install sharp: npm install sharp
+ * - Install sharp: pnpm add sharp
  * - Have src/app/icon.svg as base icon
  */
 
@@ -15,31 +21,17 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
-// Icon sizes to generate
+// Icon sizes to generate - matching manifest.ts requirements
 const iconSizes = [
+  // Required by manifest.ts
+  { size: 192, name: 'icon-192.png', purpose: 'maskable' },
+  { size: 512, name: 'icon-512.png', purpose: 'maskable' },
+  { size: 180, name: 'apple-icon.png', purpose: 'any' },
+
+  // Additional common favicon sizes
   { size: 16, name: 'favicon-16x16.png' },
   { size: 32, name: 'favicon-32x32.png' },
   { size: 48, name: 'favicon-48x48.png' },
-  { size: 96, name: 'favicon-96x96.png' },
-  { size: 144, name: 'favicon-144x144.png' },
-  { size: 192, name: 'icon-192.png' },
-  { size: 256, name: 'icon-256.png' },
-  { size: 384, name: 'icon-384.png' },
-  { size: 512, name: 'icon-512.png' },
-];
-
-// Apple touch icon sizes
-const appleIconSizes = [
-  { size: 57, name: 'apple-touch-icon-57x57.png' },
-  { size: 60, name: 'apple-touch-icon-60x60.png' },
-  { size: 72, name: 'apple-touch-icon-72x72.png' },
-  { size: 76, name: 'apple-touch-icon-76x76.png' },
-  { size: 114, name: 'apple-touch-icon-114x114.png' },
-  { size: 120, name: 'apple-touch-icon-120x120.png' },
-  { size: 144, name: 'apple-touch-icon-144x144.png' },
-  { size: 152, name: 'apple-touch-icon-152x152.png' },
-  { size: 180, name: 'apple-touch-icon-180x180.png' },
-  { size: 180, name: 'apple-icon.png' },
 ];
 
 async function generateIcons() {
@@ -61,24 +53,17 @@ async function generateIcons() {
   console.log('🎨 Generating icons from SVG...');
 
   try {
-    // Generate regular icons
-    for (const { size, name } of iconSizes) {
+    // Generate all icons
+    for (const { size, name, purpose } of iconSizes) {
       const outputPath = path.join(publicDir, name);
       await sharp(svgPath)
         .resize(size, size)
         .png()
         .toFile(outputPath);
-      console.log(`✅ Generated ${name} (${size}x${size})`);
-    }
 
-    // Generate Apple touch icons
-    for (const { size, name } of appleIconSizes) {
-      const outputPath = path.join(publicDir, name);
-      await sharp(svgPath)
-        .resize(size, size)
-        .png()
-        .toFile(outputPath);
-      console.log(`🍎 Generated ${name} (${size}x${size})`);
+      const purposeText = purpose ? ` (${purpose})` : '';
+      const iconType = name.includes('apple') ? '🍎' : '✅';
+      console.log(`${iconType} Generated ${name} (${size}x${size})${purposeText}`);
     }
 
     // Generate ICO file (requires to-ico package)
@@ -98,10 +83,12 @@ async function generateIcons() {
     }
 
     console.log('\n🎉 All icons generated successfully!');
-    console.log('\nGenerated files:');
-    console.log('- Regular icons: favicon-*.png, icon-*.png');
-    console.log('- Apple icons: apple-touch-icon-*.png');
-    console.log('- ICO file: favicon.ico');
+    console.log('\nGenerated files matching manifest.ts:');
+    console.log('- icon-192.png (192x192) - maskable');
+    console.log('- icon-512.png (512x512) - maskable');
+    console.log('- apple-icon.png (180x180) - any');
+    console.log('- Additional favicon sizes: 16x16, 32x32, 48x48');
+    console.log('- favicon.ico');
     
   } catch (error) {
     console.error('❌ Error generating icons:', error);

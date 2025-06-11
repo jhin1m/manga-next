@@ -56,6 +56,17 @@ export default function MangaListClient({
 
   const t = useTranslations('search');
 
+  // Ensure scroll to top when component mounts (especially important for mobile)
+  useEffect(() => {
+    // Only scroll to top if we're on page 2 or higher (coming from ViewMoreButton or pagination)
+    if (currentPage > 1) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, [currentPage]);
+
   // Faster, more conservative loading effect to prevent scroll issues
   useEffect(() => {
     const timeouts = [

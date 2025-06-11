@@ -486,7 +486,7 @@
   },
   "pwa": {
     "install": {
-      "title": "Cài đặt ứng dụng Manga",
+      "title": "Cài đặt ứng dụng",
       "description": "Trải nghiệm ứng dụng đầy đủ với đọc offline và tải nhanh hơn.",
       "ios-instruction": "Nhấn nút Chia sẻ và chọn 'Thêm vào Màn hình chính' để cài đặt.",
       "button": "Cài đặt",
