@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
     const now = new Date()
     let startDate: Date
-    let endDate: Date = query.endDate ? new Date(query.endDate) : now
+    const endDate: Date = query.endDate ? new Date(query.endDate) : now
 
     // Calculate start date based on period
     switch (query.period) {

@@ -97,7 +97,7 @@ export async function GET(request: Request): Promise<NextResponse<MangaRankingsR
     let whereClause: any = {}
 
     switch (category) {
-      case 'most_viewed':
+      case 'most_viewed': {
         const viewField = period === 'daily'
           ? 'daily_views'
           : period === 'weekly'
@@ -115,6 +115,7 @@ export async function GET(request: Request): Promise<NextResponse<MangaRankingsR
           [viewField]: { gt: 0 }
         }
         break
+      }
 
       case 'highest_rated':
         orderBy = [
@@ -132,7 +133,7 @@ export async function GET(request: Request): Promise<NextResponse<MangaRankingsR
         }
         break
 
-      case 'most_bookmarked':
+      case 'most_bookmarked': {
         const favoriteField = period === 'all_time' ? 'total_favorites' : 'total_favorites'
         orderBy = [
           { [favoriteField]: 'desc' },
@@ -143,8 +144,9 @@ export async function GET(request: Request): Promise<NextResponse<MangaRankingsR
           [favoriteField]: { gt: 0 }
         }
         break
+      }
 
-      case 'trending':
+      case 'trending': {
         // For trending, we'll use a combination of recent views and growth
         const trendingViewField = period === 'daily'
           ? 'daily_views'
@@ -165,6 +167,7 @@ export async function GET(request: Request): Promise<NextResponse<MangaRankingsR
           }
         }
         break
+      }
     }
 
     // Get top manga by the specified category and period

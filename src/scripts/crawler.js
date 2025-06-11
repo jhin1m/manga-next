@@ -7,11 +7,14 @@
  */
 
 // Register ts-node to handle TypeScript imports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 require('ts-node').register({
   project: './tsconfig.crawler.json'
 });
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { runCrawler, getSupportedSources } = require('../lib/crawler');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const dotenv = require('dotenv');
 
 // Load biến môi trường

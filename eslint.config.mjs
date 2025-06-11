@@ -35,7 +35,11 @@ const eslintConfig = [
     rules: {
       // Disable specific TypeScript ESLint rules
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }],
       "react/no-unescaped-entities": "warn",
       
       // Disable specific React rules

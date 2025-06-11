@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     const pagination_type = searchParams.get('pagination_type') || 'offset' // 'offset' or 'cursor'
 
     // Build where clause based on view mode
-    let where: any = {
+    const where: any = {
       parent_comment_id: null, // Only top-level comments
       status: query.status || CommentStatus.APPROVED,
     }

@@ -50,11 +50,11 @@ export default function RankingCard({
   // Get the primary stat based on category
   const getPrimaryStat = () => {
     switch (category) {
-      case 'most_viewed':
-        const viewCount = period === 'daily' 
+      case 'most_viewed': {
+        const viewCount = period === 'daily'
           ? manga.daily_views
-          : period === 'weekly' 
-            ? manga.weekly_views 
+          : period === 'weekly'
+            ? manga.weekly_views
             : period === 'monthly'
               ? manga.monthly_views
               : manga.total_views
@@ -63,6 +63,7 @@ export default function RankingCard({
           label: t('stats.views'),
           icon: <Eye className="w-4 h-4" />
         }
+      }
       case 'highest_rated':
         return {
           value: manga.average_rating ? `${manga.average_rating}/10` : 'N/A',
@@ -75,17 +76,18 @@ export default function RankingCard({
           label: t('stats.bookmarks'),
           icon: <Heart className="w-4 h-4" />
         }
-      case 'trending':
-        const trendingViews = period === 'daily' 
+      case 'trending': {
+        const trendingViews = period === 'daily'
           ? manga.daily_views
-          : period === 'weekly' 
-            ? manga.weekly_views 
+          : period === 'weekly'
+            ? manga.weekly_views
             : manga.monthly_views
         return {
           value: formatViews(trendingViews),
           label: t('stats.views'),
           icon: <TrendingUp className="w-4 h-4" />
         }
+      }
       default:
         return {
           value: formatViews(manga.total_views),

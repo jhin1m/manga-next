@@ -7,11 +7,11 @@ export function useRouteDetection() {
 
   // Check if current route is a chapter reading page
   // Pattern: /manga/[slug]/[chapterSlug]
-  const isChapterPage = /^\/manga\/[^\/]+\/[^\/]+$/.test(pathname);
+  const isChapterPage = /^\/manga\/[^/]+\/[^/]+$/.test(pathname);
 
   // Check if current route is a manga detail page
   // Pattern: /manga/[slug] (but not /manga/[slug]/[chapterSlug])
-  const isMangaDetailPage = /^\/manga\/[^\/]+$/.test(pathname);
+  const isMangaDetailPage = /^\/manga\/[^/]+$/.test(pathname);
 
   // Check if current route is manga listing page
   const isMangaListPage = pathname === '/manga';

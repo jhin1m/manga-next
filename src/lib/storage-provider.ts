@@ -100,10 +100,12 @@ export function getAvatarUrl(
   
   if (storageProvider === 's3') {
     // For S3, we need to import the function dynamically to avoid issues
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { getAvatarS3Url } = require('./aws-s3')
     return getAvatarS3Url(publicId, size)
   } else {
     // For Cloudinary, use the existing function
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { getAvatarUrl: getCloudinaryUrl } = require('./cloudinary')
     return getCloudinaryUrl(publicId, size)
   }

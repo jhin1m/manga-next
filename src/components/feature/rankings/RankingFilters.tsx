@@ -17,10 +17,10 @@ import {
   Star, 
   Heart, 
   TrendingUp, 
-  Clock, 
+  Clock,
   Calendar,
   CalendarDays,
-  Infinity
+  Infinity as InfinityIcon
 } from 'lucide-react'
 
 type RankingCategory = 'most_viewed' | 'highest_rated' | 'most_bookmarked' | 'trending'
@@ -95,7 +95,7 @@ export default function RankingFilters({
     },
     {
       id: 'all_time' as const,
-      icon: <Infinity className="w-4 h-4" />,
+      icon: <InfinityIcon className="w-4 h-4" />,
       label: t('periods.allTime'),
       description: 'Since the beginning'
     }

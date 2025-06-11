@@ -239,39 +239,35 @@ export async function apiClient<T = any>(
     fetchOptions.body = typeof body === 'string' ? body : JSON.stringify(body);
   }
 
-  try {
-    // Debug logging for Docker environment
-    // if (process.env.NODE_ENV === 'production') {
-    //   console.log(`[API Client] Making request to: ${url}`);
-    //   console.log(`[API Client] Base URL: ${API_CONFIG.baseUrl}`);
-    //   console.log(`[API Client] Is server-side: ${typeof window === 'undefined'}`);
-    // }
+  // Debug logging for Docker environment
+  // if (process.env.NODE_ENV === 'production') {
+  //   console.log(`[API Client] Making request to: ${url}`);
+  //   console.log(`[API Client] Base URL: ${API_CONFIG.baseUrl}`);
+  //   console.log(`[API Client] Is server-side: ${typeof window === 'undefined'}`);
+  // }
 
-    const response = await fetch(url, fetchOptions);
+  const response = await fetch(url, fetchOptions);
 
-    if (!response.ok) {
-      // Try to parse error response body for more details
-      let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+  if (!response.ok) {
+    // Try to parse error response body for more details
+    let errorMessage = `API Error: ${response.status} ${response.statusText}`;
 
-      try {
-        const errorData = await response.json();
-        if (errorData.error) {
-          errorMessage = errorData.error;
-          if (errorData.details) {
-            errorMessage += `: ${errorData.details}`;
-          }
+    try {
+      const errorData = await response.json();
+      if (errorData.error) {
+        errorMessage = errorData.error;
+        if (errorData.details) {
+          errorMessage += `: ${errorData.details}`;
         }
-      } catch {
-        // If we can't parse the error response, use the default message
       }
-
-      throw new Error(errorMessage);
+    } catch {
+      // If we can't parse the error response, use the default message
     }
 
-    return await response.json();
-  } catch (error) {
-    throw error;
+    throw new Error(errorMessage);
   }
+
+  return await response.json();
 }
 
 // Specialized API functions with proper typing and caching

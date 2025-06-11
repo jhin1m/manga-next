@@ -66,8 +66,6 @@ export async function POST(
     })
 
     let action: 'liked' | 'disliked' | 'removed' | 'changed'
-    let newLikesCount: number
-    let newDislikesCount: number
 
     if (existingLike) {
       if (existingLike.is_like === validatedData.is_like) {
@@ -133,9 +131,6 @@ export async function POST(
       }
     })
 
-    newLikesCount = likesCount
-    newDislikesCount = dislikesCount
-
     // Determine user's current like status
     let userLikeStatus: 'like' | 'dislike' | null = null
     if (action === 'liked' || (action === 'changed' && validatedData.is_like)) {
@@ -149,8 +144,8 @@ export async function POST(
                action === 'disliked' ? 'Comment disliked' :
                action === 'changed' ? 'Like status changed' :
                'Like removed',
-      likes_count: newLikesCount,
-      dislikes_count: newDislikesCount,
+      likes_count: likesCount,
+      dislikes_count: dislikesCount,
       userLikeStatus
     })
 
