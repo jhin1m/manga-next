@@ -17,7 +17,7 @@ interface PerformanceMetric {
 // Performance monitor class
 export class PerformanceMonitor {
   private static metrics: PerformanceMetric[] = [];
-  public static isEnabled = process.env.NODE_ENV === 'development';
+  public static isEnabled = process.env.NODE_ENV === 'development' && process.env.ENABLE_PERFORMANCE_MONITORING === 'true';
 
   // Enable/disable monitoring
   static setEnabled(enabled: boolean) {

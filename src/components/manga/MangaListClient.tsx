@@ -104,7 +104,7 @@ export default function MangaListClient({
         {manga.length > 0 ? (
           <>
             {loadingStates.mangaGrid ? (
-              <MangaGridSkeleton itemCount={Math.min(manga.length, 12)} showStaggered={false} />
+              <MangaGridSkeleton itemCount={Math.min(manga.length, 12)} />
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 mb-8 smooth-fade">
                 {manga.map((item: MangaItem) => (

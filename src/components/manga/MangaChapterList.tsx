@@ -30,8 +30,12 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isClient, setIsClient] = useState(false);
   const [readChapters, setReadChapters] = useState<Record<string, boolean>>({});
+  const [showAll, setShowAll] = useState(false);
   const { formatViews, formatDate } = useFormat();
   const t = useTranslations('manga');
+
+  // Limit initial chapters display for better performance
+  const INITIAL_CHAPTERS_LIMIT = 20;
 
   // Set isClient to true after hydration is complete and load reading history
   useEffect(() => {
@@ -58,13 +62,20 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
   );
 
   // Sort chapters based on sort order
-  const sortedChapters = [...filteredChapters].sort((a, b) => {
+  const allSortedChapters = [...filteredChapters].sort((a, b) => {
     if (sortOrder === 'newest') {
       return b.number - a.number;
     } else {
       return a.number - b.number;
     }
   });
+
+  // Limit chapters display for better performance
+  const sortedChapters = showAll || searchTerm
+    ? allSortedChapters
+    : allSortedChapters.slice(0, INITIAL_CHAPTERS_LIMIT);
+
+  const hasMoreChapters = !showAll && !searchTerm && allSortedChapters.length > INITIAL_CHAPTERS_LIMIT;
 
   return (
     <Card>
@@ -138,6 +149,19 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
             </div>
           )}
           </div>
+
+          {/* Show More Button */}
+          {hasMoreChapters && (
+            <div className="text-center pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowAll(true)}
+                className="w-full max-w-sm"
+              >
+                {t('showAllChapters', { count: allSortedChapters.length - INITIAL_CHAPTERS_LIMIT })}
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -18,16 +18,16 @@ export function NavigationLoadingProvider({ children }: { children: ReactNode })
   const triggerLoading = () => {
     if (pathname === '/') {
       setIsLoading(true);
-      
+
       // Clear timeout cũ nếu có
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current);
       }
-      
-      // Set timeout để tắt loading
+
+      // Immediate loading completion - no fake delay
       loadingTimeoutRef.current = setTimeout(() => {
         setIsLoading(false);
-      }, 600);
+      }, 0);
     }
   };
 

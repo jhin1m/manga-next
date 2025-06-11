@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -33,7 +32,7 @@ export function FilterSortBarSkeleton() {
   );
 }
 
-export function MangaCardSkeleton({ index = 0, showAnimation = true }: { index?: number; showAnimation?: boolean }) {
+export function MangaCardSkeleton() {
   return (
     <Card className="group border-0 bg-card/50 backdrop-blur-sm">
       <CardContent className="p-0">
@@ -67,19 +66,13 @@ export function MangaCardSkeleton({ index = 0, showAnimation = true }: { index?:
 
 export function MangaGridSkeleton({
   itemCount = 12, // Reduced from 24 to prevent excessive height
-  showStaggered = false // Disabled staggered animation to prevent layout shifts
 }: {
   itemCount?: number;
-  showStaggered?: boolean;
 }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 mb-8">
       {Array.from({ length: itemCount }).map((_, i) => (
-        <MangaCardSkeleton
-          key={i}
-          index={0}
-          showAnimation={false}
-        />
+        <MangaCardSkeleton key={i} />
       ))}
     </div>
   );
@@ -105,52 +98,25 @@ export function PaginationSkeleton() {
 }
 
 export function MangaListPageSkeleton() {
-  const [currentStep, setCurrentStep] = useState(0);
-
-  useEffect(() => {
-    const steps = [
-      { delay: 0, step: 0 },     // Header
-      { delay: 200, step: 1 },   // Filter bar
-      { delay: 400, step: 2 },   // Manga grid
-      { delay: 800, step: 3 },   // Pagination
-    ];
-
-    const timeouts = steps.map(({ delay, step }) =>
-      setTimeout(() => setCurrentStep(step), delay)
-    );
-
-    return () => {
-      timeouts.forEach(timeout => clearTimeout(timeout));
-    };
-  }, []);
-
   return (
     <div className="container mx-auto py-8">
       {/* Page title skeleton */}
-      <div className={`mb-6 transition-all duration-500 ${
-        currentStep >= 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-      }`}>
+      <div className="mb-6 animate-in fade-in duration-300">
         <Skeleton className="h-8 w-64" />
       </div>
 
       {/* Filter bar skeleton */}
-      <div className={`mb-6 transition-all duration-500 delay-200 ${
-        currentStep >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-      }`}>
+      <div className="mb-6 animate-in fade-in duration-300 delay-100">
         <FilterSortBarSkeleton />
       </div>
 
       {/* Manga grid skeleton */}
-      <div className={`transition-all duration-500 delay-400 ${
-        currentStep >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-      }`}>
-        <MangaGridSkeleton showStaggered={currentStep >= 2} />
+      <div className="animate-in fade-in duration-300 delay-200">
+        <MangaGridSkeleton />
       </div>
 
       {/* Pagination skeleton */}
-      <div className={`transition-all duration-500 delay-800 ${
-        currentStep >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-      }`}>
+      <div className="animate-in fade-in duration-300 delay-300">
         <PaginationSkeleton />
       </div>
     </div>
@@ -170,7 +136,7 @@ export function MangaListPageSkeletonCompact() {
       </div>
 
       {/* Manga grid skeleton - conservative height to prevent layout shifts */}
-      <MangaGridSkeleton itemCount={8} showStaggered={false} />
+      <MangaGridSkeleton itemCount={8} />
 
       {/* Pagination skeleton */}
       <PaginationSkeleton />

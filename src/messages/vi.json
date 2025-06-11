@@ -47,6 +47,7 @@
     "chapters": "chương",
     "chaptersCount": "{count} chương",
     "noChaptersFound": "Không tìm thấy chương nào phù hợp với \"{searchTerm}\" đâu.",
+    "showAllChapters": "Xem tất cả chương",
     "chaptersList": "Danh sách chương",
     "alternativeTitles": "Tên khác",
     "author": "Tác giả",

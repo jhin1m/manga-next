@@ -33,8 +33,13 @@ export function useRating({
 
   const isAuthenticated = status === 'authenticated'
 
-  // Fetch current rating data - optimized to prevent duplicate calls
+  // Only fetch rating data if no initial data provided (prevent duplicate API calls)
   useEffect(() => {
+    // Skip API call if we already have server-side data
+    if (initialRating !== undefined || initialTotalRatings !== undefined || initialUserRating !== undefined) {
+      return
+    }
+
     let isMounted = true
 
     const fetchRatingData = async () => {
@@ -55,8 +60,7 @@ export function useRating({
       }
     }
 
-    // Only fetch if we don't have initial data (undefined means no server-side data was provided)
-    if (mangaId && initialRating === undefined && initialTotalRatings === undefined && initialUserRating === undefined) {
+    if (mangaId) {
       fetchRatingData()
     }
 

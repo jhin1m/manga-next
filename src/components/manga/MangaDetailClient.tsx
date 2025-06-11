@@ -1,17 +1,12 @@
 "use client";
 
-import { useState, useEffect, lazy } from 'react';
+import { lazy } from 'react';
 import MangaChapterList from "@/components/manga/MangaChapterList";
 import RelatedManga from "@/components/manga/RelatedManga";
-import MangaDetailInfoClient from "@/components/manga/MangaDetailInfoClient";
-
+import { MangaDetailInfo } from "@/components/manga/MangaDetailInfo";
 
 // Lazy load heavy components
 const CommentSectionLazy = lazy(() => import("@/components/feature/comments/CommentSectionLazy"));
-import {
-  AnimatedChapterListSkeleton,
-  AnimatedRelatedMangaSkeleton
-} from "@/components/ui/skeletons/AnimatedMangaSkeleton";
 
 interface MangaDetailClientProps {
   manga: {
@@ -67,58 +62,29 @@ export default function MangaDetailClient({
   initialFavoriteStatus,
   initialRatingData
 }: MangaDetailClientProps) {
-  const [loadingStates, setLoadingStates] = useState({
-    chapters: true,
-    relatedManga: true,
-  });
-
-  // Progressive loading effect
-  useEffect(() => {
-    const timeouts = [
-      setTimeout(() => {
-        setLoadingStates(prev => ({ ...prev, chapters: false }));
-      }, 100),
-      setTimeout(() => {
-        setLoadingStates(prev => ({ ...prev, relatedManga: false }));
-      }, 200),
-    ];
-
-    return () => {
-      timeouts.forEach(timeout => clearTimeout(timeout));
-    };
-  }, []);
-
   return (
     <div className="space-y-8">
-      {/* Manga Information Section - With loading effect */}
-      <MangaDetailInfoClient
+      {/* Manga Information Section - Direct render without fake loading */}
+      <MangaDetailInfo
         manga={manga}
         chapters={chapters}
         initialFavoriteStatus={initialFavoriteStatus}
         initialRatingData={initialRatingData}
       />
 
-      {/* Chapters and Related Manga Section */}
+      {/* Chapters and Related Manga Section - Direct render */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Chapters Section */}
         <section className="lg:col-span-3">
-          {loadingStates.chapters ? (
-            <AnimatedChapterListSkeleton />
-          ) : (
-            <MangaChapterList
-              mangaSlug={manga.slug}
-              chapters={chapters}
-            />
-          )}
+          <MangaChapterList
+            mangaSlug={manga.slug}
+            chapters={chapters}
+          />
         </section>
 
         {/* Related Manga Section */}
         <section className="lg:col-span-1">
-          {loadingStates.relatedManga ? (
-            <AnimatedRelatedMangaSkeleton />
-          ) : (
-            <RelatedManga relatedManga={relatedManga} />
-          )}
+          <RelatedManga relatedManga={relatedManga} />
         </section>
       </div>
 

@@ -59,16 +59,16 @@ export function MangaDetailInfoSkeleton() {
 
             {/* Right Column - Metadata Skeleton - Desktop only */}
             <div className="hidden lg:block col-span-1 lg:col-span-1 space-y-3 sm:space-y-4 mt-4 sm:mt-12">
-              {/* Genres Skeleton */}
+              {/* Genres Skeleton - Reduced */}
               <div className="flex flex-wrap gap-1 sm:gap-1.5 justify-start">
-                {Array.from({ length: 4 }).map((_, i) => (
+                {Array.from({ length: 3 }).map((_, i) => (
                   <Skeleton key={i} className="h-6 w-16" />
                 ))}
               </div>
 
-              {/* Metadata Skeleton */}
+              {/* Metadata Skeleton - Reduced */}
               <div className="space-y-1.5 sm:space-y-2">
-                {Array.from({ length: 6 }).map((_, i) => (
+                {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="flex justify-start">
                     <Skeleton className="h-4 w-32" />
                   </div>
@@ -100,25 +100,21 @@ export function MangaChapterListSkeleton() {
           <Skeleton className="h-10 w-full max-w-sm" />
         </div>
 
-        {/* Chapters grid skeleton */}
+        {/* Chapters grid skeleton - Reduced */}
         <div className="max-h-[600px] overflow-y-auto pr-2">
           <div className="grid grid-cols-2 gap-3 pb-5 pr-2">
-            {Array.from({ length: 10 }).map((_, i) => (
+            {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex flex-col h-full p-3 rounded-md border">
                 {/* Chapter title */}
                 <div className="font-medium mb-2">
                   <Skeleton className="h-4 w-3/4" />
                 </div>
 
-                {/* Chapter stats */}
+                {/* Chapter stats - Simplified */}
                 <div className="mt-auto flex flex-col gap-1">
                   <div className="flex items-center gap-1">
                     <Skeleton className="h-3 w-3" />
                     <Skeleton className="h-3 w-12" />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Skeleton className="h-3 w-3" />
-                    <Skeleton className="h-3 w-16" />
                   </div>
                 </div>
               </div>
@@ -137,13 +133,12 @@ export function RelatedMangaSkeleton() {
         <Skeleton className="h-6 w-32" />
       </CardHeader>
       <CardContent className="space-y-1 px-4">
-        {Array.from({ length: 5 }).map((_, i) => (
+        {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="flex gap-3 p-2 rounded-lg">
             <Skeleton className="h-16 w-12 rounded" />
             <div className="flex-1 space-y-1">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-3 w-2/3" />
-              <Skeleton className="h-3 w-1/2" />
             </div>
           </div>
         ))}

@@ -10,9 +10,9 @@ export function AnimatedMangaDetailSkeleton() {
             {/* Left Column - Cover + Title + Actions */}
             <div className="col-span-1 lg:col-span-3">
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                {/* Cover Image Skeleton */}
+                {/* Cover Image Skeleton - Simple animation */}
                 <div className="aspect-[2/3] w-40 xs:w-48 sm:w-56 lg:w-64 mx-auto sm:mx-0 flex-shrink-0">
-                  <Skeleton className="w-full h-full rounded-xl animate-pulse" />
+                  <Skeleton className="w-full h-full rounded-xl" />
                 </div>
 
                 {/* Title + Action Buttons Skeleton */}
@@ -138,7 +138,7 @@ export function AnimatedRelatedMangaSkeleton() {
       </CardHeader>
       <CardContent className="space-y-1 px-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex gap-3 p-2 rounded-lg animate-pulse">
+          <div key={i} className="flex gap-3 p-2 rounded-lg">
             <Skeleton className="h-16 w-12 rounded" />
             <div className="flex-1 space-y-1">
               <Skeleton className="h-4 w-full" />
@@ -152,22 +152,18 @@ export function AnimatedRelatedMangaSkeleton() {
   );
 }
 
-// Animated Chapter Reader Skeleton Components
+// Simplified Chapter Reader Skeleton Components
 export function AnimatedChapterReaderNavigationSkeleton() {
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-sm shadow-md p-2 border-b w-full">
       <div className="flex items-center gap-1 justify-center md:container md:mx-auto overflow-x-auto">
-        {/* Navigation buttons with staggered animation */}
+        {/* Navigation buttons - simplified */}
         {Array.from({ length: 7 }).map((_, index) => (
           <Skeleton
             key={index}
-            className={`h-9 rounded-md flex-shrink-0 animate-pulse ${
+            className={`h-9 rounded-md flex-shrink-0 ${
               index === 3 ? 'flex-1 max-w-[150px] md:max-w-[250px]' : 'w-9'
             }`}
-            style={{
-              animationDelay: `${index * 100}ms`,
-              animationDuration: '1.5s'
-            }}
           />
         ))}
       </div>
@@ -181,22 +177,12 @@ export function AnimatedChapterImagesSkeleton() {
   return (
     <main className="pt-2 pb-16">
       <div className="flex flex-col items-center w-full sm:max-w-5xl sm:mx-auto">
-        {/* Generate multiple image skeletons with staggered animation */}
+        {/* Generate multiple image skeletons - simplified */}
         {Array.from({ length: 8 }).map((_, index) => (
-          <div
-            key={index}
-            className="w-full mb-1"
-            style={{
-              animationDelay: `${index * 150}ms`
-            }}
-          >
+          <div key={index} className="w-full mb-1">
             <Skeleton
-              className="w-full rounded-none animate-pulse"
-              style={{
-                height: `${DEFAULT_PLACEHOLDER_HEIGHT}px`,
-                animationDuration: '2s',
-                animationDelay: `${index * 150}ms`
-              }}
+              className="w-full rounded-none"
+              style={{ height: `${DEFAULT_PLACEHOLDER_HEIGHT}px` }}
             />
           </div>
         ))}
