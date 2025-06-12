@@ -41,12 +41,12 @@
     "ongoing": "Đang tiến hành",
     "completed": "Đã hoàn thành",
     "readNow": "Đọc ngay",
-    "addToFavorites": "Thêm vào yêu thích",
-    "removeFromFavorites": "Bỏ khỏi yêu thích",
+    "addToFavorites": "Thêm vào tủ sách",
+    "removeFromFavorites": "Bỏ khỏi tủ sách",
     "updating": "Đang cập nhật",
     "chapters": "chương",
     "chaptersCount": "{count} chương",
-    "noChaptersFound": "Không tìm thấy chương nào phù hợp với \"{searchTerm}\" đâu.",
+    "noChaptersFound": "Không tìm thấy chương nào phù hợp với kết quả \"{searchTerm}\".",
     "showAllChapters": "Xem tất cả chương",
     "chaptersList": "Danh sách chương",
     "alternativeTitles": "Tên khác",
@@ -55,8 +55,8 @@
     "published": "Xuất bản",
     "serialization": "Nhà xuất bản",
     "updated": "Cập nhật",
-    "readFirstChapter": "Đọc chương đầu tiên",
-    "readLatestChapter": "Đọc chương mới nhất",
+    "readFirstChapter": "Đọc chương đầu",
+    "readLatestChapter": "Đọc chương mới",
     "searchChapters": "Tìm kiếm chương",
     "newestFirst": "Mới nhất",
     "oldestFirst": "Cũ nhất",
@@ -64,14 +64,16 @@
     "information": "Thông tin",
     "showMore": "Xem thêm",
     "showLess": "Thu gọn",
-    "youMayAlsoLike": "Có thể bạn cũng thích",
+    "youMayAlsoLike": "Có thể bạn cũng ưng",
     "details": "Chi tiết",
     "authorLabel": "Tác giả:",
     "artistLabel": "Họa sĩ:",
     "statusLabel": "Trạng thái:",
     "publishedLabel": "Xuất bản:",
     "serializationLabel": "Nhà xuất bản:",
-    "updatedLabel": "Cập nhật:"
+    "updatedLabel": "Cập nhật:",
+    "loginToRate": "Đăng nhập để đánh giá truyện này nha.",
+    "ratingFailed": "Đánh giá thất bại, thử lại nha."
   },
   "search": {
     "placeholder": "Tìm kiếm truyện...",
@@ -196,7 +198,7 @@
       "totalUsers": "Tổng số người dùng",
       "totalComments": "Tổng số bình luận"
     },
-    "backToTop": "Đi lên nào~ senpai~ 🌸",
+    "backToTop": "Đi lên nào 🚀",
     "copyright": "© {year} {siteName}. {allRightsReserved}"
   },
   "format": {
@@ -245,15 +247,15 @@
     }
   },
   "comments": {
-    "noRecentComments": "Chưa có bình luận nào. Lâu lâu cũng cần người mở hàng mà!",
+    "noRecentComments": "Chưa có bình luận nào. Bạn sẽ là người mở hàng chứ ?",
     "chapter": "Chương",
     "title": "Bình luận",
     "chapterComments": "Bình luận chương",
     "allComments": "Tất cả bình luận",
     "writeComment": "Nhập nội dung bình luận...",
     "writeReply": "Trả lời bình luận này...",
-    "shareThoughts": "Bạn nghĩ sao về truyện? Đừng giữ trong lòng nhé.",
-    "noCommentsYet": "Chưa có ai bình luận. Bạn có muốn làm người đầu tiên không?",
+    "shareThoughts": "Bạn nghĩ sao về bộ truyện này ? Đừng giữ trong lòng nhé.",
+    "noCommentsYet": "Chưa có ai bình luận. Bạn có muốn làm người đầu tiên (của tui) không?",
     "signInToComment": "Hãy {signInLink} để tham gia góp vui nha.",
     "signIn": "đăng nhập",
     "sortBy": {
@@ -281,7 +283,7 @@
     },
     "form": {
       "placeholder": {
-        "comment": "Chia sẻ suy nghĩ của bạn...",
+        "comment": "Chia sẻ suy nghĩ trong lòng...",
         "reply": "Nhập phản hồi..."
       },
       "validation": {
@@ -296,10 +298,10 @@
       "characterCount": "{current}/{max}",
       "guidelines": {
         "title": "Quy tắc nhỏ thôi mà",
-        "respectful": "Lịch sự tí, đừng để ai phải khó chịu.",
-        "spoilers": "Có tiết lộ nội dung thì nhớ cảnh báo nha.",
-        "noSpam": "Không spam hay quảng cáo, không phải chợ mà.",
-        "stayOnTopic": "Giữ chủ đề, đừng lan man lung tung."
+        "respectful": "Lịch sự tí, đừng để ai phải khó chịu nha.",
+        "spoilers": "Có tiết lộ nội dung thì nhớ cảnh báo đó.",
+        "noSpam": "Không spam hay quảng cáo, tui dọn dẹp mệt lắm.",
+        "stayOnTopic": "Giữ chủ đề, nhớ đừng lan man lung tung."
       }
     },
     "status": {
@@ -458,11 +460,11 @@
         "trending": "Bảng Xếp Hạng Manga Đang Thịnh Hành {period}"
       },
       "metaDescription": {
-        "default": "Khám phá những bộ manga phổ biến nhất với bảng xếp hạng toàn diện của chúng tôi. Tìm top manga theo lượt xem, đánh giá, yêu thích và xu hướng theo ngày, tuần, tháng và mọi thời đại.",
-        "mostViewed": "Khám phá bảng xếp hạng manga nhiều lượt xem nhất {period}. Tìm hiểu những bộ manga mà độc giả đang thích nhất với thống kê lượt xem thời gian thực.",
-        "highestRated": "Tìm những bộ manga đánh giá cao nhất {period} dựa trên đánh giá và xếp hạng của người dùng. Khám phá những manga được giới phê bình đánh giá cao.",
-        "mostBookmarked": "Duyệt những bộ manga được yêu thích nhất {period}. Xem những manga mà độc giả đang lưu vào danh sách yêu thích và thêm vào danh sách đọc.",
-        "trending": "Xem những bộ manga đang thịnh hành {period} đang trở nên phổ biến. Khám phá những ngôi sao mới nổi và những phát hành hot trong thế giới manga."
+        "default": "Khám phá những bộ truyện tranh phổ biến nhất với bảng xếp hạng toàn diện của chúng tôi. Tìm top truyện tranh theo lượt xem, đánh giá, yêu thích và xu hướng theo ngày, tuần, tháng và mọi thời đại.",
+        "mostViewed": "Khám phá bảng xếp hạng truyện tranh nhiều lượt xem nhất {period}. Tìm hiểu những bộ truyện tranh mà độc giả đang thích nhất với thống kê lượt xem thời gian thực.",
+        "highestRated": "Tìm những bộ truyện tranh đánh giá cao nhất {period} dựa trên đánh giá và xếp hạng của người dùng. Khám phá những truyện tranh được giới phê bình đánh giá cao.",
+        "mostBookmarked": "Duyệt những bộ truyện tranh được yêu thích nhất {period}. Xem những truyện tranh mà độc giả đang lưu vào danh sách yêu thích và thêm vào danh sách đọc.",
+        "trending": "Xem những bộ truyện tranh đang thịnh hành {period} đang trở nên phổ biến. Khám phá những ngôi sao mới nổi và những phát hành hot trong thế giới truyện tranh."
       }
     }
   },
@@ -488,7 +490,7 @@
   "pwa": {
     "install": {
       "title": "Cài đặt ứng dụng",
-      "description": "Trải nghiệm ứng dụng đầy đủ với đọc offline và tải nhanh hơn.",
+      "description": "Trải nghiệm ứng dụng đầy đủ với đọc offline và tải nhanh hơn. (Xạo chó)",
       "ios-instruction": "Nhấn nút Chia sẻ và chọn 'Thêm vào Màn hình chính' để cài đặt.",
       "button": "Cài đặt",
       "dismiss": "Để sau"
@@ -506,13 +508,13 @@
     }
   },
   "chapterReport": {
-    "reportIssue": "Báo cáo vấn đề",
-    "reportChapterIssue": "Báo cáo lỗi chương",
-    "reportChapterIssueTitle": "Báo cáo lỗi chương",
-    "reportChapterIssueDescription": "Chương này có gì trục trặc à? Báo cho tụi mình biết để còn fix kịp, đọc không bị gián đoạn nhé!",
-    "issueType": "Loại vấn đề",
-    "issueTypeRequired": "Chọn hộ mình loại vấn đề với nha *",
-    "selectIssueType": "Chọn loại vấn đề",
+    "reportIssue": "Báo lỗi",
+    "reportChapterIssue": "Báo lỗi chương",
+    "reportChapterIssueTitle": "Báo lỗi chương",
+    "reportChapterIssueDescription": "Chương này có gì trục trặc hả? Báo cho tụi mình biết để còn fix kịp nha!",
+    "issueType": "Chọn lỗi",
+    "issueTypeRequired": "Chọn hộ mình lỗi với nha *",
+    "selectIssueType": "Chọn loại lỗi",
     "additionalDetails": "Chi tiết bổ sung",
     "additionalDetailsRequired": "Mô tả thêm chút nữa đi *",
     "additionalDetailsOptional": "Thêm tí chi tiết cho rõ ràng (không bắt buộc)...",
@@ -520,27 +522,27 @@
     "cancel": "Hủy",
     "submitReport": "Gửi báo cáo",
     "submitting": "Đang gửi, đợi tí nhé...",
-    "reportSuccess": "Cảm ơn bạn đã báo cáo! Tụi mình sẽ xử lý sớm, đảm bảo chương mượt mà không “lag” nữa.",
+    "reportSuccess": "Cảm ơn bạn đã báo cáo! Tụi mình sẽ xử lý sớm, đảm bảo chương mượt mà không lag nữa.",
     "reportError": "Gửi báo cáo không thành công rồi, thử lại nha.",
-    "loginRequired": "Bạn cần đăng nhập trước khi báo cáo lỗi, đừng “ẩn danh” nữa nhé!",
+    "loginRequired": "Bạn cần đăng nhập trước khi báo cáo lỗi, đừng ẩn danh nữa nhé!",
     "wordLimitExceeded": "Mô tả hơi dài rồi, gói gọn trong 50 từ thôi nha.",
     "characterLimitExceeded": "Mô tả không được quá 50 từ (khoảng 300 ký tự), mình biết bạn muốn nói nhiều nhưng ngắn gọn thôi!",
     "words": "từ",
     "reasons": {
-      "broken_images": "Hình ảnh hỏng hoặc thiếu, coi mà bực mình lắm!",
-      "missing_pages": "Thiếu trang, đọc không nổi rồi!",
-      "wrong_order": "Trang sai thứ tự, rối loạn hết cả lên.",
-      "duplicate_pages": "Trang bị trùng, đọc mãi một trang thôi.",
-      "poor_quality": "Hình mờ nhòe, coi không đã mắt chút nào.",
-      "wrong_chapter": "Chương này bị sai nội dung rồi nha.",
-      "corrupted_content": "Nội dung lỗi hoặc không đọc được, chịu không nổi!",
-      "other": "Vấn đề khác, ghi rõ để tụi mình biết nha."
+      "broken_images": "Hình ảnh hỏng hoặc thiếu",
+      "missing_pages": "Thiếu trang",
+      "wrong_order": "Ảnh sai thứ tự.",
+      "duplicate_pages": "Ảnh bị trùng.",
+      "poor_quality": "Hình mờ nhòe",
+      "wrong_chapter": "Chương này sai nội dung",
+      "corrupted_content": "Nội dung lỗi hoặc không đọc được",
+      "other": "Có vấn đề khác, ghi rõ để tụi mình biết nha."
     }
   },
   "notifications": {
     "title": "Thông báo",
-    "noNotifications": "Chưa có thông báo nào",
-    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "noNotifications": "Chưa có thông báo nào cả",
+    "markAllRead": "Đọc hết",
     "markAsRead": "Đánh dấu đã đọc",
     "newChapter": "Chương mới",
     "settings": "Cài đặt thông báo",

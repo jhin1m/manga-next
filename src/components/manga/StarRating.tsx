@@ -43,7 +43,7 @@ export function StarRating({
 
   const handleStarClick = async (rating: number) => {
     if (!isAuthenticated) {
-      toast.error('Please login to rate this manga', {
+      toast.error(t('loginToRate'), {
         action: {
           label: tCommon('login'),
           onClick: () => router.push(`/auth/login?callbackUrl=/manga/${mangaSlug}`)
@@ -56,10 +56,10 @@ export function StarRating({
 
     try {
       const result = await submitRating(rating)
-      toast.success(result.wasFirstRating ? 'Rating submitted!' : 'Rating updated!')
+      toast.success(result.wasFirstRating ? t('ratingSubmitted') : t('ratingUpdated'))
     } catch (error) {
       console.error('Error submitting rating:', error)
-      toast.error('Failed to submit rating. Please try again.')
+      toast.error(t('ratingFailed'))
     }
   }
 

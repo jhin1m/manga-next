@@ -70,7 +70,10 @@
     "statusLabel": "Status:",
     "publishedLabel": "Published:",
     "serializationLabel": "Serialization:",
-    "updatedLabel": "Updated:"
+    "updatedLabel": "Updated:",
+    "showAllChapters": "Show all chapters",
+    "loginToRate": "Login to rate this manga",
+    "ratingSubmitted": "Rating submitted!"
   },
   "search": {
     "placeholder": "Search for your next manga...",
