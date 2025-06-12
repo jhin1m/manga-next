@@ -20,7 +20,7 @@ interface MangaSearchResult {
   cover_image_url?: string;
   description?: string;
   Comic_Genres?: { Genres: { name: string } }[];
-  status?: string;
+  Chapters?: { title?: string; chapter_number: number; slug: string }[];
 }
 
 // Utility functions for localStorage
@@ -177,7 +177,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
           cover_image_url: comic.cover_image_url,
           description: comic.description?.substring(0, 100) + (comic.description?.length > 100 ? '...' : ''),
           Comic_Genres: comic.Comic_Genres || [],
-          status: comic.status || 'unknown'
+          Chapters: comic.Chapters || []
         }));
         setPopularManga(transformedResults);
       }
@@ -228,7 +228,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
           cover_image_url: comic.cover_image_url,
           description: comic.description?.substring(0, 100) + (comic.description?.length > 100 ? '...' : ''),
           Comic_Genres: comic.Comic_Genres || [],
-          status: comic.status || 'unknown'
+          Chapters: comic.Chapters || []
         }));
         setLiveResults(transformedResults);
       } else {
@@ -329,7 +329,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
         <div className={cn("max-h-[70vh] overflow-y-auto", className)}>
           {/* Loading State */}
           {isLoading && (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-8 px-4">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="ml-2 text-sm text-muted-foreground">{tSearch('searching')}</span>
             </div>
@@ -337,7 +337,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
 
           {/* Error State */}
           {error && !isLoading && (
-            <div className="px-4 py-6 text-center">
+            <div className="py-6 px-4 text-center">
               <p className="text-sm text-red-500 mb-3">{error}</p>
               <Button
                 variant="outline"
@@ -351,14 +351,14 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
 
           {/* No Results */}
           {!isLoading && !error && searchQuery.length > 0 && liveResults.length === 0 && (
-            <div className="px-4 py-8 text-center">
+            <div className="py-8 px-4 text-center">
               <p className="text-sm text-muted-foreground">{tSearch('noResults')}</p>
             </div>
           )}
 
           {/* Live Search Results */}
           {liveResults.length > 0 && !isLoading && (
-            <div className="p-2">
+            <div className="px-4 py-2">
               <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                 {tSearch('searchFor')}
               </div>
@@ -389,9 +389,9 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
                       <div className="font-semibold text-sm leading-tight line-clamp-2">
                         {manga.title}
                       </div>
-                      {manga.status && (
+                      {manga.Chapters && manga.Chapters.length > 0 && manga.Chapters[0].title && (
                         <Badge variant="secondary" className="text-xs">
-                          {manga.status}
+                          {manga.Chapters[0].title}
                         </Badge>
                       )}
                       {manga.Comic_Genres && manga.Comic_Genres.length > 0 && (
@@ -427,7 +427,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
 
           {/* Search Button (when no live results yet) */}
           {searchQuery && searchQuery.trim().length > 0 && liveResults.length === 0 && !isLoading && !error && (
-            <div className="p-2">
+            <div className="px-4 py-2">
               <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                 {tSearch('searchFor')}
               </div>
@@ -443,7 +443,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
 
           {/* Recent Searches */}
           {recentSearches.length > 0 && !searchQuery && (
-            <div className="p-2">
+            <div className="px-4 py-2">
               <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                 {tSearch('recentSearches')}
               </div>
@@ -451,22 +451,22 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
                 {recentSearches.map((term) => (
                   <div
                     key={term}
-                    className="flex items-center gap-3 justify-between group p-3 rounded-md hover:bg-accent transition-colors"
+                    className="flex items-center group px-3 py-2 rounded-md hover:bg-accent transition-colors"
                   >
                     <button
                       onClick={() => handleSearch(term)}
-                      className="flex items-center gap-3 flex-1 text-left"
+                      className="flex items-center gap-3 flex-1 text-left min-w-0"
                     >
                       <Clock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                      <span className="text-sm">{term}</span>
+                      <span className="text-sm truncate">{term}</span>
                     </button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+                      className="h-6 w-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
                       onClick={(e) => handleRemoveRecentSearch(e, term)}
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-3 w-3" />
                     </Button>
                   </div>
                 ))}
@@ -476,7 +476,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
 
           {/* Popular Manga */}
           {!searchQuery && (
-            <div className="p-2">
+            <div className="px-4 py-2">
               <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
                 {tSearch('popularManga')}
               </div>
@@ -513,9 +513,9 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
                         <div className="font-semibold text-sm leading-tight line-clamp-2">
                           {manga.title}
                         </div>
-                        {manga.status && (
+                        {manga.Chapters && manga.Chapters.length > 0 && manga.Chapters[0].title && (
                           <Badge variant="secondary" className="text-xs">
-                            {manga.status}
+                            {manga.Chapters[0].title}
                           </Badge>
                         )}
                         {manga.Comic_Genres && manga.Comic_Genres.length > 0 && (

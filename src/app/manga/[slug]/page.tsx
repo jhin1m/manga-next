@@ -9,28 +9,6 @@ import MangaDetailClient from "@/components/manga/MangaDetailClient";
 // Enable ISR for manga detail pages - revalidate every hour
 export const revalidate = 3600;
 
-// Generate static params for popular manga using build-time database access
-export async function generateStaticParams() {
-  // Skip static generation if configured
-  if (process.env.SKIP_BUILD_STATIC_GENERATION === 'true') {
-    console.log('⏭️ Skipping static generation for manga pages (configured)');
-    return [];
-  }
-
-  try {
-    // Use build-time database access instead of API calls
-    const { getBuildTimePopularManga } = await import('@/lib/build-time-data');
-    const popularManga = await getBuildTimePopularManga();
-
-    console.log(`📦 Generated static params for ${popularManga.length} popular manga`);
-    return popularManga;
-  } catch (error) {
-    console.error('❌ Error generating static params for manga:', error);
-    // Return empty array if error - pages will be generated on-demand
-    return [];
-  }
-}
-
 
 
 // Fetch manga data from API using centralized API client
