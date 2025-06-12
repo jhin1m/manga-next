@@ -20,6 +20,7 @@ import { defaultViewport } from "@/lib/seo/viewport";
 import { NavigationLoadingProvider } from "@/contexts/NavigationLoadingContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import SWRProvider from "@/components/providers/SWRProvider";
+import InstantNavigationProvider from "@/components/providers/InstantNavigationProvider";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -82,18 +83,20 @@ export default async function RootLayout({
           >
             <AuthProvider>
               <SWRProvider>
-                <NotificationProvider autoRefresh={true} refreshInterval={30000}>
-                  <NavigationLoadingProvider>
-                    <Header />
-                    <MainContent>
-                      {children}
-                    </MainContent>
-                    <Footer />
-                    <Toaster />
-                    <PWAInstallPrompt />
-                    <OfflineIndicator />
-                  </NavigationLoadingProvider>
-                </NotificationProvider>
+                <InstantNavigationProvider>
+                  <NotificationProvider autoRefresh={true} refreshInterval={30000}>
+                    <NavigationLoadingProvider>
+                      <Header />
+                      <MainContent>
+                        {children}
+                      </MainContent>
+                      <Footer />
+                      <Toaster />
+                      <PWAInstallPrompt />
+                      <OfflineIndicator />
+                    </NavigationLoadingProvider>
+                  </NotificationProvider>
+                </InstantNavigationProvider>
               </SWRProvider>
 
             {/* Analytics Components */}

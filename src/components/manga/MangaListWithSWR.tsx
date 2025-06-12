@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useMangaList } from '@/hooks/swr/useManga'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+// Removed loading overlay - using instant navigation
 import { Badge } from '@/components/ui/badge'
 import { Eye, Star, Heart } from 'lucide-react'
 import Link from 'next/link'
@@ -43,31 +43,16 @@ export default function MangaListWithSWR({
     limit,
   })
 
-  // Loading skeleton
+  // Loading state
   if (isLoading && manga.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-10 w-32" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <Skeleton className="h-64 w-full" />
-              <CardContent className="p-4 space-y-2">
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-6 w-16" />
-                  <Skeleton className="h-6 w-16" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      <div className="flex items-center justify-center p-8">
+        <div className="flex items-center gap-2">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+          <span>Loading manga list...</span>
         </div>
       </div>
-    )
+    );
   }
 
   // Error state

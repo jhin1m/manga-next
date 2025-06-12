@@ -1,7 +1,7 @@
 'use client'
 
 import { SWRConfig } from 'swr'
-import { swrConfig } from '@/lib/swr/config'
+import { instantSWRConfig } from '@/lib/swr-instant-config'
 
 interface SWRProviderProps {
   children: React.ReactNode
@@ -14,7 +14,7 @@ interface SWRProviderProps {
  */
 export default function SWRProvider({ children, fallback = {} }: SWRProviderProps) {
   return (
-    <SWRConfig value={{ ...swrConfig, fallback }}>
+    <SWRConfig value={{ ...instantSWRConfig, fallback }}>
       {children}
     </SWRConfig>
   )

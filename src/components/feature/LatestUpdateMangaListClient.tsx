@@ -1,7 +1,7 @@
 "use client";
 
 import MangaCard from '@/components/feature/MangaCard';
-import { Skeleton } from '@/components/ui/skeleton';
+// Removed loading overlay - using instant navigation
 import { useTranslations } from 'next-intl';
 
 // Define manga type for this component
@@ -33,25 +33,7 @@ export default function LatestUpdateMangaListClient({
 }: LatestUpdateMangaListClientProps) {
   const t = useTranslations('manga');
 
-  // Loading skeleton
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-8 w-48" />
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: limit }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-2">
-              <Skeleton className="aspect-[2/3] w-full rounded-md" />
-              <Skeleton className="h-4 w-full rounded-md" />
-              <Skeleton className="h-3 w-2/3 rounded-md" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  // No loading state - instant display
 
   return (
     <div className="space-y-6">

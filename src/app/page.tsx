@@ -172,6 +172,9 @@ export const metadata: Metadata = constructMetadata({
 
 export const viewport = defaultViewport;
 
+// Enable ISR for homepage - revalidate every hour
+export const revalidate = 3600;
+
 export default async function Home({
   searchParams,
 }: {

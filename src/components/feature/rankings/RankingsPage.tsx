@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+// Removed loading overlay - using instant navigation
 import { TrendingUp, Eye, Star, Heart, Trophy, Crown, Medal, Award } from 'lucide-react'
 import { rankingsApi } from '@/lib/api/client'
 import RankingCard from '@/components/feature/rankings/RankingCard'
@@ -153,22 +153,13 @@ export default function RankingsPage({
     }
   }
 
-  // Render loading skeleton
-  const renderLoadingSkeleton = () => (
-    <div className="space-y-4">
-      {Array.from({ length: 10 }).map((_, index) => (
-        <Card key={index} className="p-4">
-          <div className="flex items-center gap-4">
-            <Skeleton className="w-8 h-8 rounded-full" />
-            <Skeleton className="w-16 h-20 rounded" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
-              <Skeleton className="h-3 w-1/4" />
-            </div>
-          </div>
-        </Card>
-      ))}
+  // Render loading state
+  const renderLoading = () => (
+    <div className="flex items-center justify-center p-8">
+      <div className="flex items-center gap-2">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+        <span>Loading rankings...</span>
+      </div>
     </div>
   )
 
@@ -240,7 +231,7 @@ export default function RankingsPage({
         </CardHeader>
         <CardContent>
           {rankingsState.loading && rankingsState.rankings.length === 0 ? (
-            renderLoadingSkeleton()
+            renderLoading()
           ) : rankingsState.error ? (
             renderError()
           ) : rankingsState.rankings.length === 0 ? (

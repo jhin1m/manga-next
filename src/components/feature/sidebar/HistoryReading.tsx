@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Skeleton } from "@/components/ui/skeleton";
+// Removed loading overlay - using instant navigation
 import { X } from "lucide-react";
 import { removeFromReadingHistoryComplete } from "@/lib/utils/readingHistory";
 import { useSession } from "next-auth/react";
@@ -36,16 +36,11 @@ export default function HistoryReading() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="flex gap-3">
-            <Skeleton className="h-16 w-12 rounded-md" />
-            <div className="space-y-2 flex-1">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-3 w-4/5" />
-            </div>
-          </div>
-        ))}
+      <div className="flex items-center justify-center p-4">
+        <div className="flex items-center gap-2">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+          <span className="text-sm">Loading reading history...</span>
+        </div>
       </div>
     );
   }

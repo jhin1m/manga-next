@@ -9,6 +9,28 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
+// Enable ISR for manga detail pages - revalidate every hour
+export const revalidate = 3600;
+
+// Generate static params for popular manga
+export async function generateStaticParams() {
+  try {
+    // Pre-generate top 50 popular manga for instant loading
+    const popularManga = await mangaApi.getList({
+      sort: 'popular',
+      limit: 50,
+    });
+
+    return popularManga.comics.map((manga: any) => ({
+      slug: manga.slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params for manga:', error);
+    // Return empty array if error - pages will be generated on-demand
+    return [];
+  }
+}
+
 // Server-side function to get initial favorite status
 async function getInitialFavoriteStatus(mangaId: number) {
   try {

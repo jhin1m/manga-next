@@ -7,6 +7,9 @@ import MangaPageTracker from '@/components/analytics/MangaPageTracker';
 import { getServerPageTitle } from '@/lib/page-titles';
 import { getLocale } from 'next-intl/server';
 import MangaListClient from '@/components/manga/MangaListClient';
+
+// Enable ISR for manga list - revalidate every 30 minutes
+export const revalidate = 1800;
 // Fetch manga from API using centralized API client
 async function fetchManga(params: {
   sort?: string;

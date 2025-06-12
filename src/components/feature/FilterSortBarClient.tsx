@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import FilterSortBar from '@/components/feature/FilterSortBar';
-import { FilterSortBarSkeleton } from '@/components/ui/skeletons/MangaListSkeleton';
+// Removed loading overlay - using instant navigation
 
 interface FilterSortBarClientProps {
   showLoadingEffect?: boolean;
@@ -26,7 +26,14 @@ export default function FilterSortBarClient({
   }, [showLoadingEffect, loadingDelay]);
 
   if (isLoading) {
-    return <FilterSortBarSkeleton />;
+    return (
+      <div className="flex items-center justify-center p-4">
+        <div className="flex items-center gap-2">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+          <span className="text-sm">Loading filters...</span>
+        </div>
+      </div>
+    );
   }
 
   return <FilterSortBar />;
