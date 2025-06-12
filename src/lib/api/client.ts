@@ -7,8 +7,8 @@
 const API_CONFIG = {
   // Use internal URL for server-side requests, public URL for client-side
   baseUrl: typeof window === 'undefined'
-    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || '')
-    : (process.env.NEXT_PUBLIC_API_URL || ''),
+    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000')
+    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'),
   defaultHeaders: {
     'Content-Type': 'application/json',
   },

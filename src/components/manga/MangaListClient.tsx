@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
-import FilterSortBarClient from '@/components/feature/FilterSortBarClient';
+import FilterSortBar from '@/components/feature/FilterSortBar';
 import MangaCard from '@/components/feature/MangaCard';
 import PaginationWrapper from '@/components/feature/PaginationWrapper';
 // Removed loading overlay - using instant navigation
@@ -65,10 +65,7 @@ export default function MangaListClient({
 
       {/* Filter bar */}
       <div className="mb-6">
-        <FilterSortBarClient
-          showLoadingEffect={false}
-          loadingDelay={0}
-        />
+        <FilterSortBar />
       </div>
 
       {/* Manga grid with loading state - Fixed container to prevent scroll jumping */}

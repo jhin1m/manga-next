@@ -9,20 +9,23 @@ import MangaDetailClient from "@/components/manga/MangaDetailClient";
 // Enable ISR for manga detail pages - revalidate every hour
 export const revalidate = 3600;
 
-// Generate static params for popular manga
+// Generate static params for popular manga using build-time database access
 export async function generateStaticParams() {
-  try {
-    // Pre-generate top 50 popular manga for instant loading
-    const popularManga = await mangaApi.getList({
-      sort: 'popular',
-      limit: 50,
-    });
+  // Skip static generation if configured
+  if (process.env.SKIP_BUILD_STATIC_GENERATION === 'true') {
+    console.log('⏭️ Skipping static generation for manga pages (configured)');
+    return [];
+  }
 
-    return popularManga.comics.map((manga: any) => ({
-      slug: manga.slug,
-    }));
+  try {
+    // Use build-time database access instead of API calls
+    const { getBuildTimePopularManga } = await import('@/lib/build-time-data');
+    const popularManga = await getBuildTimePopularManga();
+
+    console.log(`📦 Generated static params for ${popularManga.length} popular manga`);
+    return popularManga;
   } catch (error) {
-    console.error('Error generating static params for manga:', error);
+    console.error('❌ Error generating static params for manga:', error);
     // Return empty array if error - pages will be generated on-demand
     return [];
   }

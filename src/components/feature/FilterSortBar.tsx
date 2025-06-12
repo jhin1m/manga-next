@@ -82,9 +82,11 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
       try {
         setIsLoading(true);
         const data = await genreApi.getList();
-        setGenres(data.genres);
+        setGenres(data.genres || []);
       } catch (error) {
         console.error('Error fetching genres:', error);
+        // Set empty array on error to prevent crashes
+        setGenres([]);
       } finally {
         setIsLoading(false);
       }
@@ -238,7 +240,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
               <Label>{t('genres')}</Label>
               {isLoading ? (
                 <div className="text-sm text-muted-foreground">{t('loadingGenres')}...</div>
-              ) : (
+              ) : genres.length > 0 ? (
                 <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-2">
                   {genres.map(genre => (
                     <div key={genre.id} className="flex items-center space-x-2">
@@ -260,6 +262,10 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
                       </label>
                     </div>
                   ))}
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  {t('noGenresAvailable') || 'No genres available'}
                 </div>
               )}
             </div>
