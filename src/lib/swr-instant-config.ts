@@ -111,30 +111,36 @@ export function batchPreload(items: Array<{ key: string; fetcher: () => Promise<
  * Clear cache for specific patterns
  */
 export function clearCache(pattern?: string) {
-  import('swr').then(({ cache }) => {
+  import('swr').then(({ mutate }) => {
     if (pattern) {
-      // Clear specific pattern
-      const keys = Array.from(cache.keys()).filter(key => 
-        typeof key === 'string' && key.includes(pattern)
+      // Clear specific pattern using mutate with filter function
+      mutate(
+        key => typeof key === 'string' && key.includes(pattern),
+        undefined,
+        { revalidate: false }
       );
-      keys.forEach(key => cache.delete(key));
     } else {
-      // Clear all cache
-      cache.clear();
+      // Clear all cache using mutate with filter function that matches all keys
+      mutate(
+        () => true,
+        undefined,
+        { revalidate: false }
+      );
     }
   });
 }
 
 /**
  * Get cache statistics
+ * Note: SWR doesn't provide direct cache access, so this is a simplified version
  */
 export function getCacheStats() {
-  return import('swr').then(({ cache }) => {
-    const keys = Array.from(cache.keys());
-    return {
-      totalKeys: keys.length,
-      keys: keys.slice(0, 10), // First 10 keys for debugging
-      memoryUsage: keys.length * 1024, // Rough estimate
-    };
+  // Since SWR doesn't expose cache directly, we return a placeholder
+  // In a real implementation, you might want to track cache keys manually
+  return Promise.resolve({
+    totalKeys: 0,
+    keys: [],
+    memoryUsage: 0,
+    note: 'SWR cache statistics not directly accessible'
   });
 }
