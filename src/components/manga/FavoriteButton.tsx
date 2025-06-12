@@ -53,7 +53,7 @@ export function FavoriteButton({
       onToggleComplete(result)
     }
 
-    router.refresh() // Refresh the page to update the UI
+    // No need for router.refresh() - state is managed by the hook
   }
 
   return (

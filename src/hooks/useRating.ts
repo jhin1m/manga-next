@@ -33,13 +33,8 @@ export function useRating({
 
   const isAuthenticated = status === 'authenticated'
 
-  // Only fetch rating data if no initial data provided (prevent duplicate API calls)
+  // Always fetch rating data from server to get latest state
   useEffect(() => {
-    // Skip API call if we already have server-side data
-    if (initialRating !== undefined || initialTotalRatings !== undefined || initialUserRating !== undefined) {
-      return
-    }
-
     let isMounted = true
 
     const fetchRatingData = async () => {
@@ -67,7 +62,7 @@ export function useRating({
     return () => {
       isMounted = false
     }
-  }, [mangaId, initialRating, initialTotalRatings, initialUserRating])
+  }, [mangaId, status]) // Add status dependency to refetch when auth changes
 
   const submitRating = async (rating: number) => {
     if (!isAuthenticated) {

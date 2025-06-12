@@ -45,23 +45,26 @@ export function useFavorites({ comicId, initialIsFavorite = false }: UseFavorite
     }
   }, [comicId, status])
 
-  // Check if the manga is favorited on mount - optimized to prevent duplicate calls
+  // Check if the manga is favorited on mount - always fetch when authenticated
   useEffect(() => {
     let isMounted = true
 
-    // Only check if user is authenticated and we don't have initial data
-    // Skip API call if we have initial data (either true or false)
-    if (status === 'authenticated' && initialIsFavorite === undefined) {
+    // Always check favorite status when user is authenticated
+    // This ensures we get the latest state from server
+    if (status === 'authenticated') {
       checkFavoriteStatus().then(() => {
         // Only update if component is still mounted
         if (!isMounted) return
       })
+    } else if (status === 'unauthenticated') {
+      // Reset to false when not authenticated
+      setIsFavorite(false)
     }
 
     return () => {
       isMounted = false
     }
-  }, [status, comicId, initialIsFavorite, checkFavoriteStatus])
+  }, [status, comicId, checkFavoriteStatus])
 
   // Toggle favorite status
   const toggleFavorite = useCallback(async () => {
