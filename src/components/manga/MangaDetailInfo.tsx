@@ -59,8 +59,8 @@ export function MangaDetailInfo({
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
 
   return (
-    <section className="relative overflow-hidden">
-      <Card className="relative z-10 bg-card/80 backdrop-blur-md border-border/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:bg-card/85">
+    <section className="relative">
+      <Card className="relative bg-card/80">
         <CardContent className="p-4 sm:p-6 lg:p-8">
           {/* Responsive Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 relative z-10">

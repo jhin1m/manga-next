@@ -45,7 +45,7 @@ export default function ViewMoreButton({ href, className = "" }: ViewMoreButtonP
     <div className="flex justify-center mt-8">
       <button
         onClick={handleClick}
-        className={`group w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-md text-center transition-all duration-300 flex items-center justify-center hover:shadow-lg hover:scale-[1.02] ${className}`}
+        className={`group w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3 px-6 rounded-md text-center transition-all duration-300 flex items-center justify-center hover:shadow-lg hover:scale-[1.02] ${className}`}
       >
         {t('viewMoreManga')}
         <ViewMoreIcon />

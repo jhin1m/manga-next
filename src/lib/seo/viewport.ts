@@ -1,23 +1,10 @@
 import { Viewport } from 'next';
 
-// Standard viewport configuration for PWA
+// Standard viewport configuration for PWA (accessibility-compliant)
 export const defaultViewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
-};
-
-// Viewport for reading pages (allow zoom for manga reading)
-export const readingViewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 3,
+  maximumScale: 5,
   userScalable: true,
   viewportFit: 'cover',
   themeColor: [
@@ -26,12 +13,25 @@ export const readingViewport: Viewport = {
   ],
 };
 
-// Viewport for auth pages (standard mobile-friendly)
+// Viewport for reading pages (allow zoom for manga reading - accessibility-compliant)
+export const readingViewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+};
+
+// Viewport for auth pages (accessibility-compliant)
 export const authViewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },
