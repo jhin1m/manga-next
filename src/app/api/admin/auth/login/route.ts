@@ -120,7 +120,7 @@ export async function POST(request: Request) {
     )
 
     // Return user data (password excluded)
-    const { password_hash, ...userData } = user
+    const { password_hash: _password_hash, ...userData } = user
 
     return NextResponse.json({
       success: true,

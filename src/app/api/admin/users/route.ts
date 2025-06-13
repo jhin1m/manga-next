@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     if (authResult instanceof NextResponse) {
       return authResult
     }
-    const { page, limit, sort, order, search, role, status } = extractPaginationParams(request.url)
+    const { page, limit, sort, order, search, role, status: _status } = extractPaginationParams(request.url)
 
     // Build where clause
     const where: any = {}
