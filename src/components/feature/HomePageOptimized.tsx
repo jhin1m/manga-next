@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigationLoading } from '@/hooks/useNavigationLoading';
+import { useHomepageData } from '@/hooks/useHomepageData';
+import { homepageCacheHelpers } from '@/lib/cache/hybrid-cache';
 import ProgressiveHomePage from './ProgressiveHomePage';
+import HomePageSkeleton from '@/components/ui/HomePageSkeleton';
 
 interface HomePageOptimizedProps {
   initialData: {
@@ -19,78 +22,62 @@ interface HomePageOptimizedProps {
       recommendedManga: any[];
     };
   };
+  page?: number;
 }
 
 /**
- * Optimized Homepage Component with Hybrid ISR + Client-side optimization
- * 
+ * Optimized Homepage Component with Hybrid Approach
+ *
  * Strategy:
- * 1. Show initial SSR data immediately (no loading delay)
- * 2. Prefetch critical data in background
- * 3. Use optimistic updates for better UX
- * 4. Implement smart caching for instant navigation
+ * 1. Show cached data instantly if available
+ * 2. Display static skeleton while loading if no cache
+ * 3. Use SWR for background revalidation
+ * 4. Implement progressive enhancement
+ * 5. Preload adjacent pages for instant navigation
  */
-export default function HomePageOptimized({ initialData }: HomePageOptimizedProps) {
+export default function HomePageOptimized({ initialData, page = 1 }: HomePageOptimizedProps) {
   const { hideLoading } = useNavigationLoading();
-  const [data, setData] = useState(initialData);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Hide loading overlay when component mounts (data is ready)
+  // Check if we have cached data for instant display
+  const cachedData = homepageCacheHelpers.getHomepageData(page);
+  const hasInstantData = !!(cachedData || initialData);
+
+  // Use SWR hook for data management
+  const {
+    data: swrData,
+    isLoading,
+    isValidating,
+    isCached,
+    hasData,
+  } = useHomepageData({
+    page,
+    fallbackData: initialData,
+    enableBackground: true,
+  });
+
+  // Determine what data to show
+  const displayData = swrData || cachedData || initialData;
+  const [showSkeleton, setShowSkeleton] = useState(!hasInstantData);
+
+  // Hide loading overlay when we have data to show
   useEffect(() => {
-    // Hide immediately - data is already available
-    hideLoading();
-  }, [hideLoading]);
+    if (hasInstantData || hasData) {
+      hideLoading();
+      setShowSkeleton(false);
+    }
+  }, [hideLoading, hasInstantData, hasData]);
 
-  // Background data refresh for real-time updates
+  // Handle skeleton display timing
   useEffect(() => {
-    // Only refresh if user is active and page is visible
-    const refreshData = async () => {
-      if (document.hidden) return;
+    if (!hasInstantData && isLoading) {
+      // Show skeleton for a brief moment, then show content
+      const timer = setTimeout(() => {
+        setShowSkeleton(false);
+      }, 300); // Show skeleton for 300ms max
 
-      try {
-        setIsRefreshing(true);
-
-        // Fetch fresh data in background without blocking UI
-        const response = await fetch('/api/home', {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache',
-          },
-        });
-
-        if (response.ok) {
-          const freshData = await response.json();
-
-          // Only update if data actually changed to prevent unnecessary re-renders
-          if (JSON.stringify(freshData) !== JSON.stringify(data)) {
-            setData(freshData);
-          }
-        }
-      } catch (error) {
-        console.error('Background refresh failed:', error);
-        // Fail silently - keep showing cached data
-      } finally {
-        setIsRefreshing(false);
-      }
-    };
-
-    // Refresh every 5 minutes when page is active
-    const refreshInterval = setInterval(refreshData, 5 * 60 * 1000);
-
-    // Refresh when page becomes visible again
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        refreshData();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      clearInterval(refreshInterval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [data]);
+      return () => clearTimeout(timer);
+    }
+  }, [hasInstantData, isLoading]);
 
   // Prefetch critical pages for instant navigation
   useEffect(() => {
@@ -115,17 +102,29 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
     prefetchCriticalPages();
   }, []);
 
+  // Show skeleton if no instant data available
+  if (showSkeleton && !displayData) {
+    return <HomePageSkeleton />;
+  }
+
   return (
     <div className="relative">
       {/* Show refresh indicator when updating in background */}
-      {isRefreshing && (
+      {isValidating && displayData && (
         <div className="fixed top-4 right-4 z-50 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm animate-pulse">
-          Updating...
+          {isCached ? 'Updating...' : 'Loading...'}
         </div>
       )}
-      
-      {/* Main content - always show immediately */}
-      <ProgressiveHomePage initialData={data} />
+
+      {/* Main content - show immediately if we have data */}
+      {displayData && (
+        <ProgressiveHomePage initialData={displayData} />
+      )}
+
+      {/* Fallback skeleton if still loading */}
+      {!displayData && !showSkeleton && (
+        <HomePageSkeleton />
+      )}
     </div>
   );
 }

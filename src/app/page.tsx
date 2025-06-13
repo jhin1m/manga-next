@@ -202,7 +202,7 @@ export default async function Home({
   return (
     <>
       <JsonLdScript id="home-jsonld" jsonLd={jsonLd} />
-      <HomePageOptimized initialData={initialData} />
+      <HomePageOptimized initialData={initialData} page={currentPage} />
     </>
   );
 }

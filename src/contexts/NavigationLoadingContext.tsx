@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useRef, ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import FullScreenLoader, { LoaderPresets } from '@/components/ui/FullScreenLoader';
+import { homepageCacheHelpers } from '@/lib/cache/hybrid-cache';
 
 type LoaderConfig = {
   showLogo: boolean;
@@ -62,10 +63,17 @@ export function NavigationLoadingProvider({ children }: { children: ReactNode })
   };
 
   const triggerHomeLoading = () => {
-    triggerLoading('/');
+    // Check if homepage data is cached for instant display
+    const hasHomepageCache = homepageCacheHelpers.hasHomepageData(1);
 
-    // Navigate to home immediately - no delay needed
-    router.push('/');
+    if (hasHomepageCache) {
+      // If cached, navigate immediately without loading screen
+      router.push('/');
+    } else {
+      // If not cached, show loading screen while navigating
+      triggerLoading('/');
+      router.push('/');
+    }
   };
 
   return (
