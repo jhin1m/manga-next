@@ -23,7 +23,6 @@ export function NavigationLoadingProvider({ children }: { children: ReactNode })
   const [isLoading, setIsLoading] = useState(false);
   const [loadingConfig, setLoadingConfig] = useState<LoaderConfig>(LoaderPresets.generic);
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const navigationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const hideLoading = () => {
     setIsLoading(false);
@@ -33,10 +32,7 @@ export function NavigationLoadingProvider({ children }: { children: ReactNode })
       clearTimeout(loadingTimeoutRef.current);
       loadingTimeoutRef.current = null;
     }
-    if (navigationTimeoutRef.current) {
-      clearTimeout(navigationTimeoutRef.current);
-      navigationTimeoutRef.current = null;
-    }
+    // navigationTimeoutRef no longer used since we removed the delay
   };
 
   const triggerLoading = (targetPath?: string) => {
@@ -44,9 +40,7 @@ export function NavigationLoadingProvider({ children }: { children: ReactNode })
     if (loadingTimeoutRef.current) {
       clearTimeout(loadingTimeoutRef.current);
     }
-    if (navigationTimeoutRef.current) {
-      clearTimeout(navigationTimeoutRef.current);
-    }
+    // navigationTimeoutRef no longer used
 
     // Set appropriate loading config based on target path
     if (targetPath === '/' || pathname === '/') {
@@ -70,10 +64,8 @@ export function NavigationLoadingProvider({ children }: { children: ReactNode })
   const triggerHomeLoading = () => {
     triggerLoading('/');
 
-    // Navigate to home after showing loader
-    navigationTimeoutRef.current = setTimeout(() => {
-      router.push('/');
-    }, 100); // Small delay to ensure loader shows first
+    // Navigate to home immediately - no delay needed
+    router.push('/');
   };
 
   return (

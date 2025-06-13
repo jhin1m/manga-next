@@ -37,12 +37,8 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
 
   // Hide loading overlay when component mounts (data is ready)
   useEffect(() => {
-    // Small delay to ensure smooth transition
-    const timer = setTimeout(() => {
-      hideLoading();
-    }, 100);
-
-    return () => clearTimeout(timer);
+    // Hide immediately - data is already available
+    hideLoading();
   }, [hideLoading]);
 
   // Background data refresh for real-time updates
