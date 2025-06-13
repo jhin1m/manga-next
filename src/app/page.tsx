@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateHomeJsonLd } from "@/lib/seo/jsonld";
-import HomePageOptimized from "@/components/feature/HomePageOptimized";
+import HomePageClient from "@/components/feature/HomePageClient";
 import { seoConfig, getSiteUrl } from "@/config/seo.config";
 import { defaultViewport } from "@/lib/seo/viewport";
 
@@ -202,7 +202,7 @@ export default async function Home({
   return (
     <>
       <JsonLdScript id="home-jsonld" jsonLd={jsonLd} />
-      <HomePageOptimized initialData={initialData} />
+      <HomePageClient initialData={initialData} />
     </>
   );
 }

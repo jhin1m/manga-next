@@ -27,7 +27,7 @@ import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useRouteDetection } from '@/hooks/useRouteDetection';
 import { toast } from 'sonner';
 import { seoConfig } from '@/config/seo.config';
-import HomeLink from './HomeLink';
+
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -68,7 +68,7 @@ export default function Header() {
     }`}>
       <div className='container mx-auto px-4 py-3'>
         <div className='flex justify-between items-center sm:px-14 2xl:px-18'>
-          <HomeLink className='group relative flex items-center gap-2 sm:gap-3 hover:opacity-90 transition-all duration-300'>
+          <Link href="/" className='group relative flex items-center gap-2 sm:gap-3 hover:opacity-90 transition-all duration-300'>
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
               <Image
@@ -80,14 +80,14 @@ export default function Header() {
                 priority
               />
             </div>
-          </HomeLink>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className='hidden md:flex items-center space-x-6'>
-            <HomeLink className='flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary'>
+            <Link href="/" className='flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary'>
               <Home className="h-4 w-4" />
               {t('home')}
-            </HomeLink>
+            </Link>
             <Link
               href='/manga'
               className='flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary'
@@ -166,10 +166,10 @@ export default function Header() {
                   <nav className="flex flex-col mt-6 mx-2 space-y-1 pb-6">
                   {/* Main Navigation */}
                   <div className="space-y-1">
-                    <HomeLink className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'>
+                    <Link href="/" className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'>
                       <Home className="mr-3 h-5 w-5" />
                       {t('home')}
-                    </HomeLink>
+                    </Link>
                     <Link
                       href='/manga'
                       className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'

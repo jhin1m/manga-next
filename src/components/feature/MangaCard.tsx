@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import SmartPrefetch from '@/components/optimization/SmartPrefetch';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Eye } from 'lucide-react';
@@ -67,7 +66,7 @@ const MangaCard = memo(function MangaCard({
   return (
     <div className='group'>
       <Card className='overflow-hidden h-full transition-all hover:shadow-md border-border/40 bg-card/50'>
-        <SmartPrefetch href={`/manga/${slug}`} className='block'>
+        <Link href={`/manga/${slug}`} className='block'>
           {/* Ảnh bìa manga ở phía trên với kích thước cố định */}
           <div className='relative w-full h-[220px] lg:h-[200px] xl:h-[200px] overflow-hidden'>
             <Image
@@ -90,13 +89,13 @@ const MangaCard = memo(function MangaCard({
               </div>
             )}
           </div>
-        </SmartPrefetch>
+        </Link>
 
         <CardContent className='p-3 space-y-2'>
           {/* Tiêu đề manga với font chữ đậm và kích thước lớn */}
-          <SmartPrefetch href={`/manga/${slug}`} className='block'>
+          <Link href={`/manga/${slug}`} className='block'>
             <h3 className='font-bold text-base line-clamp-1 hover:text-primary transition-colors'>{title}</h3>
-          </SmartPrefetch>
+          </Link>
 
           {/* Dòng thông tin với biểu tượng sao và mắt */}
           <div className='flex items-center space-x-4 text-sm text-muted-foreground'>
