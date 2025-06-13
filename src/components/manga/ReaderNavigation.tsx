@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ChapterReportButton } from '@/components/feature/chapter-reports/ChapterReportButton';
 import { FavoriteButton } from '@/components/manga/FavoriteButton';
+import HomeNavigationLink from '@/components/navigation/HomeNavigationLink';
 
 interface ReaderNavigationProps {
   mangaTitle: string;
@@ -68,12 +69,10 @@ export default function ReaderNavigation({
     } p-2 border-b w-full`}>
       <div className="flex items-center gap-1 justify-center md:container md:mx-auto overflow-x-auto">
       {/* Nút Home - luôn hiển thị */}
-      <Button asChild variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
-        <Link href="/">
-          <Home className="h-5 w-5" />
-          <span className="sr-only">Trang chủ</span>
-        </Link>
-      </Button>
+      <HomeNavigationLink className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9 flex-shrink-0">
+        <Home className="h-5 w-5" />
+        <span className="sr-only">Trang chủ</span>
+      </HomeNavigationLink>
 
       {/* Nút Danh sách - luôn hiển thị */}
       <Button asChild variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">

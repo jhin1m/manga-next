@@ -11,15 +11,19 @@ interface HomeLinkProps {
 
 export default function HomeLink({ children, className }: HomeLinkProps) {
   const pathname = usePathname();
-  const { triggerLoading } = useNavigationLoading();
+  const { triggerHomeLoading } = useNavigationLoading();
 
   const handleClick = (e: React.MouseEvent) => {
-    // Nếu đang ở trang chủ và click vào home link
+    // Always prevent default and use our loading system
+    e.preventDefault();
+
     if (pathname === '/') {
-      e.preventDefault();
-      triggerLoading();
-      // Scroll to top
+      // If already on homepage, just scroll to top with loading effect
+      triggerHomeLoading();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Navigate to homepage with full-screen loading
+      triggerHomeLoading();
     }
   };
 

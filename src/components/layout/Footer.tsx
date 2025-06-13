@@ -20,6 +20,7 @@ import {
   Mail,
 } from 'lucide-react';
 import { seoConfig } from '@/config/seo.config';
+import HomeNavigationLink from '@/components/navigation/HomeNavigationLink';
 
 export default function Footer() {
   const [mounted, setMounted] = useState(false);
@@ -90,13 +91,10 @@ export default function Footer() {
               {t('navigation.title')}
             </h3>
             <nav className='space-y-2'>
-              <Link
-                href='/'
-                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
-              >
+              <HomeNavigationLink className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'>
                 <Home className='h-4 w-4' />
                 <span>{t('home')}</span>
-              </Link>
+              </HomeNavigationLink>
               <Link
                 href='/manga'
                 className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'

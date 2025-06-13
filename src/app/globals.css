@@ -198,4 +198,35 @@
   .scrollbar-hidden::-webkit-scrollbar {
     display: none; /* WebKit */
   }
+
+  /* Full-Screen Loader Animations */
+  @keyframes loading-dots {
+    0%, 20% {
+      opacity: 0.4;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    80%, 100% {
+      opacity: 0.4;
+      transform: scale(0.8);
+    }
+  }
+
+  .loading-dot-1 {
+    animation: loading-dots 1.5s infinite;
+    animation-delay: 0s;
+  }
+
+  .loading-dot-2 {
+    animation: loading-dots 1.5s infinite;
+    animation-delay: 0.2s;
+  }
+
+  .loading-dot-3 {
+    animation: loading-dots 1.5s infinite;
+    animation-delay: 0.4s;
+  }
 }

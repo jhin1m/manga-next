@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useNavigationLoading } from '@/hooks/useNavigationLoading';
 import ProgressiveHomePage from './ProgressiveHomePage';
 
 interface HomePageOptimizedProps {
@@ -30,9 +31,19 @@ interface HomePageOptimizedProps {
  * 4. Implement smart caching for instant navigation
  */
 export default function HomePageOptimized({ initialData }: HomePageOptimizedProps) {
-  // Remove unused isLoading since we show content immediately
+  const { hideLoading } = useNavigationLoading();
   const [data, setData] = useState(initialData);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Hide loading overlay when component mounts (data is ready)
+  useEffect(() => {
+    // Small delay to ensure smooth transition
+    const timer = setTimeout(() => {
+      hideLoading();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [hideLoading]);
 
   // Background data refresh for real-time updates
   useEffect(() => {
