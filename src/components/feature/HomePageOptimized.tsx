@@ -22,13 +22,14 @@ interface HomePageOptimizedProps {
 }
 
 /**
- * Optimized Homepage Component with Hybrid ISR + Client-side optimization
- * 
+ * Optimized Homepage Component with Smart Background Refresh
+ *
  * Strategy:
  * 1. Show initial SSR data immediately (no loading delay)
- * 2. Prefetch critical data in background
- * 3. Use optimistic updates for better UX
- * 4. Implement smart caching for instant navigation
+ * 2. Skip background API calls on fresh navigation (prevents slow loading)
+ * 3. Only trigger background refresh after user interaction
+ * 4. Prefetch critical pages for instant navigation
+ * 5. Use optimistic updates for better UX
  */
 export default function HomePageOptimized({ initialData }: HomePageOptimizedProps) {
   const { hideLoading } = useNavigationLoading();
@@ -37,13 +38,17 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
 
   // Hide loading overlay when component mounts (data is ready)
   useEffect(() => {
-    // Hide immediately - data is already available
+    // Hide immediately - data is already available from SSR
     hideLoading();
   }, [hideLoading]);
 
-  // Background data refresh for real-time updates
+  // Smart background data refresh - only after user interaction
   useEffect(() => {
-    // Only refresh if user is active and page is visible
+    let hasUserInteracted = false;
+    let refreshInterval: NodeJS.Timeout | null = null;
+    let visibilityChangeHandler: (() => void) | null = null;
+
+    // Background refresh function
     const refreshData = async () => {
       if (document.hidden) return;
 
@@ -55,6 +60,7 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
           method: 'GET',
           headers: {
             'Cache-Control': 'no-cache',
+            'x-background-refresh': 'true', // Mark as background refresh
           },
         });
 
@@ -74,25 +80,63 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
       }
     };
 
-    // Refresh every 5 minutes when page is active
-    const refreshInterval = setInterval(refreshData, 5 * 60 * 1000);
+    // Setup background refresh only after user interaction
+    const setupBackgroundRefresh = () => {
+      if (hasUserInteracted) return;
 
-    // Refresh when page becomes visible again
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        refreshData();
-      }
+      hasUserInteracted = true;
+
+      // Start periodic refresh (every 5 minutes)
+      refreshInterval = setInterval(refreshData, 5 * 60 * 1000);
+
+      // Refresh when page becomes visible again
+      visibilityChangeHandler = () => {
+        if (!document.hidden) {
+          refreshData();
+        }
+      };
+      document.addEventListener('visibilitychange', visibilityChangeHandler);
+
+      // Do initial background refresh after interaction
+      setTimeout(refreshData, 2000); // Small delay to not interfere with user action
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    // User interaction handlers
+    const handleUserInteraction = () => {
+      setupBackgroundRefresh();
+    };
 
+    // Listen for various user interactions
+    const interactionEvents = ['click', 'scroll', 'keydown', 'touchstart', 'mousemove'];
+
+    // Add interaction listeners with passive option for better performance
+    interactionEvents.forEach(event => {
+      document.addEventListener(event, handleUserInteraction, {
+        passive: true,
+        once: false // Allow multiple interactions but setupBackgroundRefresh will only run once
+      });
+    });
+
+    // Cleanup function
     return () => {
-      clearInterval(refreshInterval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      // Clear interval
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+
+      // Remove visibility change listener
+      if (visibilityChangeHandler) {
+        document.removeEventListener('visibilitychange', visibilityChangeHandler);
+      }
+
+      // Remove interaction listeners
+      interactionEvents.forEach(event => {
+        document.removeEventListener(event, handleUserInteraction);
+      });
     };
   }, [data]);
 
-  // Prefetch critical pages for instant navigation
+  // Prefetch critical pages for instant navigation (delayed to not block initial render)
   useEffect(() => {
     const prefetchCriticalPages = () => {
       const criticalUrls = [
@@ -102,6 +146,7 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
       ];
 
       // Prefetch after initial render to not block homepage loading
+      // Increased delay to ensure homepage loads fast first
       setTimeout(() => {
         criticalUrls.forEach(url => {
           const link = document.createElement('link');
@@ -109,7 +154,7 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
           link.href = url;
           document.head.appendChild(link);
         });
-      }, 1000);
+      }, 3000); // Increased from 1s to 3s to prioritize homepage loading
     };
 
     prefetchCriticalPages();
@@ -120,11 +165,11 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
       {/* Show refresh indicator when updating in background */}
       {isRefreshing && (
         <div className="fixed top-4 right-4 z-50 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm animate-pulse">
-          Updating...
+          🔄 Updating...
         </div>
       )}
-      
-      {/* Main content - always show immediately */}
+
+      {/* Main content - always show immediately with SSR data */}
       <ProgressiveHomePage initialData={data} />
     </div>
   );

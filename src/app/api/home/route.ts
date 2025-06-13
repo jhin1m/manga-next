@@ -5,6 +5,7 @@ import { mangaApi, rankingsApi, commentApi } from '@/lib/api/client';
  * Home Data API Endpoint
  * Provides fresh data for client-side background updates
  * Used by HomePageOptimized component for real-time updates
+ * Optimized to handle background refresh requests efficiently
  */
 
 // Transform functions (same as in page.tsx)
@@ -76,6 +77,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page')) || 1;
 
+    // Check if this is a background refresh request
+    const isBackgroundRefresh = request.headers.get('x-background-refresh') === 'true';
+
+    console.log(`🏠 Fetching home data for page ${page} ${isBackgroundRefresh ? '(background refresh)' : '(direct request)'}`);
+
     // Fetch all data in parallel (same as page.tsx but with no-cache)
     const [
       popularMangaData,
@@ -135,12 +141,21 @@ export async function GET(request: NextRequest) {
       }
     };
 
+    // Set appropriate cache headers based on request type
+    const cacheHeaders = isBackgroundRefresh
+      ? {
+          // Background refresh - no cache to ensure fresh data
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
+      : {
+          // Direct request - allow short cache for better performance
+          'Cache-Control': 'public, max-age=300, stale-while-revalidate=600', // 5 min cache, 10 min stale
+        };
+
     return NextResponse.json(responseData, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      },
+      headers: cacheHeaders,
     });
 
   } catch (error) {
