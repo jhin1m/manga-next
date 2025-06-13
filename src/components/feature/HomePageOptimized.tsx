@@ -36,15 +36,13 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
 
   // Background data refresh for real-time updates
   useEffect(() => {
-    let refreshInterval: NodeJS.Timeout;
-
     // Only refresh if user is active and page is visible
     const refreshData = async () => {
       if (document.hidden) return;
-      
+
       try {
         setIsRefreshing(true);
-        
+
         // Fetch fresh data in background without blocking UI
         const response = await fetch('/api/home', {
           method: 'GET',
@@ -52,10 +50,10 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
             'Cache-Control': 'no-cache',
           },
         });
-        
+
         if (response.ok) {
           const freshData = await response.json();
-          
+
           // Only update if data actually changed to prevent unnecessary re-renders
           if (JSON.stringify(freshData) !== JSON.stringify(data)) {
             setData(freshData);
@@ -70,7 +68,7 @@ export default function HomePageOptimized({ initialData }: HomePageOptimizedProp
     };
 
     // Refresh every 5 minutes when page is active
-    refreshInterval = setInterval(refreshData, 5 * 60 * 1000);
+    const refreshInterval = setInterval(refreshData, 5 * 60 * 1000);
 
     // Refresh when page becomes visible again
     const handleVisibilityChange = () => {

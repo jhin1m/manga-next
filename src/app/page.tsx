@@ -177,9 +177,6 @@ export const viewport = defaultViewport;
 // Reduced from 1 hour to 15 minutes for more responsive content updates
 export const revalidate = 900; // 15 minutes
 
-// Add cache tags for selective revalidation
-export const tags = ['homepage', 'hot-manga', 'latest-manga', 'rankings'];
-
 export default async function Home({
   searchParams,
 }: {

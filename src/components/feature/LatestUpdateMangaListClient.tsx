@@ -28,8 +28,8 @@ interface LatestUpdateMangaListClientProps {
 
 export default function LatestUpdateMangaListClient({
   manga,
-  isLoading = false,
-  limit = 12
+  isLoading: _isLoading = false,
+  limit: _limit = 12
 }: LatestUpdateMangaListClientProps) {
   const t = useTranslations('manga');
 
