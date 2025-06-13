@@ -247,10 +247,10 @@ export default function SidebarClient({ sidebarData }: SidebarClientProps) {
 
                     {/* Genres */}
                     <div className="flex flex-wrap gap-1">
-                      {manga.genres.slice(0, 2).map((genre) => (
-                        <Badge 
-                          key={genre} 
-                          variant="outline" 
+                      {manga.genres?.slice(0, 2).map((genre) => (
+                        <Badge
+                          key={genre}
+                          variant="outline"
                           className="text-xs px-1 py-0"
                         >
                           {genre}
