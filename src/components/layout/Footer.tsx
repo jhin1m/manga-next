@@ -13,7 +13,6 @@ import {
   Search,
   TrendingUp,
   Clock,
-  BookOpen,
   HelpCircle,
   Info,
   Shield,

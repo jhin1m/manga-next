@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import sharp from 'sharp'
 
@@ -71,7 +71,7 @@ async function processImage(buffer: Buffer, size: { width: number; height: numbe
 export async function uploadAvatarToS3(
   fileBuffer: Buffer,
   fileName: string,
-  contentType: string
+  _contentType: string
 ): Promise<{ url: string; key: string; sizes: Record<string, string> }> {
   const timestamp = Date.now()
   const baseKey = `${avatarS3Options.folder}/${fileName}-${timestamp}`

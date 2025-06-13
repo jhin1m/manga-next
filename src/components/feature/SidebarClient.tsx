@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, MessageCircle, Clock, Star } from "lucide-react";
+import { Trophy, MessageCircle, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";

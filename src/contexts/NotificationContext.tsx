@@ -44,6 +44,10 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined)
 
+// Constants moved outside component to prevent re-creation on every render
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const UNREAD_COUNT_CACHE_DURATION = 30 * 1000 // 30 seconds
+
 interface NotificationProviderProps {
   children: React.ReactNode
   autoRefresh?: boolean
@@ -65,30 +69,28 @@ export function NotificationProvider({
 
   // Cache for notifications and settings
   const cache = useRef<Map<string, CacheEntry>>(new Map())
-  const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
-  const UNREAD_COUNT_CACHE_DURATION = 30 * 1000 // 30 seconds
 
-  // Cache helper functions - STABLE REFERENCES
-  const getCacheKey = (key: string, params?: any) => {
+  // Cache helper functions - STABLE REFERENCES with useCallback
+  const getCacheKey = useCallback((key: string, params?: any) => {
     return params ? `${key}_${JSON.stringify(params)}` : key
-  }
+  }, [])
 
-  const getCachedData = (key: string) => {
+  const getCachedData = useCallback((key: string) => {
     const entry = cache.current.get(key)
     if (entry && Date.now() < entry.expiry) {
       return entry.data
     }
     cache.current.delete(key)
     return null
-  }
+  }, [])
 
-  const setCachedData = (key: string, data: any, duration: number) => {
+  const setCachedData = useCallback((key: string, data: any, duration: number) => {
     cache.current.set(key, {
       data,
       timestamp: Date.now(),
       expiry: Date.now() + duration
     })
-  }
+  }, [])
 
   // Clear cache when user changes
   useEffect(() => {
@@ -128,12 +130,12 @@ export function NotificationProvider({
       setCachedData(cacheKey, data, CACHE_DURATION)
 
       return data
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to fetch notifications')
     } finally {
       setIsLoading(false)
     }
-  }, [status]) // FIXED: Remove unstable dependencies
+  }, [status, getCacheKey, getCachedData, setCachedData])
 
   // Fetch notification settings with caching
   const fetchSettings = useCallback(async () => {
@@ -157,10 +159,10 @@ export function NotificationProvider({
       setCachedData(cacheKey, data.settings, CACHE_DURATION)
 
       return data.settings
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to fetch notification settings')
     }
-  }, [status]) // FIXED: Remove unstable dependencies
+  }, [status, getCachedData, setCachedData])
 
   // Update notification settings
   const updateSettings = useCallback(async (newSettings: Partial<NotificationSettings>) => {
@@ -181,7 +183,7 @@ export function NotificationProvider({
 
       toast.success('Notification settings updated successfully')
       return data.settings
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to update notification settings')
       toast.error('Failed to update notification settings')
     } finally {
@@ -220,7 +222,7 @@ export function NotificationProvider({
       cache.current.clear()
 
       return data
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to mark notifications as read')
     }
   }, [status])
@@ -248,11 +250,11 @@ export function NotificationProvider({
       setCachedData(cacheKey, data.unread_count, UNREAD_COUNT_CACHE_DURATION)
 
       return data.unread_count
-    } catch (err) {
+    } catch (_err) {
       // Silent error handling
       setError('Failed to fetch unread count')
     }
-  }, [status]) // FIXED: Remove unstable dependencies
+  }, [status, getCachedData, setCachedData])
 
   // Initial fetch on authentication
   useEffect(() => {

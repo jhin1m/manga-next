@@ -13,10 +13,7 @@ import {
   Heart,
   TrendingUp,
   TrendingDown,
-  Minus,
   Sparkles,
-  ChevronDown,
-  ChevronUp,
   ExternalLink
 } from 'lucide-react'
 import { useFormat } from '@/hooks/useFormat'
@@ -41,7 +38,7 @@ export default function RankingCard({
 }: RankingCardProps) {
   const t = useTranslations('rankings')
   const { formatViews } = useFormat()
-  const [showMobileStats, setShowMobileStats] = useState(false)
+  const [showMobileStats] = useState(false)
 
   // Determine if this is a top 3 ranking
   const isTopThree = manga.rank <= 3

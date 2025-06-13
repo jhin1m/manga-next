@@ -112,7 +112,7 @@ export default function PrivacyPage() {
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   We are committed to protecting your privacy and ensuring transparency 
                   in how we handle your personal information. If you have any questions 
-                  about this privacy policy, please don't hesitate to contact us.
+                  about this privacy policy, please don&apos;t hesitate to contact us.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
                   <Badge variant="secondary">GDPR Compliant</Badge>

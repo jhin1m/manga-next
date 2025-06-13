@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, memo } from 'react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -33,7 +33,7 @@ interface CommentSectionProps {
   paginationType?: 'offset' | 'cursor' // New prop to control pagination type
 }
 
-export default function CommentSection({
+const CommentSection = memo(function CommentSection({
   mangaId,
   chapterId,
   mangaSlug,
@@ -428,4 +428,6 @@ export default function CommentSection({
       </Card>
     </div>
   )
-}
+})
+
+export default CommentSection

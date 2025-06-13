@@ -5,11 +5,8 @@
 
 import { prisma } from '@/lib/db'
 import {
-  calculateViewStatistics,
-  updateEntityViewStatistics,
   batchUpdateViewStatistics,
   storeDailyViewSnapshot,
-  type EntityType,
 } from '@/lib/utils/viewStatistics'
 
 export interface JobResult {

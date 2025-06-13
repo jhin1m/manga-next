@@ -248,7 +248,7 @@ export function StorageTest() {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Environment Variables:</h4>
                 <code className="block text-xs bg-muted p-2 rounded">
-                  STORAGE_PROVIDER="cloudinary" # or "s3"
+                  STORAGE_PROVIDER=&quot;cloudinary&quot; # or &quot;s3&quot;
                 </code>
               </div>
 

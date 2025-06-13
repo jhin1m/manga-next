@@ -68,7 +68,7 @@ export class ErrorBoundary extends React.Component<
             <AlertTriangle className="h-16 w-16 text-destructive mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-2">Oops! Something went wrong</h2>
             <p className="text-muted-foreground mb-4 max-w-md">
-              We're sorry for the inconvenience. The page encountered an unexpected error.
+              We&apos;re sorry for the inconvenience. The page encountered an unexpected error.
             </p>
           </div>
 

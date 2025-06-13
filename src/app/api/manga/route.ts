@@ -35,16 +35,22 @@ export const GET = withCors(async (request: NextRequest) => {
         ? { total_views: 'desc' as const }
         : { title: 'asc' as const }
 
-    // Optimized query execution based on sort type
+    // Optimized query execution - Use database-level sorting for better performance
     let comics, totalComics
 
     if (sort === 'latest') {
-      // For latest sort, we need custom handling for null last_chapter_uploaded_at
-      // First get all comics to sort properly, then paginate
-      const [allComics, total] = await Promise.all([
+      // OPTIMIZED: Use database-level sorting with proper null handling
+      // This avoids loading all records into memory for sorting
+      const [paginatedComics, total] = await Promise.all([
         prisma.comics.findMany({
           where,
-          orderBy: { created_at: 'desc' }, // temporary sort
+          // Use database-level sorting with NULLS LAST equivalent
+          orderBy: [
+            { last_chapter_uploaded_at: { sort: 'desc', nulls: 'last' } },
+            { created_at: 'desc' }
+          ],
+          skip: (page - 1) * limit,
+          take: limit,
           include: {
             Comic_Genres: {
               include: {
@@ -74,28 +80,7 @@ export const GET = withCors(async (request: NextRequest) => {
         prisma.comics.count({ where })
       ])
 
-      // Sort to put null last_chapter_uploaded_at at the end
-      const sortedComics = allComics.sort((a, b) => {
-        // If both have dates, sort by date desc
-        if (a.last_chapter_uploaded_at && b.last_chapter_uploaded_at) {
-          return new Date(b.last_chapter_uploaded_at).getTime() - new Date(a.last_chapter_uploaded_at).getTime()
-        }
-        // If only a has date, a comes first
-        if (a.last_chapter_uploaded_at && !b.last_chapter_uploaded_at) {
-          return -1
-        }
-        // If only b has date, b comes first
-        if (!a.last_chapter_uploaded_at && b.last_chapter_uploaded_at) {
-          return 1
-        }
-        // If both are null, sort by created_at desc
-        const aCreatedAt = a.created_at ? new Date(a.created_at).getTime() : 0
-        const bCreatedAt = b.created_at ? new Date(b.created_at).getTime() : 0
-        return bCreatedAt - aCreatedAt
-      })
-
-      // Apply pagination after sorting
-      comics = sortedComics.slice((page - 1) * limit, page * limit)
+      comics = paginatedComics
       totalComics = total
     } else {
       // For other sorts (popular, alphabetical), use database-level pagination

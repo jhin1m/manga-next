@@ -59,7 +59,7 @@ export default function FavoritesGrid({ favorites }: FavoritesGridProps) {
         <AlertCircle className="h-16 w-16 text-muted-foreground mb-4" />
         <h2 className="text-2xl font-bold mb-2">No favorites yet</h2>
         <p className="text-muted-foreground mb-6">
-          You haven't added any manga to your favorites list.
+          You haven&apos;t added any manga to your favorites list.
         </p>
         <Button asChild>
           <Link href="/manga">

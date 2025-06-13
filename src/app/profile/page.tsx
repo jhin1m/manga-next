@@ -134,7 +134,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 <CardHeader>
                   <CardTitle>No favorites yet</CardTitle>
                   <CardDescription>
-                    You haven't added any manga to your favorites yet.
+                    You haven&apos;t added any manga to your favorites yet.
                   </CardDescription>
                 </CardHeader>
               </Card>

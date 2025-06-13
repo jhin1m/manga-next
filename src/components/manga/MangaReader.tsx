@@ -8,7 +8,7 @@ import { ChapterReportButton } from "@/components/feature/chapter-reports/Chapte
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useReadingHistory } from "@/hooks/useReadingHistory";
 import { useTranslations } from 'next-intl';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, memo } from 'react';
 
 interface MangaReaderProps {
   chapterData: {
@@ -78,7 +78,7 @@ const LoadingIcon = ({ height = 800 }: { height?: number }) => (
   </div>
 );
 
-export default function MangaReader({ chapterData }: MangaReaderProps) {
+const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps) {
   // Translations
   const t = useTranslations('reader');
 
@@ -377,4 +377,6 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
 
     </div>
   );
-}
+})
+
+export default MangaReader

@@ -32,6 +32,10 @@ interface CacheEntry {
   expiry: number
 }
 
+// Constants moved outside hook to prevent re-creation on every render
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const UNREAD_COUNT_CACHE_DURATION = 30 * 1000 // 30 seconds
+
 /**
  * Custom hook for managing user notifications with caching
  */
@@ -49,8 +53,6 @@ export function useNotifications({
 
   // Cache for notifications and settings
   const cache = useRef<Map<string, CacheEntry>>(new Map())
-  const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
-  const UNREAD_COUNT_CACHE_DURATION = 30 * 1000 // 30 seconds
 
   // Cache helper functions
   const getCacheKey = useCallback((key: string, params?: any) => {

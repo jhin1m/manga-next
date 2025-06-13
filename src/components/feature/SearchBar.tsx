@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Search, BookOpen, Clock, X, Loader2 } from 'lucide-react';
@@ -130,7 +130,7 @@ interface SearchBarProps {
   className?: string;
 }
 
-export default function SearchBar({ open, setOpen, className }: SearchBarProps) {
+const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBarProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -418,7 +418,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
                     className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-accent transition-colors text-primary"
                   >
                     <Search className="h-5 w-5 flex-shrink-0" />
-                    <span>{tSearch('searchFor')} <span className="font-semibold">"{searchQuery}"</span></span>
+                    <span>{tSearch('searchFor')} <span className="font-semibold">&quot;{searchQuery}&quot;</span></span>
                   </button>
                 )}
               </div>
@@ -436,7 +436,7 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
                 className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-accent transition-colors"
               >
                 <Search className="h-5 w-5 flex-shrink-0" />
-                <span>{tSearch('searchFor')} <span className="font-semibold">"{searchQuery}"</span></span>
+                <span>{tSearch('searchFor')} <span className="font-semibold">&quot;{searchQuery}&quot;</span></span>
               </button>
             </div>
           )}
@@ -542,4 +542,6 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
       </DialogContent>
     </Dialog>
   );
-}
+})
+
+export default SearchBar
