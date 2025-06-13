@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Eye, TrendingUp, Calendar, Clock } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -38,25 +38,19 @@ export function ViewStatistics({
   const { formatViews } = useFormat()
   const t = useTranslations('viewStats')
 
-  useEffect(() => {
-    if (!initialData) {
-      fetchStatistics()
-    }
-  }, [entityType, entityId, initialData])
-
-  const fetchStatistics = async () => {
+  const fetchStatistics = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
 
       const response = await fetch(`/api/view-statistics/${entityType}/${entityId}`)
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch view statistics')
       }
 
       const data = await response.json()
-      
+
       if (data.success) {
         setStatistics(data.data.stored)
       } else {
@@ -68,7 +62,13 @@ export function ViewStatistics({
     } finally {
       setLoading(false)
     }
-  }
+  }, [entityType, entityId])
+
+  useEffect(() => {
+    if (!initialData) {
+      fetchStatistics()
+    }
+  }, [entityType, entityId, initialData, fetchStatistics])
 
   if (loading) {
     return (

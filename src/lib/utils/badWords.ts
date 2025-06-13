@@ -6,7 +6,7 @@
 // Vietnamese bad words list (common profanity)
 const VIETNAMESE_BAD_WORDS = [
   'đụ', 'địt', 'đéo', 'đm', 'dm', 'đmm', 'dmm', 'vcl', 'vãi', 'cặc', 'lồn', 'buồi',
-  'đĩ', 'điếm', 'cave', 'gái gọi', 'mẹ kiếp', 'thằng chó', 'con chó', 'súc vật',
+  'đĩ', 'điếm', 'cave', 'mẹ', 'gái gọi', 'mẹ kiếp', 'thằng chó', 'con chó', 'súc vật',
   'đồ chó', 'đồ khốn', 'khốn nạn', 'đồ ngu', 'ngu ngốc', 'đần độn', 'óc chó',
   'não cá vàng', 'đồ ngớ ngẩn', 'thằng ngu', 'con ngu', 'đồ khùng', 'điên khùng',
   'đồ điên', 'thằng điên', 'con điên', 'đồ rồ', 'đồ dở hơi', 'não tôm',

@@ -1,7 +1,7 @@
 'use client';
 
 import { lazy, Suspense } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 // Removed loading overlay - using instant navigation
 import { Loader2 } from 'lucide-react';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface SmartPrefetchProps {
@@ -31,12 +31,12 @@ export default function SmartPrefetch({
   const prefetchedRef = useRef(false);
 
   // Prefetch function
-  const prefetchPage = () => {
+  const prefetchPage = useCallback(() => {
     if (!prefetchedRef.current) {
       router.prefetch(href);
       prefetchedRef.current = true;
     }
-  };
+  }, [router, href]);
 
   // Intersection Observer for viewport prefetching
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function SmartPrefetch({
     observer.observe(linkRef.current);
 
     return () => observer.disconnect();
-  }, [prefetchOnView, viewThreshold]);
+  }, [prefetchOnView, viewThreshold, prefetchPage]);
 
   // Handle hover/focus prefetching
   const handleMouseEnter = () => {

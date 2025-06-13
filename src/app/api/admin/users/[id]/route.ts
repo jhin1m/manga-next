@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import bcrypt from 'bcrypt'
+
 import { requireAdminAuth, logAdminAction, AdminPermissions } from '@/lib/admin/middleware'
 import { AdminRole, userUpdateSchema } from '@/types/admin'
 import { prisma } from '@/lib/db'

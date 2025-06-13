@@ -217,12 +217,14 @@ export default function MangaReader({ chapterData }: MangaReaderProps) {
     const observer = observerRef.current;
     if (!observer) return;
 
-    Object.values(imageRefs.current).forEach(ref => {
+    const currentRefs = imageRefs.current; // Capture current refs
+    Object.values(currentRefs).forEach(ref => {
       if (ref) observer.observe(ref);
     });
 
     return () => {
-      Object.values(imageRefs.current).forEach(ref => {
+      // Use captured refs to avoid stale closure
+      Object.values(currentRefs).forEach(ref => {
         if (ref) observer.unobserve(ref);
       });
     };

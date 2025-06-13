@@ -145,18 +145,6 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
   const tSearch = useTranslations('search');
   const tCommon = useTranslations('common');
 
-  // Load recent searches when component mounts, but delay popular manga loading
-  useEffect(() => {
-    setRecentSearches(getRecentSearches());
-  }, []);
-
-  // OPTIMIZED: Lazy load popular manga only when search dialog is opened and no search query
-  useEffect(() => {
-    if (open && !searchQuery && popularManga.length === 0 && !isLoadingPopular) {
-      fetchPopularManga();
-    }
-  }, [open, searchQuery]);
-
   // Fetch popular manga - OPTIMIZED with better error handling and caching
   const fetchPopularManga = useCallback(async () => {
     // Avoid duplicate calls
@@ -188,6 +176,18 @@ export default function SearchBar({ open, setOpen, className }: SearchBarProps) 
       setIsLoadingPopular(false);
     }
   }, [isLoadingPopular, popularManga.length]);
+
+  // Load recent searches when component mounts, but delay popular manga loading
+  useEffect(() => {
+    setRecentSearches(getRecentSearches());
+  }, []);
+
+  // OPTIMIZED: Lazy load popular manga only when search dialog is opened and no search query
+  useEffect(() => {
+    if (open && !searchQuery && popularManga.length === 0 && !isLoadingPopular) {
+      fetchPopularManga();
+    }
+  }, [open, searchQuery, fetchPopularManga, isLoadingPopular, popularManga.length]);
 
   // Focus input when dialog opens
   useEffect(() => {
