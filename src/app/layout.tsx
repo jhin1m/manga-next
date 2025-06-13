@@ -21,7 +21,6 @@ import { NavigationLoadingProvider } from "@/contexts/NavigationLoadingContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import SWRProvider from "@/components/providers/SWRProvider";
 import InstantNavigationProvider from "@/components/providers/InstantNavigationProvider";
-import HomepagePreloader from "@/components/optimization/HomepagePreloader";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -95,7 +94,6 @@ export default async function RootLayout({
                       <Toaster />
                       <PWAInstallPrompt />
                       <OfflineIndicator />
-                      <HomepagePreloader />
                     </NavigationLoadingProvider>
                   </NotificationProvider>
                 </InstantNavigationProvider>
