@@ -9,9 +9,8 @@ export const SITE_CONSTANTS = {
     main: [
       { name: 'Home', href: '/' },
       { name: 'Manga', href: '/manga' },
-      { name: 'Popular', href: '/popular' },
-      { name: 'Completed', href: '/completed' },
       { name: 'Search', href: '/search' },
+      { name: 'Rankings', href: '/rankings' },
     ],
     footer: [
       { name: 'About', href: '/about' },

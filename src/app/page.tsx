@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { constructMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import { generateHomeJsonLd } from "@/lib/seo/jsonld";
-import HomePageWithNavigation from "@/components/feature/HomePageWithNavigation";
+import HomePageOptimized from "@/components/feature/HomePageOptimized";
 import { seoConfig, getSiteUrl } from "@/config/seo.config";
 import { defaultViewport } from "@/lib/seo/viewport";
 
@@ -20,6 +20,7 @@ async function fetchAllHomePageData(page: number = 1) {
       recentCommentsData
     ] = await Promise.all([
       // Popular manga - fetch once with limit 10 for both slider and sidebar
+      // Cache is already optimized in API client for popular manga
       mangaApi.getList({
         sort: 'popular',
         limit: 10, // Get 10 items, use all for slider, first 5 for recommended
@@ -100,8 +101,8 @@ function transformHotMangaData(comics: any[]) {
     status: comic.status || 'Ongoing',
     chapterCount: comic._chapterCount || 0,
     latestChapter: comic.Chapters && comic.Chapters.length > 0
-      ? comic.Chapters[0].title
-      : undefined,
+      ? (comic.Chapters[0].title || `Chapter ${comic.Chapters[0].chapter_number}`)
+      : 'Updating',
     latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
       ? comic.Chapters[0].slug
       : undefined,
@@ -117,8 +118,8 @@ function transformLatestMangaData(comics: any[]) {
     coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
     slug: comic.slug,
     latestChapter: comic.Chapters && comic.Chapters.length > 0
-      ? comic.Chapters[0].title
-      : undefined,
+      ? (comic.Chapters[0].title || `Chapter ${comic.Chapters[0].chapter_number}`)
+      : 'Updating',
     latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
       ? comic.Chapters[0].slug
       : undefined,
@@ -172,8 +173,12 @@ export const metadata: Metadata = constructMetadata({
 
 export const viewport = defaultViewport;
 
-// Enable ISR for homepage - revalidate every hour
-export const revalidate = 3600;
+// Optimized ISR for homepage - shorter revalidation for better UX
+// Reduced from 1 hour to 15 minutes for more responsive content updates
+export const revalidate = 900; // 15 minutes
+
+// Add cache tags for selective revalidation
+export const tags = ['homepage', 'hot-manga', 'latest-manga', 'rankings'];
 
 export default async function Home({
   searchParams,
@@ -200,7 +205,7 @@ export default async function Home({
   return (
     <>
       <JsonLdScript id="home-jsonld" jsonLd={jsonLd} />
-      <HomePageWithNavigation initialData={initialData} />
+      <HomePageOptimized initialData={initialData} />
     </>
   );
 }
