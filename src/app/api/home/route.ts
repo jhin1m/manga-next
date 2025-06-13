@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Set appropriate cache headers based on request type
-    const cacheHeaders = isBackgroundRefresh
+    const cacheHeaders: Record<string, string> = isBackgroundRefresh
       ? {
           // Background refresh - no cache to ensure fresh data
           'Cache-Control': 'no-cache, no-store, must-revalidate',
