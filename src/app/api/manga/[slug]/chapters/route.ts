@@ -9,6 +9,7 @@ export async function GET(
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '50')
+    const all = searchParams.get('all') === 'true' // Option to get all chapters
     const { slug } = await params
 
     // Get the manga ID first
@@ -24,13 +25,16 @@ export async function GET(
       )
     }
 
-    // Get chapters with pagination
+    // Get chapters with or without pagination
     const [chapters, totalChapters] = await Promise.all([
       prisma.chapters.findMany({
         where: { comic_id: manga.id },
         orderBy: { chapter_number: 'desc' },
-        skip: (page - 1) * limit,
-        take: limit
+        // Skip pagination if 'all' parameter is true
+        ...(all ? {} : {
+          skip: (page - 1) * limit,
+          take: limit
+        })
       }),
       prisma.chapters.count({
         where: { comic_id: manga.id }
@@ -39,8 +43,8 @@ export async function GET(
 
     return NextResponse.json({
       chapters,
-      totalPages: Math.ceil(totalChapters / limit),
-      currentPage: page,
+      totalPages: all ? 1 : Math.ceil(totalChapters / limit),
+      currentPage: all ? 1 : page,
       totalChapters
     })
   } catch (error) {

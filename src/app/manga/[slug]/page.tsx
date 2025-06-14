@@ -51,7 +51,8 @@ async function getMangaBySlug(slug: string) {
 async function getChapters(slug: string) {
   try {
     // Use centralized API client with built-in ISR caching
-    const data = await mangaApi.getChapters(slug);
+    // Use getAllChapters to get all chapters without pagination limit
+    const data = await mangaApi.getAllChapters(slug);
 
     // Transform API data to match our component needs (preserve existing logic)
     return data.chapters.map((chapter: any) => ({

@@ -10,7 +10,8 @@ import { mangaApi, chapterApi } from '@/lib/api/client';
 async function getChapterData(mangaSlug: string, chapterSlug: string) {
   try {
     // First, get the chapter list to find the chapter ID from slug
-    const chaptersData = await mangaApi.getChapters(mangaSlug);
+    // Use getAllChapters to get all chapters for proper navigation
+    const chaptersData = await mangaApi.getAllChapters(mangaSlug);
     const chapter = chaptersData.chapters.find((ch: any) => ch.slug === chapterSlug);
 
     if (!chapter) {

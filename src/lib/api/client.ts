@@ -329,6 +329,17 @@ export const mangaApi = {
       },
     });
   },
+
+  // Get all manga chapters (no pagination limit)
+  getAllChapters: async (slug: string) => {
+    return apiClient(API_ENDPOINTS.manga.chapters(slug), {
+      params: { all: 'true' }, // Use 'all' parameter to get all chapters
+      next: {
+        ...API_CONFIG.defaultCacheOptions.chapters,
+        tags: ['chapters', `chapters-${slug}`, 'all-chapters'],
+      },
+    });
+  },
 };
 
 export const chapterApi = {
