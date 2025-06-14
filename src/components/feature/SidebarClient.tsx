@@ -240,7 +240,7 @@ export default function SidebarClient({ sidebarData }: SidebarClientProps) {
                       {manga.latestChapter && (
                         <>
                           <span>•</span>
-                          <span>Ch. {manga.latestChapter.number}</span>
+                          <span>{manga.latestChapter.title}</span>
                         </>
                       )}
                     </div>
