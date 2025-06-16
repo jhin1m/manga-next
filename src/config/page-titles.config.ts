@@ -126,15 +126,15 @@ export const localizedPageTitles: LocalizedPageTitles = {
 // Environment variable overrides
 const getEnvironmentPageTitles = () => {
   const overrides: Partial<PageTitleConfig> = {};
-  
+
   // Allow environment variable overrides for specific titles
   const envPrefix = 'NEXT_PUBLIC_PAGE_TITLE_';
-  
+
   Object.keys(process.env).forEach(key => {
     if (key.startsWith(envPrefix)) {
       const titleKey = key.replace(envPrefix, '').toLowerCase();
       const value = process.env[key];
-      
+
       if (value) {
         // Parse the key to determine the structure
         // Example: NEXT_PUBLIC_PAGE_TITLE_MANGA_SORT_POPULAR="Custom Popular Manga"
@@ -153,7 +153,7 @@ const getEnvironmentPageTitles = () => {
       }
     }
   });
-  
+
   return overrides;
 };
 
@@ -170,11 +170,11 @@ export function getPageTitle(
   // Get base configuration for locale
   const baseConfig = localizedPageTitles[locale] || localizedPageTitles['en'];
   const sectionConfig = baseConfig[section];
-  
+
   if (!sectionConfig) {
     return baseConfig.manga?.default || 'Latest Manga';
   }
-  
+
   // Apply environment overrides
   const envOverrides = getEnvironmentPageTitles();
   const finalConfig = {
@@ -184,13 +184,13 @@ export function getPageTitle(
     status: { ...sectionConfig.status, ...envOverrides[section]?.status },
     combined: { ...sectionConfig.combined, ...envOverrides[section]?.combined },
   };
-  
+
   // Handle genre-specific titles
   if (filters.genre) {
     const genreTitle = getGenreTitle(filters.genre, locale);
     return genreTitle;
   }
-  
+
   // Handle combined filters
   if (filters.sort && filters.status) {
     const combinedKey = `${filters.sort}+${filters.status}`;
@@ -198,17 +198,17 @@ export function getPageTitle(
       return finalConfig.combined[combinedKey];
     }
   }
-  
+
   // Handle status filter
   if (filters.status && finalConfig.status[filters.status]) {
     return finalConfig.status[filters.status];
   }
-  
+
   // Handle sort filter
   if (filters.sort && finalConfig.sort[filters.sort]) {
     return finalConfig.sort[filters.sort];
   }
-  
+
   // Return default
   return finalConfig.default;
 }
@@ -260,21 +260,21 @@ export function getGenreTitle(genre: string, locale: string = 'en'): string {
       thriller: 'スリラーマンガ',
     },
   };
-  
+
   const translations = genreTranslations[locale] || genreTranslations['en'];
   const normalizedGenre = genre.toLowerCase().replace(/\s+/g, '_');
-  
-  return translations[normalizedGenre] || 
-         `${genre.charAt(0).toUpperCase() + genre.slice(1)} Manga`;
+
+  return translations[normalizedGenre] || `${genre.charAt(0).toUpperCase() + genre.slice(1)} Manga`;
 }
 
 // Validation function
 export function validatePageTitleConfig(config: PageTitleConfig): boolean {
-  return Object.values(config).every(section => 
-    section.default && 
-    typeof section.sort === 'object' &&
-    typeof section.status === 'object' &&
-    typeof section.combined === 'object'
+  return Object.values(config).every(
+    section =>
+      section.default &&
+      typeof section.sort === 'object' &&
+      typeof section.status === 'object' &&
+      typeof section.combined === 'object'
   );
 }
 

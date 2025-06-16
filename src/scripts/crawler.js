@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Script crawler để chạy từ Next.js CLI (CommonJS version)
- * 
+ *
  * Cách sử dụng:
  * node src/scripts/crawler.js [source] [startPage] [endPage] [options]
  */
@@ -9,7 +9,7 @@
 // Register ts-node to handle TypeScript imports
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 require('ts-node').register({
-  project: './tsconfig.crawler.json'
+  project: './tsconfig.crawler.json',
 });
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -25,7 +25,7 @@ dotenv.config();
  */
 function parseArguments() {
   const args = process.argv.slice(2);
-  
+
   if (args.includes('-h') || args.includes('--help')) {
     showHelp();
     process.exit(0);
@@ -38,13 +38,13 @@ function parseArguments() {
     useOriginalImages: false,
     concurrency: 3,
     authToken: process.env.MANGARAW_API_TOKEN,
-    mangaId: undefined
+    mangaId: undefined,
   };
 
   // Parse options
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     if (arg.startsWith('--manga-id=')) {
       options.mangaId = arg.split('=')[1];
     } else if (arg === '--use-original-images') {
@@ -95,12 +95,12 @@ Nguồn hỗ trợ:
  */
 async function main() {
   const options = parseArguments();
-  
+
   console.log('=================');
   console.log('MANGA CRAWLER CLI');
   console.log('=================');
   console.log(`Nguồn: ${options.source}`);
-  
+
   if (options.mangaId) {
     console.log(`Manga ID: ${options.mangaId}`);
   } else {
@@ -109,10 +109,12 @@ async function main() {
       console.log(`Trang kết thúc: ${options.endPage}`);
     }
   }
-  
+
   console.log(`Sử dụng ảnh gốc: ${options.useOriginalImages ? 'Có' : 'Không'}`);
   console.log(`Concurrency: ${options.concurrency || 3}`);
-  console.log(`Auth token: ${options.authToken ? 'Được cung cấp' : (process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có')}`);
+  console.log(
+    `Auth token: ${options.authToken ? 'Được cung cấp' : process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có'}`
+  );
   console.log('=================');
 
   try {

@@ -1,15 +1,13 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { constructMangaMetadata } from "@/lib/seo/metadata";
-import JsonLdScript from "@/components/seo/JsonLdScript";
-import { generateMangaJsonLd } from "@/lib/seo/jsonld";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { constructMangaMetadata } from '@/lib/seo/metadata';
+import JsonLdScript from '@/components/seo/JsonLdScript';
+import { generateMangaJsonLd } from '@/lib/seo/jsonld';
 import { mangaApi } from '@/lib/api/client';
-import MangaDetailClient from "@/components/manga/MangaDetailClient";
+import MangaDetailClient from '@/components/manga/MangaDetailClient';
 
 // Enable ISR for manga detail pages - revalidate every hour
 export const revalidate = 3600;
-
-
 
 // Fetch manga data from API using centralized API client
 async function getMangaBySlug(slug: string) {
@@ -21,24 +19,25 @@ async function getMangaBySlug(slug: string) {
     return {
       id: data.manga.id,
       title: data.manga.title,
-      alternativeTitles: data.manga.alternative_titles ?
-        Object.values(data.manga.alternative_titles as Record<string, string>) : [],
+      alternativeTitles: data.manga.alternative_titles
+        ? Object.values(data.manga.alternative_titles as Record<string, string>)
+        : [],
       coverImage: data.manga.cover_image_url || 'https://placehold.co/300x450/png',
       slug: data.manga.slug,
       author: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', '),
       artist: data.manga.Comic_Authors?.map((ca: any) => ca.Authors.name).join(', '),
       description: data.manga.description,
-      genres: data.manga.Comic_Genres?.map((cg: any) => ({
-        name: cg.Genres.name,
-        slug: cg.Genres.slug
-      })) || [],
+      genres:
+        data.manga.Comic_Genres?.map((cg: any) => ({
+          name: cg.Genres.name,
+          slug: cg.Genres.slug,
+        })) || [],
       status: data.manga.status,
       views: data.manga.total_views || 0,
       favorites: data.manga.total_favorites || 0,
       chapterCount: 0, // Will be updated when we fetch chapters
       updatedAt: data.manga.last_chapter_uploaded_at || null,
-      publishedYear: data.manga.release_date ?
-        new Date(data.manga.release_date).getFullYear() : '',
+      publishedYear: data.manga.release_date ? new Date(data.manga.release_date).getFullYear() : '',
       serialization: data.manga.Comic_Publishers?.map((cp: any) => cp.Publishers.name).join(', '),
     };
   } catch (error) {
@@ -87,7 +86,7 @@ async function fetchAllMangaDetailData(slug: string) {
       getRelatedManga(slug, manga.genres).catch(err => {
         console.error('Error fetching related manga:', err);
         return [];
-      })
+      }),
     ]);
 
     manga.chapterCount = chapters.length;
@@ -98,7 +97,7 @@ async function fetchAllMangaDetailData(slug: string) {
       relatedManga,
       // Auth-dependent data will be fetched client-side
       initialFavoriteStatus: undefined,
-      initialRatingData: undefined
+      initialRatingData: undefined,
     };
   } catch (error) {
     console.error('Error fetching manga detail data:', error);
@@ -153,7 +152,7 @@ export async function generateMetadata({
     return {
       title: 'Manga Not Found',
       description: 'The requested manga could not be found.',
-      robots: { index: false, follow: false }
+      robots: { index: false, follow: false },
     };
   }
 
@@ -172,11 +171,7 @@ export async function generateMetadata({
   });
 }
 
-export default async function MangaDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function MangaDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
   // Fetch all data in parallel
@@ -204,7 +199,7 @@ export default async function MangaDetailPage({
 
   return (
     <div>
-      <JsonLdScript id="manga-jsonld" jsonLd={jsonLd} />
+      <JsonLdScript id='manga-jsonld' jsonLd={jsonLd} />
       <MangaDetailClient
         manga={manga}
         chapters={chapters}

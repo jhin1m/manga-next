@@ -25,7 +25,7 @@ runCrawler({
   source: 'mangaraw',
   startPage: 1,
   endPage: 5,
-  useOriginalImages: true
+  useOriginalImages: true,
 });
 
 // Crawl với token tùy chỉnh
@@ -33,13 +33,13 @@ runCrawler({
   source: 'mangaraw',
   startPage: 1,
   endPage: 5,
-  authToken: 'your_custom_token_here'
+  authToken: 'your_custom_token_here',
 });
 
 // Crawl một manga cụ thể
 runCrawler({
   source: 'mangaraw',
-  mangaId: '20463a51-7faf-4a3f-9e67-5c624f80d487'
+  mangaId: '20463a51-7faf-4a3f-9e67-5c624f80d487',
 });
 ```
 
@@ -57,13 +57,13 @@ const response = await fetch('/api/admin/crawler', {
     startPage: 1,
     endPage: 5,
     useOriginalImages: true,
-    authToken: 'your_custom_token_here' // Tùy chọn, nếu không có sẽ dùng từ biến môi trường
+    authToken: 'your_custom_token_here', // Tùy chọn, nếu không có sẽ dùng từ biến môi trường
   }),
 });
 
 // Lấy danh sách nguồn hỗ trợ
 const sourcesResponse = await fetch('/api/admin/crawler', {
-  method: 'GET'
+  method: 'GET',
 });
 const { sources } = await sourcesResponse.json();
 ```
@@ -113,15 +113,15 @@ Options:
 
 ## Tùy chọn
 
-| Tùy chọn | Kiểu dữ liệu | Mô tả |
-|----------|--------------|-------|
-| `source` | string | Tên nguồn (mặc định: 'mangaraw') |
-| `startPage` | number | Trang bắt đầu (mặc định: 1) |
-| `endPage` | number | Trang kết thúc (tùy chọn) |
-| `mangaId` | string | ID của manga cụ thể (tùy chọn) |
-| `useOriginalImages` | boolean | Sử dụng ảnh gốc thay vì tải về (mặc định: false) |
-| `concurrency` | number | Số lượng request đồng thời (mặc định: 3) |
-| `authToken` | string | Token xác thực (tùy chọn, nếu không có sẽ dùng từ biến môi trường) |
+| Tùy chọn            | Kiểu dữ liệu | Mô tả                                                              |
+| ------------------- | ------------ | ------------------------------------------------------------------ |
+| `source`            | string       | Tên nguồn (mặc định: 'mangaraw')                                   |
+| `startPage`         | number       | Trang bắt đầu (mặc định: 1)                                        |
+| `endPage`           | number       | Trang kết thúc (tùy chọn)                                          |
+| `mangaId`           | string       | ID của manga cụ thể (tùy chọn)                                     |
+| `useOriginalImages` | boolean      | Sử dụng ảnh gốc thay vì tải về (mặc định: false)                   |
+| `concurrency`       | number       | Số lượng request đồng thời (mặc định: 3)                           |
+| `authToken`         | string       | Token xác thực (tùy chọn, nếu không có sẽ dùng từ biến môi trường) |
 
 ## Thêm nguồn mới
 
@@ -149,7 +149,7 @@ export class MangaDexSource extends BaseSource {
       authToken: process.env.MANGADEX_API_TOKEN || ''
     });
   }
-  
+
   // Implement các phương thức cần thiết...
 }
 
@@ -159,10 +159,10 @@ import { MangaDexSource } from './mangadex';
 
 static initialize(): void {
   if (this.initialized) return;
-  
+
   this.registerSource('mangaraw', new MangaRawSource());
   this.registerSource('mangadex', new MangaDexSource()); // Thêm nguồn mới
-  
+
   this.initialized = true;
 }
 ```

@@ -36,7 +36,7 @@ const colors = {
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
   reset: '\x1b[0m',
-  bold: '\x1b[1m'
+  bold: '\x1b[1m',
 };
 
 function log(message, color = 'reset') {
@@ -68,13 +68,13 @@ function logInfo(message) {
 // Test environment variables
 function testEnvironmentVariables() {
   logSection('Testing Environment Variables');
-  
+
   const requiredVars = [
     'NEXT_PUBLIC_SITE_URL',
-    'NEXT_PUBLIC_SITE_NAME', 
-    'NEXT_PUBLIC_SITE_DESCRIPTION'
+    'NEXT_PUBLIC_SITE_NAME',
+    'NEXT_PUBLIC_SITE_DESCRIPTION',
   ];
-  
+
   const optionalVars = [
     'NEXT_PUBLIC_SITE_TAGLINE',
     'NEXT_PUBLIC_SITE_KEYWORDS',
@@ -91,16 +91,16 @@ function testEnvironmentVariables() {
     'NEXT_PUBLIC_ORG_NAME',
     'NEXT_PUBLIC_ORG_LEGAL_NAME',
     'NEXT_PUBLIC_ORG_FOUNDING_DATE',
-    'NEXT_PUBLIC_ORG_COUNTRY'
+    'NEXT_PUBLIC_ORG_COUNTRY',
   ];
-  
+
   const analyticsVars = [
     'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID',
     'NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID',
     'NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION',
-    'NEXT_PUBLIC_FACEBOOK_PIXEL_ID'
+    'NEXT_PUBLIC_FACEBOOK_PIXEL_ID',
   ];
-  
+
   // Check required variables
   let missingRequired = 0;
   requiredVars.forEach(varName => {
@@ -111,7 +111,7 @@ function testEnvironmentVariables() {
       missingRequired++;
     }
   });
-  
+
   // Check optional variables
   let setOptional = 0;
   optionalVars.forEach(varName => {
@@ -122,7 +122,7 @@ function testEnvironmentVariables() {
       logWarning(`${varName}: Not set (optional)`);
     }
   });
-  
+
   // Check analytics variables
   let setAnalytics = 0;
   analyticsVars.forEach(varName => {
@@ -133,24 +133,26 @@ function testEnvironmentVariables() {
       logInfo(`${varName}: Not set (analytics)`);
     }
   });
-  
+
   logSection('Environment Variables Summary');
-  logInfo(`Required variables: ${requiredVars.length - missingRequired}/${requiredVars.length} set`);
+  logInfo(
+    `Required variables: ${requiredVars.length - missingRequired}/${requiredVars.length} set`
+  );
   logInfo(`Optional variables: ${setOptional}/${optionalVars.length} set`);
   logInfo(`Analytics variables: ${setAnalytics}/${analyticsVars.length} set`);
-  
+
   if (missingRequired > 0) {
     logError(`Missing ${missingRequired} required environment variables!`);
     return false;
   }
-  
+
   return true;
 }
 
 // Test SEO configuration loading
 function testSeoConfig() {
   logSection('Testing SEO Configuration Loading');
-  
+
   try {
     // This would require building the project first
     logInfo('SEO configuration test requires a built project');
@@ -165,17 +167,16 @@ function testSeoConfig() {
 // Test file structure
 function testFileStructure() {
   logSection('Testing File Structure');
-  
 
   const requiredFiles = [
     'src/config/seo.config.ts',
     'src/components/analytics/Analytics.tsx',
     'docs/seo-environment-variables-guide.md',
-    '.env.example'
+    '.env.example',
   ];
-  
+
   let allFilesExist = true;
-  
+
   requiredFiles.forEach(filePath => {
     if (fs.existsSync(filePath)) {
       logSuccess(`${filePath}: Exists`);
@@ -184,14 +185,14 @@ function testFileStructure() {
       allFilesExist = false;
     }
   });
-  
+
   return allFilesExist;
 }
 
 // Test build process
 function testBuild() {
   logSection('Testing Build Process');
-  
+
   try {
     logInfo('Running build test...');
     execSync('npm run build', { stdio: 'pipe' });
@@ -210,16 +211,16 @@ function runTests() {
 
   // Load environment variables first
   loadEnvFile();
-  
+
   const results = {
     envVars: testEnvironmentVariables(),
     fileStructure: testFileStructure(),
     seoConfig: testSeoConfig(),
-    build: testBuild()
+    build: testBuild(),
   };
-  
+
   logSection('Test Results Summary');
-  
+
   Object.entries(results).forEach(([test, passed]) => {
     if (passed) {
       logSuccess(`${test}: PASSED`);
@@ -227,9 +228,9 @@ function runTests() {
       logError(`${test}: FAILED`);
     }
   });
-  
+
   const allPassed = Object.values(results).every(result => result);
-  
+
   if (allPassed) {
     logSuccess('\n🎉 All tests passed! SEO configuration is working correctly.');
   } else {

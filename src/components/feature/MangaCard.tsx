@@ -39,7 +39,7 @@ const MangaCard = memo(function MangaCard({
   status,
   priority = false,
   fetchPriority = 'auto',
-  imageSizes = "(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw",
+  imageSizes = '(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw',
   loading = 'lazy',
 }: MangaCardProps) {
   const { formatViews, formatDate } = useFormat();
@@ -79,8 +79,8 @@ const MangaCard = memo(function MangaCard({
               fetchPriority={fetchPriority}
               loading={loading}
               quality={85}
-              placeholder="blur"
-              blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
+              placeholder='blur'
+              blurDataURL='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII='
             />
             {/* Số chapter ở góc phải dưới ảnh bìa */}
             {chapterCount > 0 && (
@@ -94,7 +94,9 @@ const MangaCard = memo(function MangaCard({
         <CardContent className='p-3 space-y-2'>
           {/* Tiêu đề manga với font chữ đậm và kích thước lớn */}
           <Link href={`/manga/${slug}`} className='block'>
-            <h3 className='font-bold text-base line-clamp-1 hover:text-primary transition-colors'>{title}</h3>
+            <h3 className='font-bold text-base line-clamp-1 hover:text-primary transition-colors'>
+              {title}
+            </h3>
           </Link>
 
           {/* Dòng thông tin với biểu tượng sao và mắt */}
@@ -140,7 +142,10 @@ const MangaCard = memo(function MangaCard({
                 </div>
               )}
               {updatedAt && (
-                <span className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis' title={isClient ? formatDate(updatedAt) : ''}>
+                <span
+                  className='text-muted-foreground/80 text-[11px] whitespace-nowrap max-w-[80px] overflow-hidden text-ellipsis'
+                  title={isClient ? formatDate(updatedAt) : ''}
+                >
                   {isClient ? formatDate(updatedAt) : '...'}
                 </span>
               )}

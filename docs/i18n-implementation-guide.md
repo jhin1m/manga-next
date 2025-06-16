@@ -1,6 +1,7 @@
 # Hướng dẫn triển khai i18n cho Manga Website
 
 ## Tổng quan
+
 Triển khai đa ngôn ngữ (Tiếng Việt + Tiếng Anh) cho manga website sử dụng next-intl, tương thích với NextJS 15 + App Router + ShadcnUI.
 
 ## Bước 1: Cài đặt Dependencies
@@ -12,19 +13,21 @@ pnpm add next-intl
 ## Bước 2: Cấu hình next-intl
 
 ### 2.1 Tạo file cấu hình i18n
+
 ```typescript
 // src/i18n/config.ts
 export const locales = ['en', 'vi'] as const;
 export const defaultLocale = 'en' as const;
-export type Locale = typeof locales[number];
+export type Locale = (typeof locales)[number];
 
 export const localeNames = {
   en: 'English',
-  vi: 'Tiếng Việt'
+  vi: 'Tiếng Việt',
 } as const;
 ```
 
 ### 2.2 Cấu hình middleware
+
 ```typescript
 // middleware.ts
 import createMiddleware from 'next-intl/middleware';
@@ -34,15 +37,16 @@ export default createMiddleware({
   locales,
   defaultLocale,
   localeDetection: true, // Tự động detect từ browser
-  localePrefix: 'never' // Không dùng /en, /vi prefix
+  localePrefix: 'never', // Không dùng /en, /vi prefix
 });
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 };
 ```
 
 ### 2.3 Cấu hình messages
+
 ```typescript
 // src/i18n/request.ts
 import { getRequestConfig } from 'next-intl/server';
@@ -56,7 +60,7 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
-    messages: (await import(`../messages/${locale}.json`)).default
+    messages: (await import(`../messages/${locale}.json`)).default,
   };
 });
 ```
@@ -64,6 +68,7 @@ export default getRequestConfig(async () => {
 ## Bước 3: Tạo Translation Files
 
 ### 3.1 English translations
+
 ```json
 // src/messages/en.json
 {
@@ -140,6 +145,7 @@ export default getRequestConfig(async () => {
 ```
 
 ### 3.2 Vietnamese translations
+
 ```json
 // src/messages/vi.json
 {
@@ -286,17 +292,25 @@ export function LanguageSwitcher() {
 ## Bước 6: Migration Strategy
 
 ### 6.1 Cập nhật Layout Root
-### 6.2 Cập nhật Header Component  
+
+### 6.2 Cập nhật Header Component
+
 ### 6.3 Cập nhật HotMangaSlider Component
+
 ### 6.4 Cập nhật SearchBar Component
+
 ### 6.5 Cập nhật Auth Components
+
 ### 6.6 Cập nhật Footer Component
 
 ## Bước 7: Testing & Validation
 
 ### 7.1 Test SSR/ISR compatibility
+
 ### 7.2 Test performance impact
+
 ### 7.3 Test all components với cả 2 ngôn ngữ
+
 ### 7.4 Test language switching
 
 ## Lưu ý quan trọng

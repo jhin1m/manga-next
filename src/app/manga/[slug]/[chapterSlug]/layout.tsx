@@ -5,9 +5,5 @@ interface ChapterLayoutProps {
 }
 
 export default function ChapterLayout({ children }: ChapterLayoutProps) {
-  return (
-    <>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

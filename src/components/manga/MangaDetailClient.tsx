@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
 import { lazy } from 'react';
-import MangaChapterList from "@/components/manga/MangaChapterList";
-import RelatedManga from "@/components/manga/RelatedManga";
-import { MangaDetailInfo } from "@/components/manga/MangaDetailInfo";
+import MangaChapterList from '@/components/manga/MangaChapterList';
+import RelatedManga from '@/components/manga/RelatedManga';
+import { MangaDetailInfo } from '@/components/manga/MangaDetailInfo';
 
 // Lazy load heavy components
-const CommentSectionLazy = lazy(() => import("@/components/feature/comments/CommentSectionLazy"));
+const CommentSectionLazy = lazy(() => import('@/components/feature/comments/CommentSectionLazy'));
 
 interface MangaDetailClientProps {
   manga: {
@@ -60,10 +60,10 @@ export default function MangaDetailClient({
   chapters,
   relatedManga,
   initialFavoriteStatus,
-  initialRatingData
+  initialRatingData,
 }: MangaDetailClientProps) {
   return (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Manga Information Section - Direct render without fake loading */}
       <MangaDetailInfo
         manga={manga}
@@ -73,29 +73,26 @@ export default function MangaDetailClient({
       />
 
       {/* Chapters and Related Manga Section - Direct render */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className='grid grid-cols-1 lg:grid-cols-4 gap-6'>
         {/* Chapters Section */}
-        <section className="lg:col-span-3">
-          <MangaChapterList
-            mangaSlug={manga.slug}
-            chapters={chapters}
-          />
+        <section className='lg:col-span-3'>
+          <MangaChapterList mangaSlug={manga.slug} chapters={chapters} />
         </section>
 
         {/* Related Manga Section */}
-        <section className="lg:col-span-1">
+        <section className='lg:col-span-1'>
           <RelatedManga relatedManga={relatedManga} />
         </section>
       </div>
 
       {/* Comments Section */}
-      <section className="mt-8">
+      <section className='mt-8'>
         <CommentSectionLazy
           mangaId={manga.id}
           mangaSlug={manga.slug}
-          defaultViewMode="all"
+          defaultViewMode='all'
           hideToggle={true}
-          paginationType="cursor"
+          paginationType='cursor'
           delayMs={300} // Delay loading to prevent race conditions
           key={`comments-${manga.id}`} // Add key to prevent unnecessary re-mounts
         />

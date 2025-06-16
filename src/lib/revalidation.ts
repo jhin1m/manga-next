@@ -1,6 +1,6 @@
 /**
  * Revalidation Helper Utilities
- * 
+ *
  * This module provides helper functions to trigger cache revalidation
  * when data is updated in the database. It integrates with the on-demand
  * revalidation API to solve the issue where PostgreSQL updates don't
@@ -37,7 +37,9 @@ interface RevalidationResponse {
  * Main revalidation function
  * Triggers cache revalidation for specified tags, paths, or contexts
  */
-export async function triggerRevalidation(options: RevalidationOptions): Promise<RevalidationResponse> {
+export async function triggerRevalidation(
+  options: RevalidationOptions
+): Promise<RevalidationResponse> {
   const { tags = [], paths = [], mangaSlug, chapterId, genreSlug, secret } = options;
 
   // Auto-generate tags and paths based on context
@@ -67,11 +69,7 @@ export async function triggerRevalidation(options: RevalidationOptions): Promise
 
   // Auto-generate tags for genre updates
   if (genreSlug) {
-    allTags.push(
-      `manga-genre-${genreSlug}`,
-      'genres',
-      'manga-list'
-    );
+    allTags.push(`manga-genre-${genreSlug}`, 'genres', 'manga-list');
     allPaths.push(`/genres/${genreSlug}`);
   }
 
@@ -99,11 +97,10 @@ export async function triggerRevalidation(options: RevalidationOptions): Promise
     const result: RevalidationResponse = await response.json();
     console.log('✅ Revalidation successful:', result);
     return result;
-
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('❌ Revalidation error:', errorMessage);
-    
+
     return {
       success: false,
       message: 'Revalidation failed',
@@ -128,7 +125,11 @@ export async function revalidateManga(mangaSlug: string, options?: { secret?: st
 }
 
 // Revalidate after chapter creation or update
-export async function revalidateChapter(mangaSlug: string, chapterId: string, options?: { secret?: string }) {
+export async function revalidateChapter(
+  mangaSlug: string,
+  chapterId: string,
+  options?: { secret?: string }
+) {
   return triggerRevalidation({
     mangaSlug,
     chapterId,
@@ -215,7 +216,7 @@ export async function onChapterUpdated(mangaSlug: string, chapterId: string) {
 // Call after bulk operations (e.g., crawler updates)
 export async function onBulkUpdate(type: 'manga' | 'chapters' | 'all' = 'manga') {
   console.log(`🔄 Bulk update completed: ${type}`);
-  
+
   switch (type) {
     case 'manga':
       return revalidateMangaList();
@@ -240,7 +241,7 @@ export async function checkRevalidationHealth(): Promise<boolean> {
     const response = await fetch(`${apiUrl}/api/revalidate`, {
       method: 'GET',
     });
-    
+
     return response.ok;
   } catch (error) {
     console.error('❌ Revalidation health check failed:', error);

@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
-import { requireAdminAuth, logAdminAction, AdminPermissions } from '@/lib/admin/middleware'
-import { AdminRole, mangaUpdateSchema } from '@/types/admin'
-import { prisma } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { requireAdminAuth, logAdminAction, AdminPermissions } from '@/lib/admin/middleware';
+import { AdminRole, mangaUpdateSchema } from '@/types/admin';
+import { prisma } from '@/lib/db';
 
 /**
  * GET /api/admin/manga/[id]
@@ -11,22 +11,22 @@ import { prisma } from '@/lib/db'
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.EDITOR)
+    const authResult = await requireAdminAuth(request, AdminRole.EDITOR);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
 
-    const { id } = await params
-    const mangaId = parseInt(id)
+    const { id } = await params;
+    const mangaId = parseInt(id);
 
     if (isNaN(mangaId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid manga ID' 
+          error: 'Invalid manga ID',
         },
         { status: 400 }
-      )
+      );
     }
 
     const manga = await prisma.comics.findUnique({
@@ -40,10 +40,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                 name: true,
                 slug: true,
                 bio: true,
-                avatar_url: true
-              }
-            }
-          }
+                avatar_url: true,
+              },
+            },
+          },
         },
         Comic_Genres: {
           include: {
@@ -51,10 +51,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
               select: {
                 id: true,
                 name: true,
-                slug: true
-              }
-            }
-          }
+                slug: true,
+              },
+            },
+          },
         },
         Chapters: {
           select: {
@@ -65,11 +65,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             created_at: true,
             _count: {
               select: {
-                Chapter_Views: true
-              }
-            }
+                Chapter_Views: true,
+              },
+            },
           },
-          orderBy: { chapter_number: 'asc' }
+          orderBy: { chapter_number: 'asc' },
         },
         _count: {
           select: {
@@ -77,28 +77,28 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             Comic_Views: true,
             Favorites: true,
             Ratings: true,
-            Comments: true
-          }
-        }
-      }
-    })
+            Comments: true,
+          },
+        },
+      },
+    });
 
     if (!manga) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Manga not found' 
+          error: 'Manga not found',
         },
         { status: 404 }
-      )
+      );
     }
 
     // Get rating statistics
     const ratingStats = await prisma.ratings.aggregate({
       where: { comic_id: mangaId },
       _avg: { rating: true },
-      _count: { rating: true }
-    })
+      _count: { rating: true },
+    });
 
     // Transform data
     const transformedManga = {
@@ -116,7 +116,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       Genres: manga.Comic_Genres.map(cg => cg.Genres),
       Chapters: manga.Chapters.map(chapter => ({
         ...chapter,
-        viewsCount: chapter._count.Chapter_Views
+        viewsCount: chapter._count.Chapter_Views,
       })),
       stats: {
         chaptersCount: manga._count.Chapters,
@@ -124,24 +124,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         favoritesCount: manga._count.Favorites,
         ratingsCount: manga._count.Ratings,
         commentsCount: manga._count.Comments,
-        averageRating: ratingStats._avg.rating || 0
-      }
-    }
+        averageRating: ratingStats._avg.rating || 0,
+      },
+    };
 
     return NextResponse.json({
       success: true,
-      data: transformedManga
-    })
-
+      data: transformedManga,
+    });
   } catch (error) {
-    console.error('[ADMIN_MANGA_DETAIL_ERROR]', error)
+    console.error('[ADMIN_MANGA_DETAIL_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to fetch manga details' 
+        error: 'Failed to fetch manga details',
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -152,41 +151,41 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.EDITOR)
+    const authResult = await requireAdminAuth(request, AdminRole.EDITOR);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { user } = authResult
+    const { user } = authResult;
 
-    const { id } = await params
-    const mangaId = parseInt(id)
+    const { id } = await params;
+    const mangaId = parseInt(id);
 
     if (isNaN(mangaId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid manga ID' 
+          error: 'Invalid manga ID',
         },
         { status: 400 }
-      )
+      );
     }
 
-    const body = await request.json()
-    const validatedData = mangaUpdateSchema.parse(body)
+    const body = await request.json();
+    const validatedData = mangaUpdateSchema.parse(body);
 
     // Check if manga exists
     const existingManga = await prisma.comics.findUnique({
-      where: { id: mangaId }
-    })
+      where: { id: mangaId },
+    });
 
     if (!existingManga) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Manga not found' 
+          error: 'Manga not found',
         },
         { status: 404 }
-      )
+      );
     }
 
     // Check if slug is being changed and if it conflicts
@@ -194,32 +193,32 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       const slugConflict = await prisma.comics.findFirst({
         where: {
           slug: validatedData.slug,
-          id: { not: mangaId }
-        }
-      })
+          id: { not: mangaId },
+        },
+      });
 
       if (slugConflict) {
         return NextResponse.json(
-          { 
+          {
             success: false,
-            error: 'Manga with this slug already exists' 
+            error: 'Manga with this slug already exists',
           },
           { status: 409 }
-        )
+        );
       }
     }
 
     // Prepare update data with correct field names
     const updateData: any = {
-      updated_at: new Date()
-    }
+      updated_at: new Date(),
+    };
 
-    if (validatedData.title) updateData.title = validatedData.title
-    if (validatedData.slug) updateData.slug = validatedData.slug
-    if (validatedData.description !== undefined) updateData.description = validatedData.description
-    if (validatedData.cover_url) updateData.cover_image_url = validatedData.cover_url
-    if (validatedData.status) updateData.status = validatedData.status
-    if (validatedData.author_id) updateData.uploader_id = validatedData.author_id
+    if (validatedData.title) updateData.title = validatedData.title;
+    if (validatedData.slug) updateData.slug = validatedData.slug;
+    if (validatedData.description !== undefined) updateData.description = validatedData.description;
+    if (validatedData.cover_url) updateData.cover_image_url = validatedData.cover_url;
+    if (validatedData.status) updateData.status = validatedData.status;
+    if (validatedData.author_id) updateData.uploader_id = validatedData.author_id;
 
     // Update manga
     const updatedManga = await prisma.comics.update({
@@ -232,29 +231,29 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
               select: {
                 id: true,
                 name: true,
-                slug: true
-              }
-            }
-          }
-        }
-      }
-    })
+                slug: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
     // Update genres if provided
     if (validatedData.genre_ids !== undefined) {
       // Remove existing genres
       await prisma.comic_Genres.deleteMany({
-        where: { comic_id: mangaId }
-      })
+        where: { comic_id: mangaId },
+      });
 
       // Add new genres
       if (validatedData.genre_ids.length > 0) {
         await prisma.comic_Genres.createMany({
           data: validatedData.genre_ids.map(genreId => ({
             comic_id: mangaId,
-            genre_id: genreId
-          }))
-        })
+            genre_id: genreId,
+          })),
+        });
       }
     }
 
@@ -264,40 +263,39 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       'UPDATE_MANGA',
       'manga',
       mangaId,
-      { 
-        title: updatedManga.title, 
+      {
+        title: updatedManga.title,
         slug: updatedManga.slug,
-        changes: validatedData 
+        changes: validatedData,
       },
       request
-    )
+    );
 
     return NextResponse.json({
       success: true,
       message: 'Manga updated successfully',
-      data: updatedManga
-    })
-
+      data: updatedManga,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Invalid request data',
-          details: error.errors 
+          details: error.errors,
         },
         { status: 400 }
-      )
+      );
     }
 
-    console.error('[ADMIN_MANGA_UPDATE_ERROR]', error)
+    console.error('[ADMIN_MANGA_UPDATE_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to update manga' 
+        error: 'Failed to update manga',
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -308,57 +306,57 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.ADMIN)
+    const authResult = await requireAdminAuth(request, AdminRole.ADMIN);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { user } = authResult
+    const { user } = authResult;
 
-    const { id } = await params
-    const mangaId = parseInt(id)
+    const { id } = await params;
+    const mangaId = parseInt(id);
 
     if (isNaN(mangaId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid manga ID' 
+          error: 'Invalid manga ID',
         },
         { status: 400 }
-      )
+      );
     }
 
     // Check permissions
-    const permissions = new AdminPermissions(user.role)
+    const permissions = new AdminPermissions(user.role);
     if (!permissions.canDeleteManga()) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Insufficient permissions to delete manga' 
+          error: 'Insufficient permissions to delete manga',
         },
         { status: 403 }
-      )
+      );
     }
 
     // Check if manga exists
     const manga = await prisma.comics.findUnique({
       where: { id: mangaId },
-      select: { id: true, title: true, slug: true }
-    })
+      select: { id: true, title: true, slug: true },
+    });
 
     if (!manga) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Manga not found' 
+          error: 'Manga not found',
         },
         { status: 404 }
-      )
+      );
     }
 
     // Delete manga (cascade will handle related records)
     await prisma.comics.delete({
-      where: { id: mangaId }
-    })
+      where: { id: mangaId },
+    });
 
     // Log admin action
     await logAdminAction(
@@ -368,21 +366,20 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       mangaId,
       { title: manga.title, slug: manga.slug },
       request
-    )
+    );
 
     return NextResponse.json({
       success: true,
-      message: 'Manga deleted successfully'
-    })
-
+      message: 'Manga deleted successfully',
+    });
   } catch (error) {
-    console.error('[ADMIN_MANGA_DELETE_ERROR]', error)
+    console.error('[ADMIN_MANGA_DELETE_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to delete manga' 
+        error: 'Failed to delete manga',
       },
       { status: 500 }
-    )
+    );
   }
 }

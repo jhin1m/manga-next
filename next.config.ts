@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import withPWA from 'next-pwa';
 
@@ -50,7 +50,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '*',
-      }
+      },
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -77,7 +77,10 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: process.env.NODE_ENV === 'development' ? '*' : (process.env.NEXT_PUBLIC_SITE_URL || '*'),
+            value:
+              process.env.NODE_ENV === 'development'
+                ? '*'
+                : process.env.NEXT_PUBLIC_SITE_URL || '*',
           },
           {
             key: 'Access-Control-Allow-Methods',
@@ -85,11 +88,13 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'Accept, Accept-Language, Content-Language, Content-Type, Authorization, X-Requested-With, X-CSRF-Token, X-API-Key, Cache-Control, Pragma',
+            value:
+              'Accept, Accept-Language, Content-Language, Content-Type, Authorization, X-Requested-With, X-CSRF-Token, X-API-Key, Cache-Control, Pragma',
           },
           {
             key: 'Access-Control-Expose-Headers',
-            value: 'X-Total-Count, X-Page-Count, X-Current-Page, X-Rate-Limit-Remaining, X-Rate-Limit-Reset',
+            value:
+              'X-Total-Count, X-Page-Count, X-Current-Page, X-Rate-Limit-Remaining, X-Rate-Limit-Reset',
           },
           {
             key: 'Access-Control-Allow-Credentials',

@@ -13,14 +13,8 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    ".next"
-  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", ".next"],
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs",

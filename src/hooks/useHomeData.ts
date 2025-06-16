@@ -26,10 +26,10 @@ interface UseHomePageDataReturn {
 
 /**
  * Custom hook for loading homepage data asynchronously
- * 
+ *
  * This hook fetches homepage data in the background after the shell UI is rendered,
  * providing a smooth user experience with instant visual feedback.
- * 
+ *
  * Features:
  * - Async data fetching after shell render
  * - Error handling with retry capability
@@ -76,7 +76,7 @@ export function useHomePageData(page: number = 1): UseHomePageDataReturn {
         }
       } catch (err) {
         console.error('Error fetching home data:', err);
-        
+
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'Failed to load home data');
           setIsLoading(false);

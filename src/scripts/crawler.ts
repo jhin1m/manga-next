@@ -16,7 +16,7 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const options: any = {
     source: 'mangaraw',
-    startPage: 1
+    startPage: 1,
   };
 
   // Hiển thị help nếu không có tham số hoặc có flag --help
@@ -90,16 +90,18 @@ async function main() {
   console.log('Manga Crawler CLI');
   console.log('=================');
   console.log(`Source: ${options.source}`);
-  
+
   if (options.mangaId) {
     console.log(`Manga ID: ${options.mangaId}`);
   } else {
     console.log(`Trang: ${options.startPage}${options.endPage ? ` đến ${options.endPage}` : ''}`);
   }
-  
+
   console.log(`Sử dụng ảnh gốc: ${options.useOriginalImages ? 'Có' : 'Không'}`);
   console.log(`Concurrency: ${options.concurrency || 3}`);
-  console.log(`Auth token: ${options.authToken ? 'Được cung cấp' : (process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có')}`);
+  console.log(
+    `Auth token: ${options.authToken ? 'Được cung cấp' : process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có'}`
+  );
   console.log('=================');
 
   try {

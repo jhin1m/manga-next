@@ -7,12 +7,14 @@ The reading history synchronization system provides seamless, transparent data p
 ## Features
 
 ### For Non-Logged-In Users
+
 - ✅ Reading history stored in localStorage
 - ✅ Automatic tracking when reading chapters
 - ✅ Manual history management (clear, remove items)
 - ✅ Cross-tab synchronization via storage events
 
 ### For Logged-In Users
+
 - ✅ All localStorage features
 - ✅ Silent automatic sync to database upon login
 - ✅ Silent real-time sync when reading chapters
@@ -24,11 +26,13 @@ The reading history synchronization system provides seamless, transparent data p
 ### Components
 
 1. **Enhanced Reading History Types** (`src/lib/utils/readingHistory.ts`)
+
    - Extended `ReadingHistory` type with sync fields
    - `DatabaseReadingProgress` type for API responses
    - Utility functions for data conversion and merging
 
 2. **API Endpoints**
+
    - `GET /api/reading-progress` - Fetch user's reading history
    - `POST /api/reading-progress` - Update reading progress
    - `POST /api/reading-progress/sync` - Bulk sync localStorage to database
@@ -36,6 +40,7 @@ The reading history synchronization system provides seamless, transparent data p
    - `GET/DELETE /api/reading-progress/[comicId]` - Manage specific comic progress
 
 3. **Hooks**
+
    - `useReadingHistorySync` - Main sync management hook
    - Enhanced `useReadingHistory` - Auto-sync for authenticated users
 
@@ -46,6 +51,7 @@ The reading history synchronization system provides seamless, transparent data p
 ### Database Schema
 
 Uses existing `Reading_Progress` table:
+
 ```sql
 Reading_Progress {
   user_id               Int
@@ -82,9 +88,9 @@ import { useReadingHistorySync } from '@/hooks/useReadingHistorySync';
 
 function MyComponent() {
   const {
-    history,              // Current reading history
+    history, // Current reading history
     clearDatabaseHistory, // Clear database history
-    refreshHistory,       // Refresh from localStorage
+    refreshHistory, // Refresh from localStorage
   } = useReadingHistorySync();
 
   // Sync happens automatically - no manual intervention needed

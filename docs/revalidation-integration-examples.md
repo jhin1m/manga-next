@@ -29,19 +29,19 @@ import { revalidateManga, revalidateMangaList } from '@/lib/revalidation';
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    
+
     // Create manga in database
     const manga = await prisma.comic.create({
       data: {
         title: data.title,
         slug: data.slug,
         // ... other fields
-      }
+      },
     });
 
     // Trigger revalidation after successful creation
     await revalidateManga(manga.slug);
-    
+
     return NextResponse.json({ success: true, manga });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create manga' }, { status: 500 });
@@ -51,19 +51,19 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const data = await request.json();
-    
+
     // Update manga in database
     const manga = await prisma.comic.update({
       where: { id: data.id },
       data: {
         title: data.title,
         // ... other fields
-      }
+      },
     });
 
     // Trigger revalidation after successful update
     await revalidateManga(manga.slug);
-    
+
     return NextResponse.json({ success: true, manga });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update manga' }, { status: 500 });
@@ -80,7 +80,7 @@ export async function POST(request: Request, { params }: { params: { slug: strin
   try {
     const data = await request.json();
     const mangaSlug = params.slug;
-    
+
     // Create chapter in database
     const chapter = await prisma.chapter.create({
       data: {
@@ -88,12 +88,12 @@ export async function POST(request: Request, { params }: { params: { slug: strin
         chapter_number: data.chapter_number,
         comic: { connect: { slug: mangaSlug } },
         // ... other fields
-      }
+      },
     });
 
     // Trigger revalidation after successful chapter creation
     await revalidateChapter(mangaSlug, chapter.id.toString());
-    
+
     return NextResponse.json({ success: true, chapter });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create chapter' }, { status: 500 });
@@ -112,14 +112,14 @@ export async function POST(request: Request) {
   try {
     // Perform bulk manga updates
     const results = await performBulkMangaUpdate();
-    
+
     // Trigger bulk revalidation
     await onBulkUpdate('manga');
-    
-    return NextResponse.json({ 
-      success: true, 
+
+    return NextResponse.json({
+      success: true,
       message: 'Bulk update completed',
-      updated: results.length 
+      updated: results.length,
     });
   } catch (error) {
     return NextResponse.json({ error: 'Bulk update failed' }, { status: 500 });
@@ -150,13 +150,13 @@ prisma.$use(async (params, next) => {
           await revalidateManga(result.slug);
         }
         break;
-      
+
       case 'Chapter':
         if (result.comic_id) {
           // Get manga slug from comic_id
           const comic = await prisma.comic.findUnique({
             where: { id: result.comic_id },
-            select: { slug: true }
+            select: { slug: true },
           });
           if (comic) {
             await revalidateChapter(comic.slug, result.id.toString());
@@ -191,7 +191,7 @@ export default function RevalidationPanel() {
     setLoading(true);
     try {
       let response;
-      
+
       switch (type) {
         case 'manga-list':
           response = await revalidationApi.trigger({
@@ -199,15 +199,15 @@ export default function RevalidationPanel() {
             paths: ['/manga', '/']
           });
           break;
-          
+
         case 'all':
           response = await revalidationApi.all();
           break;
-          
+
         default:
           response = await revalidationApi.health();
       }
-      
+
       setResult(response);
     } catch (error) {
       setResult({ error: error.message });
@@ -219,23 +219,23 @@ export default function RevalidationPanel() {
   return (
     <div className="space-y-4">
       <h2>Cache Revalidation Panel</h2>
-      
+
       <div className="flex gap-2">
-        <button 
+        <button
           onClick={() => handleRevalidate('manga-list')}
           disabled={loading}
         >
           Revalidate Manga List
         </button>
-        
-        <button 
+
+        <button
           onClick={() => handleRevalidate('all')}
           disabled={loading}
         >
           Revalidate All
         </button>
       </div>
-      
+
       {result && (
         <pre className="bg-gray-100 p-4 rounded">
           {JSON.stringify(result, null, 2)}
@@ -264,12 +264,12 @@ export async function POST(request: Request) {
           await triggerRevalidation({ mangaSlug: record.slug });
         }
         break;
-        
+
       case 'chapters':
         if (record.comic_slug) {
-          await triggerRevalidation({ 
+          await triggerRevalidation({
             mangaSlug: record.comic_slug,
-            chapterId: record.id.toString()
+            chapterId: record.id.toString(),
           });
         }
         break;
@@ -337,7 +337,7 @@ describe('Revalidation', () => {
 try {
   // Database operation
   const manga = await createManga(data);
-  
+
   // Revalidation (don't fail if this fails)
   try {
     await revalidateManga(manga.slug);
@@ -345,7 +345,7 @@ try {
     console.warn('Revalidation failed:', revalidationError);
     // Continue - don't fail the main operation
   }
-  
+
   return { success: true, manga };
 } catch (error) {
   return { error: 'Failed to create manga' };

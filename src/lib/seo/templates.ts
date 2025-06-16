@@ -19,52 +19,85 @@ export const seoTemplates: SeoTemplates = {
 
   manga: {
     title: '{title}',
-    description: '{seoText.read} {title} {seoText.manga} {seoText.online} {seoText.forFree}. {description} {seoText.latestChapters} {seoText.on} {siteName}.',
-    keywords: ['{title}', '{seoText.manga}', '{seoText.readOnline}', '{seoText.freeManga}', '{genres}', '{author}'],
+    description:
+      '{seoText.read} {title} {seoText.manga} {seoText.online} {seoText.forFree}. {description} {seoText.latestChapters} {seoText.on} {siteName}.',
+    keywords: [
+      '{title}',
+      '{seoText.manga}',
+      '{seoText.readOnline}',
+      '{seoText.freeManga}',
+      '{genres}',
+      '{author}',
+    ],
     type: 'article',
   },
 
   chapter: {
     title: '{mangaTitle} {seoText.chapter} {chapterNumber}',
-    description: '{seoText.read} {mangaTitle} {seoText.chapter} {chapterNumber} {seoText.online} {seoText.forFree}. {seoText.highQualityPages} {seoText.on} {siteName}.',
-    keywords: ['{mangaTitle}', '{seoText.chapter} {chapterNumber}', '{seoText.manga}', '{seoText.readOnline}', '{genres}'],
+    description:
+      '{seoText.read} {mangaTitle} {seoText.chapter} {chapterNumber} {seoText.online} {seoText.forFree}. {seoText.highQualityPages} {seoText.on} {siteName}.',
+    keywords: [
+      '{mangaTitle}',
+      '{seoText.chapter} {chapterNumber}',
+      '{seoText.manga}',
+      '{seoText.readOnline}',
+      '{genres}',
+    ],
     type: 'article',
   },
 
   genre: {
     title: '{genreName}',
-    description: '{seoText.discoverBest} {genreName} {seoText.manga} {seoText.series}. {seoText.browse} {mangaCount} {genreName} {seoText.comics} {seoText.and} {seoText.readOnline} {seoText.forFree} {seoText.on} {siteName}.',
-    keywords: ['{genreName} {seoText.manga}', '{genreName} {seoText.comics}', '{seoText.readOnline} {genreName}', '{seoText.mangaGenre}'],
+    description:
+      '{seoText.discoverBest} {genreName} {seoText.manga} {seoText.series}. {seoText.browse} {mangaCount} {genreName} {seoText.comics} {seoText.and} {seoText.readOnline} {seoText.forFree} {seoText.on} {siteName}.',
+    keywords: [
+      '{genreName} {seoText.manga}',
+      '{genreName} {seoText.comics}',
+      '{seoText.readOnline} {genreName}',
+      '{seoText.mangaGenre}',
+    ],
     type: 'website',
   },
 
   search: {
     title: '{seoText.searchResults} for "{query}" | {siteName}',
-    description: '{seoText.findWithKeyword} "{query}". {seoText.browseSearchResults} {seoText.on} {siteName}.',
+    description:
+      '{seoText.findWithKeyword} "{query}". {seoText.browseSearchResults} {seoText.on} {siteName}.',
     keywords: ['{seoText.search}', '{seoText.findManga}', '{query}', '{seoText.mangaSearch}'],
     type: 'website',
   },
 
   mangaList: {
     title: '{pageTitle}',
-    description: '{pageTitle} {siteName}. {seoText.discoverBest} {totalResults} {seoText.manga} {seoText.series} {seoText.and} {seoText.readOnline} {seoText.forFree}. {seoText.updatedDaily}.',
-    keywords: ['{pageTitle}', '{seoText.mangaList}', '{seoText.browseManga}', '{seoText.readMangaOnline}', '{seoText.freeManga}', '{filters}'],
+    description:
+      '{pageTitle} {siteName}. {seoText.discoverBest} {totalResults} {seoText.manga} {seoText.series} {seoText.and} {seoText.readOnline} {seoText.forFree}. {seoText.updatedDaily}.',
+    keywords: [
+      '{pageTitle}',
+      '{seoText.mangaList}',
+      '{seoText.browseManga}',
+      '{seoText.readMangaOnline}',
+      '{seoText.freeManga}',
+      '{filters}',
+    ],
     type: 'website',
   },
 
   profile: {
     title: '{username} {seoText.profile} | {siteName}',
-    description: '{seoText.viewProfile} {username}\'s {seoText.profile}, {seoText.bookmarks}, {seoText.and} {seoText.readingHistory} {seoText.on} {siteName}.',
-    keywords: ['{seoText.userProfile}', '{username}', '{seoText.bookmarks}', '{seoText.readingHistory}'],
+    description:
+      "{seoText.viewProfile} {username}'s {seoText.profile}, {seoText.bookmarks}, {seoText.and} {seoText.readingHistory} {seoText.on} {siteName}.",
+    keywords: [
+      '{seoText.userProfile}',
+      '{username}',
+      '{seoText.bookmarks}',
+      '{seoText.readingHistory}',
+    ],
     type: 'profile',
   },
 };
 
 // Template processing functions
-export const processTemplate = (
-  template: string,
-  variables: Record<string, any>
-): string => {
+export const processTemplate = (template: string, variables: Record<string, any>): string => {
   let processed = template;
 
   // Add default variables
@@ -102,10 +135,7 @@ export const processTemplate = (
   return processed;
 };
 
-export const processKeywords = (
-  keywords: string[],
-  variables: Record<string, any>
-): string[] => {
+export const processKeywords = (keywords: string[], variables: Record<string, any>): string[] => {
   return keywords
     .map(keyword => processTemplate(keyword, variables))
     .filter(keyword => keyword.length > 0)
@@ -127,7 +157,9 @@ export const getMangaTemplate = (variables: {
     title: processTemplate(template.title, variables),
     description: processTemplate(template.description, {
       ...variables,
-      description: variables.description || `${variables.title} ${seoConfig.seoText.manga} ${seoConfig.seoText.series}`,
+      description:
+        variables.description ||
+        `${variables.title} ${seoConfig.seoText.manga} ${seoConfig.seoText.series}`,
     }),
     keywords: processKeywords(template.keywords, {
       ...variables,
@@ -175,17 +207,18 @@ export const getGenreTemplate = (variables: {
   };
 };
 
-export const getSearchTemplate = (variables: {
-  query?: string;
-  resultsCount?: number;
-}) => {
+export const getSearchTemplate = (variables: { query?: string; resultsCount?: number }) => {
   const template = seoTemplates.search;
 
   if (!variables.query) {
     return {
       title: `${seoConfig.seoText.search} ${seoConfig.seoText.manga} | ${seoConfig.site.name}`,
       description: `${seoConfig.seoText.searchFor} ${seoConfig.seoText.manga} ${seoConfig.seoText.series} ${seoConfig.seoText.on} ${seoConfig.site.name}. ${seoConfig.seoText.findFavorite} ${seoConfig.seoText.manga} ${seoConfig.seoText.and} ${seoConfig.seoText.readOnline} ${seoConfig.seoText.forFree}.`,
-      keywords: [seoConfig.seoText.search, seoConfig.seoText.findManga, seoConfig.seoText.mangaSearch],
+      keywords: [
+        seoConfig.seoText.search,
+        seoConfig.seoText.findManga,
+        seoConfig.seoText.mangaSearch,
+      ],
       type: template.type,
     };
   }
@@ -222,10 +255,7 @@ export const getMangaListTemplate = (variables: {
   };
 };
 
-export const getProfileTemplate = (variables: {
-  username: string;
-  displayName?: string;
-}) => {
+export const getProfileTemplate = (variables: { username: string; displayName?: string }) => {
   const template = seoTemplates.profile;
 
   return {

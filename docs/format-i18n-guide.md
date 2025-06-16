@@ -52,38 +52,51 @@ function MyComponent() {
 ## Các hàm có sẵn
 
 ### formatViews(count: number)
+
 Định dạng số lượt xem với đơn vị phù hợp:
+
 - **English**: 1.2K, 1.2M, 1.2B
 - **Tiếng Việt**: 1.2K, 1.2Tr, 1.2Tỷ
 
 ### formatDate(dateString: string)
+
 Định dạng ngày thành dạng "time ago":
+
 - **English**: "2 minutes ago", "1 hour ago", "Yesterday", "2 days ago", "1 week ago"
 - **Tiếng Việt**: "2 phút trước", "1 giờ trước", "Hôm qua", "2 ngày trước", "1 tuần trước"
 
 ### formatNumber(number: number, options?)
+
 Định dạng số theo locale:
+
 - **English**: 1,234,567.89
 - **Tiếng Việt**: 1.234.567,89
 
 ### formatDateLocale(date: Date | string, options?)
+
 Định dạng ngày theo locale:
+
 - **English**: "January 15, 2024"
 - **Tiếng Việt**: "15 tháng 1, 2024"
 
 ### formatCurrency(amount: number, currency: string)
+
 Định dạng tiền tệ:
+
 - **English**: $1,234.56
 - **Tiếng Việt**: 1.234.567 ₫
 
 ### formatPercentage(value: number, options?)
+
 Định dạng phần trăm:
+
 - **English**: 12.34%
 - **Tiếng Việt**: 12,34%
 
 ## Translations được hỗ trợ
 
 ### English (en.json)
+
 ```json
 {
   "format": {
@@ -97,12 +110,32 @@ function MyComponent() {
     },
     "months": {
       "short": {
-        "0": "Jan", "1": "Feb", "2": "Mar", "3": "Apr", "4": "May", "5": "Jun",
-        "6": "Jul", "7": "Aug", "8": "Sep", "9": "Oct", "10": "Nov", "11": "Dec"
+        "0": "Jan",
+        "1": "Feb",
+        "2": "Mar",
+        "3": "Apr",
+        "4": "May",
+        "5": "Jun",
+        "6": "Jul",
+        "7": "Aug",
+        "8": "Sep",
+        "9": "Oct",
+        "10": "Nov",
+        "11": "Dec"
       },
       "long": {
-        "0": "January", "1": "February", "2": "March", "3": "April", "4": "May", "5": "June",
-        "6": "July", "7": "August", "8": "September", "9": "October", "10": "November", "11": "December"
+        "0": "January",
+        "1": "February",
+        "2": "March",
+        "3": "April",
+        "4": "May",
+        "5": "June",
+        "6": "July",
+        "7": "August",
+        "8": "September",
+        "9": "October",
+        "10": "November",
+        "11": "December"
       }
     },
     "numbers": {
@@ -115,6 +148,7 @@ function MyComponent() {
 ```
 
 ### Tiếng Việt (vi.json)
+
 ```json
 {
   "format": {
@@ -128,12 +162,32 @@ function MyComponent() {
     },
     "months": {
       "short": {
-        "0": "Th1", "1": "Th2", "2": "Th3", "3": "Th4", "4": "Th5", "5": "Th6",
-        "6": "Th7", "7": "Th8", "8": "Th9", "9": "Th10", "10": "Th11", "11": "Th12"
+        "0": "Th1",
+        "1": "Th2",
+        "2": "Th3",
+        "3": "Th4",
+        "4": "Th5",
+        "5": "Th6",
+        "6": "Th7",
+        "7": "Th8",
+        "8": "Th9",
+        "9": "Th10",
+        "10": "Th11",
+        "11": "Th12"
       },
       "long": {
-        "0": "Tháng 1", "1": "Tháng 2", "2": "Tháng 3", "3": "Tháng 4", "4": "Tháng 5", "5": "Tháng 6",
-        "6": "Tháng 7", "7": "Tháng 8", "8": "Tháng 9", "9": "Tháng 10", "10": "Tháng 11", "11": "Tháng 12"
+        "0": "Tháng 1",
+        "1": "Tháng 2",
+        "2": "Tháng 3",
+        "3": "Tháng 4",
+        "4": "Tháng 5",
+        "5": "Tháng 6",
+        "6": "Tháng 7",
+        "7": "Tháng 8",
+        "8": "Tháng 9",
+        "9": "Tháng 10",
+        "10": "Tháng 11",
+        "11": "Tháng 12"
       }
     },
     "numbers": {
@@ -148,6 +202,7 @@ function MyComponent() {
 ## Migration từ format functions cũ
 
 ### Trước đây:
+
 ```tsx
 import { formatViews, formatDate } from '@/lib/utils/format';
 
@@ -157,6 +212,7 @@ import { formatViews, formatDate } from '@/lib/utils/format';
 ```
 
 ### Bây giờ:
+
 ```tsx
 import { useFormat } from '@/hooks/useFormat';
 
@@ -183,6 +239,7 @@ function MyComponent() {
 ## Ví dụ thực tế
 
 Xem các component đã được cập nhật:
+
 - `src/components/feature/HotMangaSlider.tsx`
 - `src/components/feature/MangaCard.tsx`
 - `src/components/i18n-demo.tsx`

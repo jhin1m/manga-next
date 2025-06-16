@@ -102,7 +102,7 @@ export const SITE_CONSTANTS = {
 
 // Type exports
 export type SiteConstants = typeof SITE_CONSTANTS;
-export type NavigationItem = typeof SITE_CONSTANTS.navigation.main[0];
+export type NavigationItem = (typeof SITE_CONSTANTS.navigation.main)[0];
 export type ImageDimensions = typeof SITE_CONSTANTS.images.manga.cover;
 export type CacheDuration = keyof typeof SITE_CONSTANTS.cache;
 

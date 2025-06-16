@@ -47,11 +47,37 @@ export function formatDate(dateString: string): string {
     return `${diffWeeks} ${diffWeeks === 1 ? 'week' : 'weeks'} ago`;
   } else if (diffDays < 365) {
     // Hiển thị ngày và tháng
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return `${date.getDate()} ${monthNames[date.getMonth()]}`;
   } else {
     // Hiển thị ngày, tháng và năm cho thời gian quá lâu
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
   }
 }

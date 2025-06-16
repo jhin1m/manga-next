@@ -1,102 +1,101 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { useSession } from 'next-auth/react'
-import { toast } from 'sonner'
-import { favoritesApi } from '@/lib/api/client'
-
+import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
+import { favoritesApi } from '@/lib/api/client';
 
 interface UseFavoritesOptions {
-  comicId: number
-  initialIsFavorite?: boolean
+  comicId: number;
+  initialIsFavorite?: boolean;
 }
 
 interface FavoriteResponse {
-  action: 'added' | 'removed'
-  isFavorite: boolean
+  action: 'added' | 'removed';
+  isFavorite: boolean;
 }
 
 /**
  * Custom hook for managing manga favorites
  */
 export function useFavorites({ comicId, initialIsFavorite = false }: UseFavoritesOptions) {
-  const { data: session, status } = useSession()
-  const [isFavorite, setIsFavorite] = useState<boolean>(initialIsFavorite)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
+  const { data: session, status } = useSession();
+  const [isFavorite, setIsFavorite] = useState<boolean>(initialIsFavorite);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Check if the manga is in user's favorites
   const checkFavoriteStatus = useCallback(async () => {
     if (status !== 'authenticated') {
-      return
+      return;
     }
 
     try {
-      setIsLoading(true)
-      setError(null)
+      setIsLoading(true);
+      setError(null);
 
-      const data = await favoritesApi.check(comicId)
-      setIsFavorite(data.isFavorite)
+      const data = await favoritesApi.check(comicId);
+      setIsFavorite(data.isFavorite);
     } catch (err) {
-      console.error('Error checking favorite status:', err)
-      setError('Failed to check favorite status')
+      console.error('Error checking favorite status:', err);
+      setError('Failed to check favorite status');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [comicId, status])
+  }, [comicId, status]);
 
   // Check if the manga is favorited on mount - always fetch when authenticated
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
 
     // Always check favorite status when user is authenticated
     // This ensures we get the latest state from server
     if (status === 'authenticated') {
       checkFavoriteStatus().then(() => {
         // Only update if component is still mounted
-        if (!isMounted) return
-      })
+        if (!isMounted) return;
+      });
     } else if (status === 'unauthenticated') {
       // Reset to false when not authenticated
-      setIsFavorite(false)
+      setIsFavorite(false);
     }
 
     return () => {
-      isMounted = false
-    }
-  }, [status, comicId, checkFavoriteStatus])
+      isMounted = false;
+    };
+  }, [status, comicId, checkFavoriteStatus]);
 
   // Toggle favorite status
   const toggleFavorite = useCallback(async () => {
     if (status !== 'authenticated') {
-      toast.error('Please log in to add favorites')
-      return undefined
+      toast.error('Please log in to add favorites');
+      return undefined;
     }
 
     try {
-      setIsLoading(true)
-      setError(null)
+      setIsLoading(true);
+      setError(null);
 
-      const data: FavoriteResponse = await favoritesApi.toggle(comicId)
-      setIsFavorite(data.isFavorite)
+      const data: FavoriteResponse = await favoritesApi.toggle(comicId);
+      setIsFavorite(data.isFavorite);
 
       // Show success message
       if (data.action === 'added') {
-        toast.success('Added to favorites')
+        toast.success('Added to favorites');
       } else {
-        toast.success('Removed from favorites')
+        toast.success('Removed from favorites');
       }
 
-      return data
+      return data;
     } catch (err) {
-      console.error('Error toggling favorite:', err)
-      setError('Failed to update favorite status')
-      toast.error('Failed to update favorite status')
-      return undefined
+      console.error('Error toggling favorite:', err);
+      setError('Failed to update favorite status');
+      toast.error('Failed to update favorite status');
+      return undefined;
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [comicId, status])
+  }, [comicId, status]);
 
   return {
     isFavorite,
@@ -105,52 +104,55 @@ export function useFavorites({ comicId, initialIsFavorite = false }: UseFavorite
     toggleFavorite,
     checkFavoriteStatus,
     isAuthenticated: status === 'authenticated',
-  }
+  };
 }
 
 /**
  * Hook to fetch all favorites for the current user
  */
 export function useFavoritesList() {
-  const { status } = useSession()
-  const [favorites, setFavorites] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
+  const { status } = useSession();
+  const [favorites, setFavorites] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     total: 0,
     perPage: 20,
-  })
+  });
 
   // Fetch favorites
-  const fetchFavorites = useCallback(async (page = 1, limit = 20) => {
-    if (status !== 'authenticated') {
-      return
-    }
+  const fetchFavorites = useCallback(
+    async (page = 1, limit = 20) => {
+      if (status !== 'authenticated') {
+        return;
+      }
 
-    try {
-      setIsLoading(true)
-      setError(null)
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      const data = await favoritesApi.getList({ page, limit })
-      setFavorites(data.favorites)
-      setPagination(data.pagination)
-      return data
-    } catch (err) {
-      console.error('Error fetching favorites:', err)
-      setError('Failed to fetch favorites')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [status])
+        const data = await favoritesApi.getList({ page, limit });
+        setFavorites(data.favorites);
+        setPagination(data.pagination);
+        return data;
+      } catch (err) {
+        console.error('Error fetching favorites:', err);
+        setError('Failed to fetch favorites');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [status]
+  );
 
   // Fetch favorites on mount
   useEffect(() => {
     if (status === 'authenticated') {
-      fetchFavorites()
+      fetchFavorites();
     }
-  }, [status, fetchFavorites])
+  }, [status, fetchFavorites]);
 
   return {
     favorites,
@@ -159,5 +161,5 @@ export function useFavoritesList() {
     pagination,
     fetchFavorites,
     isAuthenticated: status === 'authenticated',
-  }
+  };
 }

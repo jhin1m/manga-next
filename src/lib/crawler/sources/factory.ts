@@ -17,10 +17,10 @@ export class SourceFactory {
    */
   static initialize(): void {
     if (this.initialized) return;
-    
+
     // Đăng ký nguồn MangaRaw
     this.registerSource('mangaraw', new MangaRawSource());
-    
+
     this.initialized = true;
   }
 
@@ -43,10 +43,12 @@ export class SourceFactory {
     if (!this.initialized) {
       this.initialize();
     }
-    
+
     const source = this.sources.get(name.toLowerCase());
     if (!source) {
-      throw new Error(`Source "${name}" not found. Available sources: ${this.getSupportedSources().join(', ')}`);
+      throw new Error(
+        `Source "${name}" not found. Available sources: ${this.getSupportedSources().join(', ')}`
+      );
     }
     return source;
   }
@@ -59,7 +61,7 @@ export class SourceFactory {
     if (!this.initialized) {
       this.initialize();
     }
-    
+
     return Array.from(this.sources.keys());
   }
 }

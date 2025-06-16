@@ -5,7 +5,13 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Sheet,
   SheetContent,
@@ -16,11 +22,7 @@ import {
   SheetFooter,
   SheetClose,
 } from '@/components/ui/sheet';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { genreApi } from '@/lib/api/client';
@@ -34,8 +36,6 @@ type Genre = {
   description?: string;
   mangaCount?: number;
 };
-
-
 
 interface FilterSortBarProps {
   className?: string;
@@ -52,7 +52,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
     { value: 'all', label: t('statusOptions.all') },
     { value: 'ongoing', label: t('statusOptions.ongoing') },
     { value: 'completed', label: t('statusOptions.completed') },
-    { value: 'hiatus', label: t('statusOptions.hiatus') }
+    { value: 'hiatus', label: t('statusOptions.hiatus') },
   ];
 
   // Sort options with translations
@@ -60,7 +60,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
     { value: 'latest', label: t('sortOptions.latest') },
     { value: 'newest', label: t('sortOptions.newest') },
     { value: 'popular', label: t('sortOptions.popular') },
-    { value: 'rating', label: t('sortOptions.rating') }
+    { value: 'rating', label: t('sortOptions.rating') },
   ];
 
   // Get current filter values from URL
@@ -104,9 +104,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
   // Toggle genre selection
   const toggleGenre = (genre: string) => {
     setSelectedGenres(prev =>
-      prev.includes(genre)
-        ? prev.filter(g => g !== genre)
-        : [...prev, genre]
+      prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]
     );
   };
 
@@ -120,7 +118,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
     updateFilters({
       status,
       ...(isGenrePage ? {} : { genre: selectedGenres.length === 1 ? selectedGenres[0] : null }),
-      genres: selectedGenres.length > 1 ? selectedGenres.join(',') : null
+      genres: selectedGenres.length > 1 ? selectedGenres.join(',') : null,
     });
     setIsFilterOpen(false);
   };
@@ -154,38 +152,40 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
     setTimeout(() => {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }, 100); // Độ trễ nhỏ để đảm bảo navigation đã xử lý xong
   };
 
   // Count active filters
-  const activeFilterCount = [
-    status !== 'all' ? 1 : 0,
-    selectedGenres.length
-  ].reduce((a, b) => a + b, 0);
+  const activeFilterCount = [status !== 'all' ? 1 : 0, selectedGenres.length].reduce(
+    (a, b) => a + b,
+    0
+  );
 
   return (
     <div className={`flex flex-wrap gap-2 items-center justify-between ${className}`}>
       {/* Sort Dropdown */}
-      <div className="flex-1 min-w-[200px]">
+      <div className='flex-1 min-w-[200px]'>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-between">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4" />
-                <span>{t('sort')}: {SORT_OPTIONS.find(option => option.value === sort)?.label}</span>
+            <Button variant='outline' className='w-full justify-between'>
+              <div className='flex items-center gap-2'>
+                <SlidersHorizontal className='h-4 w-4' />
+                <span>
+                  {t('sort')}: {SORT_OPTIONS.find(option => option.value === sort)?.label}
+                </span>
               </div>
-              <ChevronDown className="h-4 w-4 opacity-50" />
+              <ChevronDown className='h-4 w-4 opacity-50' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0" align="start">
-            <div className="flex flex-col">
+          <PopoverContent className='w-[200px] p-0' align='start'>
+            <div className='flex flex-col'>
               {SORT_OPTIONS.map(option => (
                 <Button
                   key={option.value}
-                  variant={sort === option.value ? "secondary" : "ghost"}
-                  className="justify-start"
+                  variant={sort === option.value ? 'secondary' : 'ghost'}
+                  className='justify-start'
                   onClick={() => handleSortChange(option.value)}
                 >
                   {option.label}
@@ -199,11 +199,14 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
       {/* Filter Button and Sheet */}
       <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
         <SheetTrigger asChild>
-          <Button variant="outline" className="gap-2">
-            <Filter className="h-4 w-4" />
+          <Button variant='outline' className='gap-2'>
+            <Filter className='h-4 w-4' />
             <span>{t('filter')}</span>
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center">
+              <Badge
+                variant='secondary'
+                className='ml-1 h-5 w-5 p-0 flex items-center justify-center'
+              >
                 {activeFilterCount}
               </Badge>
             )}
@@ -212,17 +215,15 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
         <SheetContent>
           <SheetHeader>
             <SheetTitle>{t('filterManga')}</SheetTitle>
-            <SheetDescription>
-              {t('applyFilters')}
-            </SheetDescription>
+            <SheetDescription>{t('applyFilters')}</SheetDescription>
           </SheetHeader>
 
-          <div className="p-4 flex flex-col gap-6">
+          <div className='p-4 flex flex-col gap-6'>
             {/* Status Filter */}
-            <div className="space-y-2">
-              <Label htmlFor="status">{t('status')}</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='status'>{t('status')}</Label>
               <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger id="status">
+                <SelectTrigger id='status'>
                   <SelectValue placeholder={t('selectStatus')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -236,14 +237,14 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
             </div>
 
             {/* Genres Filter */}
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>{t('genres')}</Label>
               {isLoading ? (
-                <div className="text-sm text-muted-foreground">{t('loadingGenres')}...</div>
+                <div className='text-sm text-muted-foreground'>{t('loadingGenres')}...</div>
               ) : genres.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-2">
+                <div className='grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-2'>
                   {genres.map(genre => (
-                    <div key={genre.id} className="flex items-center space-x-2">
+                    <div key={genre.id} className='flex items-center space-x-2'>
                       <Checkbox
                         id={`genre-${genre.slug}`}
                         checked={selectedGenres.includes(genre.slug)}
@@ -251,11 +252,11 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
                       />
                       <label
                         htmlFor={`genre-${genre.slug}`}
-                        className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        className='text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
                       >
                         {genre.name}
                         {genre.mangaCount !== undefined && (
-                          <span className="text-xs text-muted-foreground ml-1">
+                          <span className='text-xs text-muted-foreground ml-1'>
                             ({genre.mangaCount})
                           </span>
                         )}
@@ -264,7 +265,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
                   ))}
                 </div>
               ) : (
-                <div className="text-sm text-muted-foreground">
+                <div className='text-sm text-muted-foreground'>
                   {t('noGenresAvailable') || 'No genres available'}
                 </div>
               )}
@@ -272,7 +273,7 @@ export default function FilterSortBar({ className }: FilterSortBarProps) {
           </div>
 
           <SheetFooter>
-            <Button variant="outline" onClick={resetFilters}>
+            <Button variant='outline' onClick={resetFilters}>
               {t('reset')}
             </Button>
             <SheetClose asChild>

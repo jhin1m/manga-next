@@ -56,9 +56,7 @@ export function formatDateI18n(dateString: string, tTimeAgo: any, tMonths: any):
     return tTimeAgo('daysAgo', { days: diffDays });
   } else if (diffDays < 30) {
     const diffWeeks = Math.floor(diffDays / 7);
-    return diffWeeks === 1
-      ? tTimeAgo('weekAgo')
-      : tTimeAgo('weeksAgo', { weeks: diffWeeks });
+    return diffWeeks === 1 ? tTimeAgo('weekAgo') : tTimeAgo('weeksAgo', { weeks: diffWeeks });
   } else if (diffDays < 365) {
     // Hiển thị ngày và tháng - truy cập từng tháng riêng lẻ
     const monthIndex = date.getMonth();
@@ -92,7 +90,8 @@ export function useFormatI18n() {
 
   return {
     formatViews: (count: number, tNumbers: any) => formatViewsI18n(count, tNumbers),
-    formatDate: (dateString: string, tTimeAgo: any, tMonths: any) => formatDateI18n(dateString, tTimeAgo, tMonths)
+    formatDate: (dateString: string, tTimeAgo: any, tMonths: any) =>
+      formatDateI18n(dateString, tTimeAgo, tMonths),
   };
 }
 
@@ -147,7 +146,7 @@ export function formatCurrencyWithLocale(
 ): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: currency
+    currency: currency,
   }).format(amount);
 }
 
@@ -165,6 +164,6 @@ export function formatPercentageWithLocale(
 ): string {
   return new Intl.NumberFormat(locale, {
     style: 'percent',
-    ...options
+    ...options,
   }).format(value);
 }

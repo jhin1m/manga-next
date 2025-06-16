@@ -2,7 +2,7 @@
 
 /**
  * PM2 Configuration Test Script
- * 
+ *
  * This script validates the PM2 ecosystem configuration
  * and checks if all required dependencies are available.
  */
@@ -17,17 +17,19 @@ console.log('1. Checking ecosystem.config.js...');
 const ecosystemPath = path.join(process.cwd(), 'ecosystem.config.js');
 if (fs.existsSync(ecosystemPath)) {
   console.log('   ✅ ecosystem.config.js found');
-  
+
   try {
     const config = require(ecosystemPath);
     console.log('   ✅ Configuration file is valid JavaScript');
-    
+
     if (config.apps && config.apps.length > 0) {
       console.log('   ✅ Apps configuration found');
       const app = config.apps[0];
       console.log(`   📱 App name: ${app.name}`);
       console.log(`   🚀 Script: ${app.script}`);
-      console.log(`   🌍 Environment: ${app.env_production ? 'Production ready' : 'Development only'}`);
+      console.log(
+        `   🌍 Environment: ${app.env_production ? 'Production ready' : 'Development only'}`
+      );
     } else {
       console.log('   ❌ No apps configuration found');
     }
@@ -64,8 +66,10 @@ console.log('\n4. Checking package.json PM2 scripts...');
 const packagePath = path.join(process.cwd(), 'package.json');
 if (fs.existsSync(packagePath)) {
   const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-  const pm2Scripts = Object.keys(packageJson.scripts || {}).filter(script => script.startsWith('pm2:'));
-  
+  const pm2Scripts = Object.keys(packageJson.scripts || {}).filter(script =>
+    script.startsWith('pm2:')
+  );
+
   if (pm2Scripts.length > 0) {
     console.log('   ✅ PM2 scripts found:');
     pm2Scripts.forEach(script => {

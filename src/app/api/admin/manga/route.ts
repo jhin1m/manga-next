@@ -1,8 +1,13 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
-import { requireAdminAuth, extractPaginationParams, buildPaginationResponse, logAdminAction } from '@/lib/admin/middleware'
-import { AdminRole, mangaCreateSchema } from '@/types/admin'
-import { prisma } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import {
+  requireAdminAuth,
+  extractPaginationParams,
+  buildPaginationResponse,
+  logAdminAction,
+} from '@/lib/admin/middleware';
+import { AdminRole, mangaCreateSchema } from '@/types/admin';
+import { prisma } from '@/lib/db';
 
 /**
  * GET /api/admin/manga
@@ -11,37 +16,37 @@ import { prisma } from '@/lib/db'
 export async function GET(request: Request) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.EDITOR)
+    const authResult = await requireAdminAuth(request, AdminRole.EDITOR);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { page, limit, sort, order, search, status } = extractPaginationParams(request.url)
+    const { page, limit, sort, order, search, status } = extractPaginationParams(request.url);
 
     // Build where clause
-    const where: any = {}
-    
+    const where: any = {};
+
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { slug: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
-      ]
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
     }
-    
+
     if (status) {
-      where.status = status
+      where.status = status;
     }
 
     // Build order by clause
-    const orderBy: any = {}
+    const orderBy: any = {};
     if (sort === 'title') {
-      orderBy.title = order
+      orderBy.title = order;
     } else if (sort === 'status') {
-      orderBy.status = order
+      orderBy.status = order;
     } else if (sort === 'views') {
-      orderBy.view_count = order
+      orderBy.view_count = order;
     } else {
-      orderBy.created_at = order
+      orderBy.created_at = order;
     }
 
     // Get manga with pagination
@@ -55,10 +60,10 @@ export async function GET(request: Request) {
                 select: {
                   id: true,
                   name: true,
-                  slug: true
-                }
-              }
-            }
+                  slug: true,
+                },
+              },
+            },
           },
           Comic_Genres: {
             include: {
@@ -66,26 +71,26 @@ export async function GET(request: Request) {
                 select: {
                   id: true,
                   name: true,
-                  slug: true
-                }
-              }
-            }
+                  slug: true,
+                },
+              },
+            },
           },
           _count: {
             select: {
               Chapters: true,
               Comic_Views: true,
               Favorites: true,
-              Ratings: true
-            }
-          }
+              Ratings: true,
+            },
+          },
         },
         orderBy,
         skip: (page - 1) * limit,
-        take: limit
+        take: limit,
       }),
-      prisma.comics.count({ where })
-    ])
+      prisma.comics.count({ where }),
+    ]);
 
     // Transform data to include statistics
     const transformedManga = manga.map(item => ({
@@ -105,24 +110,23 @@ export async function GET(request: Request) {
         viewsCount: item._count.Comic_Views,
         favoritesCount: item._count.Favorites,
         ratingsCount: item._count.Ratings,
-        averageRating: 0 // TODO: Calculate from ratings
-      }
-    }))
+        averageRating: 0, // TODO: Calculate from ratings
+      },
+    }));
 
     return NextResponse.json({
       success: true,
-      ...buildPaginationResponse(transformedManga, totalCount, page, limit)
-    })
-
+      ...buildPaginationResponse(transformedManga, totalCount, page, limit),
+    });
   } catch (error) {
-    console.error('[ADMIN_MANGA_LIST_ERROR]', error)
+    console.error('[ADMIN_MANGA_LIST_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to fetch manga list' 
+        error: 'Failed to fetch manga list',
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -133,27 +137,27 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.EDITOR)
+    const authResult = await requireAdminAuth(request, AdminRole.EDITOR);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { user } = authResult
-    const body = await request.json()
-    const validatedData = mangaCreateSchema.parse(body)
+    const { user } = authResult;
+    const body = await request.json();
+    const validatedData = mangaCreateSchema.parse(body);
 
     // Check if slug already exists
     const existingManga = await prisma.comics.findUnique({
-      where: { slug: validatedData.slug }
-    })
+      where: { slug: validatedData.slug },
+    });
 
     if (existingManga) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Manga with this slug already exists' 
+          error: 'Manga with this slug already exists',
         },
         { status: 409 }
-      )
+      );
     }
 
     // Create manga
@@ -166,7 +170,7 @@ export async function POST(request: Request) {
         status: validatedData.status || 'ongoing',
         uploader_id: validatedData.author_id,
         created_at: new Date(),
-        updated_at: new Date()
+        updated_at: new Date(),
       },
       include: {
         Comic_Authors: {
@@ -175,22 +179,22 @@ export async function POST(request: Request) {
               select: {
                 id: true,
                 name: true,
-                slug: true
-              }
-            }
-          }
-        }
-      }
-    })
+                slug: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
     // Add genres if provided
     if (validatedData.genre_ids && validatedData.genre_ids.length > 0) {
       await prisma.comic_Genres.createMany({
         data: validatedData.genre_ids.map(genreId => ({
           comic_id: manga.id,
-          genre_id: genreId
-        }))
-      })
+          genre_id: genreId,
+        })),
+      });
     }
 
     // Log admin action
@@ -201,33 +205,35 @@ export async function POST(request: Request) {
       manga.id,
       { title: manga.title, slug: manga.slug },
       request
-    )
+    );
 
-    return NextResponse.json({
-      success: true,
-      message: 'Manga created successfully',
-      data: manga
-    }, { status: 201 })
-
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Manga created successfully',
+        data: manga,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Invalid request data',
-          details: error.errors 
+          details: error.errors,
         },
         { status: 400 }
-      )
+      );
     }
 
-    console.error('[ADMIN_MANGA_CREATE_ERROR]', error)
+    console.error('[ADMIN_MANGA_CREATE_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to create manga' 
+        error: 'Failed to create manga',
       },
       { status: 500 }
-    )
+    );
   }
 }

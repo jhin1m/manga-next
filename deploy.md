@@ -1,6 +1,7 @@
 # Deploy Guide
 
 ## Local Development
+
 ```bash
 # Install dependencies
 pnpm install
@@ -16,6 +17,7 @@ pnpm dev
 ## Docker Deployment (Recommended)
 
 ### Build and Run with Docker
+
 ```bash
 # Build the Docker image
 docker build -t manga-website .
@@ -29,13 +31,14 @@ docker run -p 3000:3000 \
 ```
 
 ### Docker Compose (Development)
+
 ```yaml
 version: '3.8'
 services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/manga-next
       - NEXTAUTH_SECRET=your-secret-key
@@ -52,13 +55,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
 volumes:
   postgres_data:
 ```
 
 ## Railway Deployment
+
 ```bash
 # Install Railway CLI
 npm install -g @railway/cli
@@ -75,6 +79,7 @@ railway variables set NEXTAUTH_URL="https://your-app.railway.app"
 ```
 
 ## Vercel Deployment
+
 ```bash
 # Install Vercel CLI
 npm install -g vercel
@@ -89,6 +94,7 @@ vercel
 ```
 
 ## Production Build (Manual)
+
 ```bash
 # Build project
 pnpm build
@@ -98,6 +104,7 @@ pnpm start
 ```
 
 ## Database Commands
+
 ```bash
 # Generate Prisma client
 npx prisma generate
@@ -116,11 +123,14 @@ npx prisma studio
 ```
 
 ## Environment Variables
+
 Required environment variables:
+
 - `DATABASE_URL`: PostgreSQL connection string
 - `NEXTAUTH_SECRET`: Secret key for NextAuth.js
 - `NEXTAUTH_URL`: Your application URL
 
 Optional:
+
 - `SEED_DATABASE=true`: Enable database seeding on startup
 - `NODE_ENV=production`: Set to production mode

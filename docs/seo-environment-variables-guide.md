@@ -7,6 +7,7 @@ Hệ thống SEO đã được mở rộng để hỗ trợ đầy đủ cấu h
 ## 🔧 **Cấu hình Environment Variables**
 
 ### **1. Thông tin cơ bản của site**
+
 ```bash
 # URL và thông tin cơ bản
 NEXT_PUBLIC_SITE_URL="https://your-domain.com"
@@ -21,6 +22,7 @@ NEXT_PUBLIC_SITE_KEYWORDS="manga,comic,read manga,free manga"
 ```
 
 ### **2. Cấu hình Assets**
+
 ```bash
 # Đường dẫn tới các file assets
 NEXT_PUBLIC_LOGO_URL="/logo.png"
@@ -29,6 +31,7 @@ NEXT_PUBLIC_OG_IMAGE="/images/og-image.jpg"
 ```
 
 ### **3. Social Media Integration**
+
 ```bash
 # Twitter/X configuration
 NEXT_PUBLIC_TWITTER_HANDLE="@YourHandle"
@@ -41,6 +44,7 @@ NEXT_PUBLIC_OG_TYPE="website"
 ```
 
 ### **4. SEO Templates**
+
 ```bash
 # Title configuration
 NEXT_PUBLIC_TITLE_TEMPLATE="%s | Your Site"
@@ -49,6 +53,7 @@ NEXT_PUBLIC_TITLE_SEPARATOR=" | "
 ```
 
 ### **5. Robots & Indexing**
+
 ```bash
 # Search engine directives
 NEXT_PUBLIC_ROBOTS_INDEX="true"
@@ -56,6 +61,7 @@ NEXT_PUBLIC_ROBOTS_FOLLOW="true"
 ```
 
 ### **6. Organization Schema**
+
 ```bash
 # Structured data cho organization
 NEXT_PUBLIC_ORG_NAME="Your Organization"
@@ -65,6 +71,7 @@ NEXT_PUBLIC_ORG_COUNTRY="US"
 ```
 
 ### **7. Analytics & Tracking**
+
 ```bash
 # Google Analytics
 NEXT_PUBLIC_GOOGLE_ANALYTICS_ID="G-XXXXXXXXXX"
@@ -82,6 +89,7 @@ NEXT_PUBLIC_FACEBOOK_PIXEL_ID="your-pixel-id"
 ## 🚀 **Cách sử dụng**
 
 ### **1. Development Environment**
+
 ```bash
 # Copy file example
 cp .env.example .env
@@ -91,6 +99,7 @@ cp .env.example .env
 ```
 
 ### **2. Production Environment**
+
 ```bash
 # Thêm analytics IDs cho production
 NEXT_PUBLIC_GOOGLE_ANALYTICS_ID="G-REAL-ID"
@@ -100,11 +109,13 @@ NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION="real-verification-code"
 ## 📊 **Analytics Integration**
 
 ### **Automatic Loading**
+
 - Analytics chỉ load trong production environment
 - Google Analytics, GTM, và Facebook Pixel được tự động cấu hình
 - Google Site Verification được thêm vào metadata
 
 ### **Event Tracking**
+
 ```typescript
 import { trackMangaView, trackChapterRead, trackSearch } from '@/components/analytics/Analytics';
 
@@ -121,6 +132,7 @@ trackSearch('search query', 10);
 ## 🔍 **Validation & Debugging**
 
 ### **Check Configuration**
+
 ```typescript
 import { validateSeoConfigExtended } from '@/config/seo.config';
 
@@ -129,12 +141,13 @@ console.log('SEO Config:', validation);
 ```
 
 ### **Helper Functions**
+
 ```typescript
-import { 
+import {
   getGoogleAnalyticsId,
   getGoogleTagManagerId,
   getSiteUrl,
-  getPageTitle 
+  getPageTitle,
 } from '@/config/seo.config';
 
 // Check if analytics is configured
@@ -149,14 +162,17 @@ const pageTitle = getPageTitle('Manga Title');
 ## ⚠️ **Lưu ý quan trọng**
 
 ### **Environment Variables**
+
 - Tất cả biến SEO phải bắt đầu với `NEXT_PUBLIC_` để có thể sử dụng ở client-side
 - Biến không có `NEXT_PUBLIC_` chỉ có thể dùng ở server-side
 
 ### **Analytics**
+
 - Analytics chỉ chạy trong production (`NODE_ENV=production`)
 - Trong development, analytics sẽ không load để tránh tracking không chính xác
 
 ### **Fallback Values**
+
 - Nếu environment variable không được set, hệ thống sẽ sử dụng giá trị mặc định từ `seo.config.ts`
 - Điều này đảm bảo site vẫn hoạt động ngay cả khi thiếu cấu hình
 

@@ -34,7 +34,7 @@ export default function Footer() {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   };
 
@@ -43,22 +43,21 @@ export default function Footer() {
       <div className='container mx-auto px-4 py-8 sm:px-14 2xl:px-21'>
         {/* Main Footer Content */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-
           {/* Site Information Section */}
           <div className='space-y-4 lg:col-span-2'>
             <div>
               <Link href='/' className='flex items-center space-x-2 mb-3'>
-              <Image
-                src="/logo.svg"
-                alt={seoConfig.site.name}
-                width={120}
-                height={40}
-                className="h-8 sm:h-10 lg:h-12 w-auto"
-                priority
-              />
+                <Image
+                  src='/logo.svg'
+                  alt={seoConfig.site.name}
+                  width={120}
+                  height={40}
+                  className='h-8 sm:h-10 lg:h-12 w-auto'
+                  priority
+                />
               </Link>
               <p className='text-sm text-muted-foreground leading-relaxed'>
-                { seoConfig.site.tagline }
+                {seoConfig.site.tagline}
               </p>
             </div>
 
@@ -90,7 +89,10 @@ export default function Footer() {
               {t('navigation.title')}
             </h3>
             <nav className='space-y-2'>
-              <Link href='/' className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'>
+              <Link
+                href='/'
+                className='flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
+              >
                 <Home className='h-4 w-4' />
                 <span>{t('home')}</span>
               </Link>
@@ -175,9 +177,7 @@ export default function Footer() {
         {/* Copyright Section */}
         <div className='flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0'>
           <div className='text-center sm:text-left'>
-            <p className='text-xs text-muted-foreground'>
-              { seoConfig.site.description }
-            </p>
+            <p className='text-xs text-muted-foreground'>{seoConfig.site.description}</p>
           </div>
 
           <div className='text-center sm:text-right'>
@@ -186,7 +186,7 @@ export default function Footer() {
                 {t('copyright', {
                   year: currentYear,
                   siteName: seoConfig.site.name,
-                  allRightsReserved: t('allRightsReserved')
+                  allRightsReserved: t('allRightsReserved'),
                 })}
               </p>
             ) : (

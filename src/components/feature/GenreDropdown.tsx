@@ -48,43 +48,36 @@ export function GenreDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1"
+        <Button
+          variant='ghost'
+          className='text-sm font-medium transition-colors hover:text-primary flex items-center gap-1'
         >
           {t('genres')}
-          <ChevronDown className="h-3 w-3" />
+          <ChevronDown className='h-3 w-3' />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-56">
+      <DropdownMenuContent align='start' className='w-56'>
         {isLoading ? (
-          <DropdownMenuItem disabled>
-            {t('loading')}...
-          </DropdownMenuItem>
+          <DropdownMenuItem disabled>{t('loading')}...</DropdownMenuItem>
         ) : (
           <>
-            {genres.map((genre) => (
+            {genres.map(genre => (
               <DropdownMenuItem key={genre.id} asChild>
-                <Link 
+                <Link
                   href={`/genres/${genre.slug}`}
-                  className="flex items-center justify-between w-full"
+                  className='flex items-center justify-between w-full'
                 >
                   <span>{genre.name}</span>
                   {genre.mangaCount && (
-                    <span className="text-xs text-muted-foreground">
-                      {genre.mangaCount}
-                    </span>
+                    <span className='text-xs text-muted-foreground'>{genre.mangaCount}</span>
                   )}
                 </Link>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link 
-                href="/genres" 
-                className="flex items-center gap-2 font-medium text-primary"
-              >
-                <LayoutGrid className="h-4 w-4" />
+              <Link href='/genres' className='flex items-center gap-2 font-medium text-primary'>
+                <LayoutGrid className='h-4 w-4' />
                 {t('viewAllGenres')}
               </Link>
             </DropdownMenuItem>
@@ -122,45 +115,39 @@ export function MobileGenreDropdown() {
   }, []);
 
   return (
-    <div className="space-y-1">
+    <div className='space-y-1'>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg"
+        className='flex items-center justify-between w-full py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
       >
-        <div className="flex items-center">
-          <LayoutGrid className="mr-3 h-5 w-5" />
+        <div className='flex items-center'>
+          <LayoutGrid className='mr-3 h-5 w-5' />
           {t('genres')}
         </div>
-        <ChevronDown 
-          className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-        />
+        <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
       </button>
-      
+
       {isExpanded && (
-        <div className="ml-8 space-y-1">
+        <div className='ml-8 space-y-1'>
           {isLoading ? (
-            <div className="py-2 px-4 text-sm text-muted-foreground">
-              {t('loading')}...
-            </div>
+            <div className='py-2 px-4 text-sm text-muted-foreground'>{t('loading')}...</div>
           ) : (
             <>
-              {genres.map((genre) => (
+              {genres.map(genre => (
                 <Link
                   key={genre.id}
                   href={`/genres/${genre.slug}`}
-                  className="flex items-center justify-between py-2 px-4 -mx-4 text-sm transition-colors hover:bg-accent hover:text-primary rounded-lg"
+                  className='flex items-center justify-between py-2 px-4 -mx-4 text-sm transition-colors hover:bg-accent hover:text-primary rounded-lg'
                 >
                   <span>{genre.name}</span>
                   {genre.mangaCount && (
-                    <span className="text-xs text-muted-foreground">
-                      {genre.mangaCount}
-                    </span>
+                    <span className='text-xs text-muted-foreground'>{genre.mangaCount}</span>
                   )}
                 </Link>
               ))}
               <Link
-                href="/genres"
-                className="flex items-center gap-2 py-2 px-4 -mx-4 text-sm font-medium text-primary transition-colors hover:bg-accent rounded-lg"
+                href='/genres'
+                className='flex items-center gap-2 py-2 px-4 -mx-4 text-sm font-medium text-primary transition-colors hover:bg-accent rounded-lg'
               >
                 {t('viewAllGenres')}
               </Link>

@@ -7,6 +7,7 @@ This guide explains the centralized SEO configuration system implemented for the
 ## 🏗️ **Architecture**
 
 ### **Configuration Files**
+
 ```
 src/config/
 ├── seo.config.ts          # Main SEO configuration (can be gitignored)
@@ -21,6 +22,7 @@ src/lib/seo/
 ```
 
 ### **Environment Variables**
+
 ```bash
 # Optional SEO overrides in .env
 NEXT_PUBLIC_SITE_URL="https://your-domain.com"
@@ -33,11 +35,13 @@ NEXT_PUBLIC_SITE_DESCRIPTION="Your site description"
 ### **Basic Setup**
 
 1. **Copy the example config:**
+
    ```bash
    cp src/config/seo.config.example.ts src/config/seo.config.ts
    ```
 
 2. **Customize your settings:**
+
    ```typescript
    // src/config/seo.config.ts
    const defaultSeoConfig = {
@@ -78,6 +82,7 @@ The system supports different configurations for development, staging, and produ
 ### **Page Metadata**
 
 #### **Basic Usage**
+
 ```typescript
 import { constructMetadata } from '@/lib/seo/metadata';
 
@@ -89,6 +94,7 @@ export const metadata = constructMetadata({
 ```
 
 #### **Manga Pages**
+
 ```typescript
 import { constructMangaMetadata } from '@/lib/seo/metadata';
 
@@ -105,6 +111,7 @@ export const metadata = constructMangaMetadata({
 ```
 
 #### **Chapter Pages**
+
 ```typescript
 import { constructChapterMetadata } from '@/lib/seo/metadata';
 
@@ -129,6 +136,7 @@ export const metadata = constructChapterMetadata({
 ### **JSON-LD Schema**
 
 #### **Manga Schema**
+
 ```typescript
 import { generateMangaJsonLd } from '@/lib/seo/jsonld';
 import JsonLdScript from '@/components/seo/JsonLdScript';
@@ -149,6 +157,7 @@ const jsonLd = generateMangaJsonLd({
 ```
 
 #### **Chapter Schema**
+
 ```typescript
 import { generateChapterJsonLd } from '@/lib/seo/jsonld';
 
@@ -164,6 +173,7 @@ const jsonLd = generateChapterJsonLd({
 The system includes pre-built templates for different page types:
 
 ### **Available Templates**
+
 - `manga`: For manga detail pages
 - `chapter`: For chapter reading pages
 - `genre`: For genre listing pages
@@ -171,6 +181,7 @@ The system includes pre-built templates for different page types:
 - `profile`: For user profile pages
 
 ### **Custom Templates**
+
 ```typescript
 import { getMangaTemplate } from '@/lib/seo/templates';
 
@@ -193,24 +204,28 @@ const template = getMangaTemplate({
 ## 🔍 **SEO Best Practices**
 
 ### **Title Optimization**
+
 - Use descriptive, unique titles for each page
 - Include primary keywords naturally
 - Keep titles under 60 characters
 - Follow the pattern: `{Content} | {Site Name}`
 
 ### **Description Optimization**
+
 - Write compelling meta descriptions (150-160 characters)
 - Include target keywords naturally
 - Make each description unique
 - Include a call-to-action when appropriate
 
 ### **Image Optimization**
+
 - Use high-quality Open Graph images (1200x630px)
 - Include alt text for all images
 - Optimize file sizes for fast loading
 - Use WebP format when possible
 
 ### **Schema Markup**
+
 - Implement relevant JSON-LD schemas
 - Use specific types (Book, Chapter, Organization)
 - Include all required properties
@@ -221,11 +236,13 @@ const template = getMangaTemplate({
 ### **Production Checklist**
 
 1. **Update production URLs:**
+
    ```bash
    NEXT_PUBLIC_SITE_URL="https://your-domain.com"
    ```
 
 2. **Verify configuration:**
+
    ```typescript
    import { validateSeoConfig } from '@/config/seo.config';
    console.log(validateSeoConfig()); // Should return true
@@ -238,6 +255,7 @@ const template = getMangaTemplate({
    - Verify sitemap generation
 
 ### **Environment Variables for Production**
+
 ```bash
 # Required
 NEXT_PUBLIC_SITE_URL="https://your-domain.com"
@@ -252,11 +270,13 @@ NEXT_PUBLIC_SITE_DESCRIPTION="Your description"
 ### **Common Issues**
 
 1. **URLs not updating:**
+
    - Check `NEXT_PUBLIC_SITE_URL` environment variable
    - Restart development server after env changes
    - Verify config is imported correctly
 
 2. **Missing metadata:**
+
    - Ensure all required props are passed
    - Check for TypeScript errors
    - Verify template variables are correct
@@ -267,6 +287,7 @@ NEXT_PUBLIC_SITE_DESCRIPTION="Your description"
    - Verify URL formats are correct
 
 ### **Debug Mode**
+
 ```typescript
 import { seoConfig, validateSeoConfig } from '@/config/seo.config';
 
@@ -278,6 +299,7 @@ console.log('Config Valid:', validateSeoConfig());
 ## 📚 **API Reference**
 
 ### **Core Functions**
+
 - `constructMetadata()`: Basic metadata generation
 - `constructMangaMetadata()`: Manga-specific metadata
 - `constructChapterMetadata()`: Chapter-specific metadata
@@ -285,12 +307,14 @@ console.log('Config Valid:', validateSeoConfig());
 - `constructSearchMetadata()`: Search page metadata
 
 ### **JSON-LD Functions**
+
 - `generateMangaJsonLd()`: Manga schema
 - `generateChapterJsonLd()`: Chapter schema
 - `generateHomeJsonLd()`: Website schema
 - `generateOrganizationJsonLd()`: Organization schema
 
 ### **Utility Functions**
+
 - `getSiteUrl()`: Generate absolute URLs
 - `getPageTitle()`: Format page titles
 - `validateSeoConfig()`: Validate configuration

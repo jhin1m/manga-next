@@ -1,21 +1,21 @@
-"use client"
+'use client';
 
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/button'
-import { Loader2, MessageCircle } from 'lucide-react'
-import { toast } from 'sonner'
-import { Comment, CommentListResponse } from '@/types/comment'
-import { commentApi } from '@/lib/api/client'
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import { Loader2, MessageCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { Comment, CommentListResponse } from '@/types/comment';
+import { commentApi } from '@/lib/api/client';
 
 interface LoadMoreCommentsProps {
-  mangaId?: number
-  chapterId?: number
-  viewMode: 'chapter' | 'all'
-  sortBy: 'newest' | 'oldest' | 'most_liked'
-  lastCommentId?: number
-  onCommentsLoaded: (comments: Comment[], hasMore: boolean) => void
-  disabled?: boolean
+  mangaId?: number;
+  chapterId?: number;
+  viewMode: 'chapter' | 'all';
+  sortBy: 'newest' | 'oldest' | 'most_liked';
+  lastCommentId?: number;
+  onCommentsLoaded: (comments: Comment[], hasMore: boolean) => void;
+  disabled?: boolean;
 }
 
 export default function LoadMoreComments({
@@ -25,16 +25,16 @@ export default function LoadMoreComments({
   sortBy,
   lastCommentId,
   onCommentsLoaded,
-  disabled = false
+  disabled = false,
 }: LoadMoreCommentsProps) {
-  const [loading, setLoading] = useState(false)
-  const t = useTranslations('comments')
+  const [loading, setLoading] = useState(false);
+  const t = useTranslations('comments');
 
   const loadMoreComments = async () => {
-    if (!lastCommentId || loading || disabled) return
+    if (!lastCommentId || loading || disabled) return;
 
     try {
-      setLoading(true)
+      setLoading(true);
 
       const params = {
         limit: 10, // Giảm xuống 10 để test Load More
@@ -44,46 +44,46 @@ export default function LoadMoreComments({
         cursor: lastCommentId.toString(),
         ...(mangaId ? { comic_id: mangaId } : {}),
         ...(chapterId && viewMode === 'chapter' ? { chapter_id: chapterId } : {}),
-      }
+      };
 
-      const data: CommentListResponse = await commentApi.getList(params)
+      const data: CommentListResponse = await commentApi.getList(params);
 
       // Check if there are more comments by looking at the nextCursor
-      const hasMore = data.pagination?.nextCursor != null
+      const hasMore = data.pagination?.nextCursor != null;
 
-      onCommentsLoaded(data.comments, hasMore)
+      onCommentsLoaded(data.comments, hasMore);
     } catch (error) {
-      console.error('Error loading more comments:', error)
-      toast.error(t('messages.failedToLoadMore'))
+      console.error('Error loading more comments:', error);
+      toast.error(t('messages.failedToLoadMore'));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (!lastCommentId) {
-    return null
+    return null;
   }
 
   return (
-    <div className="flex justify-center mt-6">
+    <div className='flex justify-center mt-6'>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={loadMoreComments}
         disabled={loading || disabled}
-        className="min-w-[200px]"
+        className='min-w-[200px]'
       >
         {loading ? (
           <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            <Loader2 className='h-4 w-4 mr-2 animate-spin' />
             {t('actions.loadingMore')}
           </>
         ) : (
           <>
-            <MessageCircle className="h-4 w-4 mr-2" />
+            <MessageCircle className='h-4 w-4 mr-2' />
             {t('actions.loadMore')}
           </>
         )}
       </Button>
     </div>
-  )
+  );
 }

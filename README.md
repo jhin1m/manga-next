@@ -17,6 +17,7 @@ MangaNext là một trang web manga toàn diện được phát triển bằng N
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **NextJS 15** - React framework với App Router
 - **TypeScript** - Type safety và developer experience
 - **Tailwind CSS v4** - Utility-first CSS framework
@@ -25,6 +26,7 @@ MangaNext là một trang web manga toàn diện được phát triển bằng N
 - **React Hook Form** - Form handling với validation
 
 ### Backend & Database
+
 - **Prisma ORM** - Type-safe database client
 - **PostgreSQL** - Relational database với full-text search
 - **NextAuth.js** - Authentication solution
@@ -32,6 +34,7 @@ MangaNext là một trang web manga toàn diện được phát triển bằng N
 - **Zod** - Schema validation
 
 ### DevOps & Deployment
+
 - **Docker** - Containerization với multi-stage builds
 - **Railway/Vercel** - Cloud deployment platforms
 - **pnpm** - Fast, disk space efficient package manager
@@ -40,36 +43,42 @@ MangaNext là một trang web manga toàn diện được phát triển bằng N
 ## ✨ Tính Năng Chính
 
 ### 🏠 Trang Chủ
+
 - Hot manga slider với carousel tương tác
 - Danh sách manga mới cập nhật
 - Sidebar với manga đề xuất và thống kê
 - SEO optimization với JSON-LD structured data
 
 ### 📚 Quản Lý Manga
+
 - Danh sách manga với pagination và filtering
 - Trang chi tiết manga với thông tin đầy đủ
 - Đọc chapter với navigation mượt mà
 - Theo dõi tiến độ đọc
 
 ### 🔍 Tìm Kiếm
+
 - Tìm kiếm toàn văn với PostgreSQL
 - Debounced search với loading states
 - Bộ lọc theo thể loại, trạng thái, tác giả
 - Highlight từ khóa trong kết quả
 
 ### 👤 Xác Thực & Hồ Sơ
+
 - Đăng ký/đăng nhập với validation
 - Quản lý hồ sơ người dùng
 - Protected routes với middleware
 - Session management với JWT
 
 ### ❤️ Đánh Dấu Trang
+
 - Toggle favorite với optimistic UI
 - Danh sách manga yêu thích
 - Đồng bộ hóa real-time
 - Responsive design cho mobile
 
 ### 💬 Hệ Thống Bình Luận
+
 - Bình luận theo manga và chapter
 - Cursor-based pagination
 - Rate limiting và spam protection
@@ -78,17 +87,20 @@ MangaNext là một trang web manga toàn diện được phát triển bằng N
 ## 🚀 Hướng Dẫn Thiết Lập
 
 ### Điều Kiện Tiên Quyết
+
 - **Node.js** 18.0.0 hoặc cao hơn
 - **PostgreSQL** 13 hoặc cao hơn
 - **pnpm** 8.0.0 hoặc cao hơn
 
 ### 1. Clone Repository
+
 ```bash
 git clone <repository-url>
 cd manga-fake
 ```
 
 ### 2. Cài Đặt Dependencies
+
 ```bash
 # Cài đặt packages
 pnpm install
@@ -98,6 +110,7 @@ npx prisma generate
 ```
 
 ### 3. Thiết Lập Database
+
 ```bash
 # Tạo database PostgreSQL
 createdb manga-next
@@ -110,7 +123,9 @@ pnpm seed
 ```
 
 ### 4. Cấu Hình Environment Variables
+
 Tạo file `.env.local`:
+
 ```env
 # Database
 DATABASE_URL="postgresql://username:password@localhost:5432/manga-next"
@@ -128,6 +143,7 @@ SEED_DATABASE="false"
 ```
 
 ### 5. Chạy Development Server
+
 ```bash
 pnpm dev
 ```
@@ -137,26 +153,31 @@ Truy cập [http://localhost:3000](http://localhost:3000) để xem ứng dụng
 ## 📡 API Documentation
 
 ### Manga Endpoints
+
 - `GET /api/manga` - Danh sách manga với filtering và pagination
 - `GET /api/manga/[slug]` - Chi tiết manga theo slug
 - `GET /api/manga/[slug]/chapters` - Danh sách chapter của manga
 
 ### Authentication Endpoints
+
 - `POST /api/auth/register` - Đăng ký tài khoản mới
 - `POST /api/auth/[...nextauth]` - NextAuth.js endpoints
 - `GET /api/users/me` - Thông tin user hiện tại
 
 ### Favorites Endpoints
+
 - `GET /api/favorites` - Danh sách manga yêu thích
 - `POST /api/favorites` - Toggle trạng thái favorite
 - `GET /api/favorites/check` - Kiểm tra trạng thái favorite
 
 ### Comments Endpoints
+
 - `GET /api/comments` - Danh sách bình luận với pagination
 - `POST /api/comments` - Tạo bình luận mới
 - `PUT /api/comments/[id]` - Cập nhật bình luận
 
 ### Search & Utility
+
 - `GET /api/search` - Tìm kiếm manga
 - `GET /api/genres` - Danh sách thể loại
 - `GET /api/health` - Health check endpoint
@@ -164,6 +185,7 @@ Truy cập [http://localhost:3000](http://localhost:3000) để xem ứng dụng
 ## 🐳 Deployment
 
 ### Docker Deployment (Khuyến Nghị)
+
 ```bash
 # Build Docker image
 docker build -t manga-website .
@@ -177,6 +199,7 @@ docker run -p 3000:3000 \
 ```
 
 ### Railway Deployment
+
 ```bash
 # Install Railway CLI
 npm install -g @railway/cli
@@ -193,6 +216,7 @@ railway variables set NEXTAUTH_URL="https://your-app.railway.app"
 ```
 
 ### Vercel Deployment
+
 ```bash
 # Install Vercel CLI
 npm install -g vercel

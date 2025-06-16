@@ -1,11 +1,11 @@
 'use client';
 
 import Script from 'next/script';
-import { 
-  getGoogleAnalyticsId, 
-  getGoogleTagManagerId, 
+import {
+  getGoogleAnalyticsId,
+  getGoogleTagManagerId,
   getFacebookPixelId,
-  isProduction 
+  isProduction,
 } from '@/config/seo.config';
 
 /**
@@ -30,9 +30,9 @@ export default function Analytics() {
         <>
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
-            strategy="afterInteractive"
+            strategy='afterInteractive'
           />
-          <Script id="google-analytics" strategy="afterInteractive">
+          <Script id='google-analytics' strategy='afterInteractive'>
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
@@ -49,7 +49,7 @@ export default function Analytics() {
       {/* Google Tag Manager */}
       {googleTagManagerId && (
         <>
-          <Script id="google-tag-manager" strategy="afterInteractive">
+          <Script id='google-tag-manager' strategy='afterInteractive'>
             {`
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -61,8 +61,8 @@ export default function Analytics() {
           <noscript>
             <iframe
               src={`https://www.googletagmanager.com/ns.html?id=${googleTagManagerId}`}
-              height="0"
-              width="0"
+              height='0'
+              width='0'
               style={{ display: 'none', visibility: 'hidden' }}
             />
           </noscript>
@@ -71,7 +71,7 @@ export default function Analytics() {
 
       {/* Facebook Pixel */}
       {facebookPixelId && (
-        <Script id="facebook-pixel" strategy="afterInteractive">
+        <Script id='facebook-pixel' strategy='afterInteractive'>
           {`
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?

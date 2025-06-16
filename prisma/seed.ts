@@ -21,34 +21,75 @@ async function main() {
   console.log('Creating genres...');
   const genres = await Promise.all([
     prisma.genres.create({
-      data: { name: 'Action', slug: 'action', description: 'Action manga typically feature high-energy scenes and physical confrontations.' },
+      data: {
+        name: 'Action',
+        slug: 'action',
+        description:
+          'Action manga typically feature high-energy scenes and physical confrontations.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Adventure', slug: 'adventure', description: 'Adventure manga focus on journeys, quests, and exploration.' },
+      data: {
+        name: 'Adventure',
+        slug: 'adventure',
+        description: 'Adventure manga focus on journeys, quests, and exploration.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Comedy', slug: 'comedy', description: 'Comedy manga aim to make readers laugh through humor and funny situations.' },
+      data: {
+        name: 'Comedy',
+        slug: 'comedy',
+        description: 'Comedy manga aim to make readers laugh through humor and funny situations.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Drama', slug: 'drama', description: 'Drama manga deal with emotional and serious themes.' },
+      data: {
+        name: 'Drama',
+        slug: 'drama',
+        description: 'Drama manga deal with emotional and serious themes.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Fantasy', slug: 'fantasy', description: 'Fantasy manga involve magical elements and supernatural worlds.' },
+      data: {
+        name: 'Fantasy',
+        slug: 'fantasy',
+        description: 'Fantasy manga involve magical elements and supernatural worlds.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Horror', slug: 'horror', description: 'Horror manga aim to frighten readers with scary and disturbing content.' },
+      data: {
+        name: 'Horror',
+        slug: 'horror',
+        description: 'Horror manga aim to frighten readers with scary and disturbing content.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Romance', slug: 'romance', description: 'Romance manga focus on romantic relationships and love stories.' },
+      data: {
+        name: 'Romance',
+        slug: 'romance',
+        description: 'Romance manga focus on romantic relationships and love stories.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Sci-Fi', slug: 'sci-fi', description: 'Science fiction manga explore futuristic concepts and technology.' },
+      data: {
+        name: 'Sci-Fi',
+        slug: 'sci-fi',
+        description: 'Science fiction manga explore futuristic concepts and technology.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Slice of Life', slug: 'slice-of-life', description: 'Slice of life manga depict everyday experiences and realistic situations.' },
+      data: {
+        name: 'Slice of Life',
+        slug: 'slice-of-life',
+        description: 'Slice of life manga depict everyday experiences and realistic situations.',
+      },
     }),
     prisma.genres.create({
-      data: { name: 'Sports', slug: 'sports', description: 'Sports manga focus on athletic competitions and sports-related themes.' },
+      data: {
+        name: 'Sports',
+        slug: 'sports',
+        description: 'Sports manga focus on athletic competitions and sports-related themes.',
+      },
     }),
   ]);
 
@@ -56,19 +97,39 @@ async function main() {
   console.log('Creating authors...');
   const authors = await Promise.all([
     prisma.authors.create({
-      data: { name: 'Eiichiro Oda', slug: 'eiichiro-oda', bio: 'Creator of One Piece, one of the best-selling manga series of all time.' },
+      data: {
+        name: 'Eiichiro Oda',
+        slug: 'eiichiro-oda',
+        bio: 'Creator of One Piece, one of the best-selling manga series of all time.',
+      },
     }),
     prisma.authors.create({
-      data: { name: 'Masashi Kishimoto', slug: 'masashi-kishimoto', bio: 'Creator of Naruto, a globally popular ninja-themed manga series.' },
+      data: {
+        name: 'Masashi Kishimoto',
+        slug: 'masashi-kishimoto',
+        bio: 'Creator of Naruto, a globally popular ninja-themed manga series.',
+      },
     }),
     prisma.authors.create({
-      data: { name: 'Akira Toriyama', slug: 'akira-toriyama', bio: 'Creator of Dragon Ball, one of the most influential manga series.' },
+      data: {
+        name: 'Akira Toriyama',
+        slug: 'akira-toriyama',
+        bio: 'Creator of Dragon Ball, one of the most influential manga series.',
+      },
     }),
     prisma.authors.create({
-      data: { name: 'Hajime Isayama', slug: 'hajime-isayama', bio: 'Creator of Attack on Titan, a dark fantasy manga series.' },
+      data: {
+        name: 'Hajime Isayama',
+        slug: 'hajime-isayama',
+        bio: 'Creator of Attack on Titan, a dark fantasy manga series.',
+      },
     }),
     prisma.authors.create({
-      data: { name: 'Kentaro Miura', slug: 'kentaro-miura', bio: 'Creator of Berserk, a dark fantasy manga known for its detailed artwork.' },
+      data: {
+        name: 'Kentaro Miura',
+        slug: 'kentaro-miura',
+        bio: 'Creator of Berserk, a dark fantasy manga known for its detailed artwork.',
+      },
     }),
   ]);
 
@@ -76,16 +137,33 @@ async function main() {
   console.log('Creating publishers...');
   const publishers = await Promise.all([
     prisma.publishers.create({
-      data: { name: 'Shueisha', slug: 'shueisha', description: 'Japanese publishing company and publisher of manga magazines like Weekly Shōnen Jump.' },
+      data: {
+        name: 'Shueisha',
+        slug: 'shueisha',
+        description:
+          'Japanese publishing company and publisher of manga magazines like Weekly Shōnen Jump.',
+      },
     }),
     prisma.publishers.create({
-      data: { name: 'Kodansha', slug: 'kodansha', description: 'One of the largest publishing companies in Japan.' },
+      data: {
+        name: 'Kodansha',
+        slug: 'kodansha',
+        description: 'One of the largest publishing companies in Japan.',
+      },
     }),
     prisma.publishers.create({
-      data: { name: 'Shogakukan', slug: 'shogakukan', description: 'Major Japanese publisher of manga, magazines, and other books.' },
+      data: {
+        name: 'Shogakukan',
+        slug: 'shogakukan',
+        description: 'Major Japanese publisher of manga, magazines, and other books.',
+      },
     }),
     prisma.publishers.create({
-      data: { name: 'Viz Media', slug: 'viz-media', description: 'American manga publisher and anime distributor.' },
+      data: {
+        name: 'Viz Media',
+        slug: 'viz-media',
+        description: 'American manga publisher and anime distributor.',
+      },
     }),
   ]);
 
@@ -96,7 +174,8 @@ async function main() {
       data: {
         title: 'One Piece',
         slug: 'one-piece',
-        description: 'The story follows the adventures of Monkey D. Luffy, a boy whose body gained the properties of rubber after unintentionally eating a Devil Fruit. With his crew of pirates, named the Straw Hat Pirates, Luffy explores the Grand Line in search of the world\'s ultimate treasure known as "One Piece" to become the next Pirate King.',
+        description:
+          'The story follows the adventures of Monkey D. Luffy, a boy whose body gained the properties of rubber after unintentionally eating a Devil Fruit. With his crew of pirates, named the Straw Hat Pirates, Luffy explores the Grand Line in search of the world\'s ultimate treasure known as "One Piece" to become the next Pirate King.',
         cover_image_url: 'https://cdn.myanimelist.net/images/manga/2/253146.jpg',
         status: 'ongoing',
         country_of_origin: 'Japan',
@@ -110,7 +189,8 @@ async function main() {
       data: {
         title: 'Naruto',
         slug: 'naruto',
-        description: 'Naruto Uzumaki, a mischievous adolescent ninja, struggles as he searches for recognition and dreams of becoming the Hokage, the village\'s leader and strongest ninja.',
+        description:
+          "Naruto Uzumaki, a mischievous adolescent ninja, struggles as he searches for recognition and dreams of becoming the Hokage, the village's leader and strongest ninja.",
         cover_image_url: 'https://cdn.myanimelist.net/images/manga/3/117681.jpg',
         status: 'completed',
         country_of_origin: 'Japan',
@@ -124,7 +204,8 @@ async function main() {
       data: {
         title: 'Dragon Ball',
         slug: 'dragon-ball',
-        description: 'Dragon Ball tells the tale of a young warrior by the name of Son Goku, a young peculiar boy with a tail who embarks on a quest to become stronger and learns of the Dragon Balls, when, once all 7 are gathered, grant a wish.',
+        description:
+          'Dragon Ball tells the tale of a young warrior by the name of Son Goku, a young peculiar boy with a tail who embarks on a quest to become stronger and learns of the Dragon Balls, when, once all 7 are gathered, grant a wish.',
         cover_image_url: 'https://cdn.myanimelist.net/images/manga/2/54545.jpg',
         status: 'completed',
         country_of_origin: 'Japan',
@@ -138,7 +219,8 @@ async function main() {
       data: {
         title: 'Attack on Titan',
         slug: 'attack-on-titan',
-        description: 'In a world where humanity lives inside cities surrounded by enormous walls due to the Titans, gigantic humanoid creatures who devour humans seemingly without reason, a young boy named Eren Yeager vows to cleanse the world of the giant humanoid Titans that have brought humanity to the brink of extinction.',
+        description:
+          'In a world where humanity lives inside cities surrounded by enormous walls due to the Titans, gigantic humanoid creatures who devour humans seemingly without reason, a young boy named Eren Yeager vows to cleanse the world of the giant humanoid Titans that have brought humanity to the brink of extinction.',
         cover_image_url: 'https://cdn.myanimelist.net/images/manga/2/37846.jpg',
         status: 'completed',
         country_of_origin: 'Japan',
@@ -152,7 +234,8 @@ async function main() {
       data: {
         title: 'Berserk',
         slug: 'berserk',
-        description: 'Guts, a former mercenary now known as the "Black Swordsman," is out for revenge. After a tumultuous childhood, he finally finds someone he respects and believes he can trust, only to have everything fall apart when this person takes away everything important to Guts for the purpose of fulfilling his own desires.',
+        description:
+          'Guts, a former mercenary now known as the "Black Swordsman," is out for revenge. After a tumultuous childhood, he finally finds someone he respects and believes he can trust, only to have everything fall apart when this person takes away everything important to Guts for the purpose of fulfilling his own desires.',
         cover_image_url: 'https://cdn.myanimelist.net/images/manga/1/157897.jpg',
         status: 'ongoing',
         country_of_origin: 'Japan',
@@ -301,8 +384,8 @@ async function main() {
       pages.push({
         chapter_id: onePieceChapters[i].id,
         page_number: j,
-        image_url: `https://placehold.co/800x1200/png?text=One+Piece+Chapter+${i+1}+Page+${j}`,
-        image_alt_text: `One Piece Chapter ${i+1} Page ${j}`,
+        image_url: `https://placehold.co/800x1200/png?text=One+Piece+Chapter+${i + 1}+Page+${j}`,
+        image_alt_text: `One Piece Chapter ${i + 1} Page ${j}`,
       });
     }
 
@@ -355,8 +438,8 @@ async function main() {
       pages.push({
         chapter_id: narutoChapters[i].id,
         page_number: j,
-        image_url: `https://placehold.co/800x1200/png?text=Naruto+Chapter+${i+1}+Page+${j}`,
-        image_alt_text: `Naruto Chapter ${i+1} Page ${j}`,
+        image_url: `https://placehold.co/800x1200/png?text=Naruto+Chapter+${i + 1}+Page+${j}`,
+        image_alt_text: `Naruto Chapter ${i + 1} Page ${j}`,
       });
     }
 
@@ -409,8 +492,8 @@ async function main() {
       pages.push({
         chapter_id: aotChapters[i].id,
         page_number: j,
-        image_url: `https://placehold.co/800x1200/png?text=AoT+Chapter+${i+1}+Page+${j}`,
-        image_alt_text: `Attack on Titan Chapter ${i+1} Page ${j}`,
+        image_url: `https://placehold.co/800x1200/png?text=AoT+Chapter+${i + 1}+Page+${j}`,
+        image_alt_text: `Attack on Titan Chapter ${i + 1} Page ${j}`,
       });
     }
 
@@ -423,7 +506,7 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error('Error during seeding:', e);
     process.exit(1);
   })

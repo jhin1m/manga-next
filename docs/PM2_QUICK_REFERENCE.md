@@ -3,6 +3,7 @@
 ## 📋 Essential Commands
 
 ### 🔧 Setup & Installation
+
 ```bash
 # Install PM2 globally
 npm install -g pm2
@@ -19,6 +20,7 @@ pnpm build
 ```
 
 ### 🚀 Deployment Commands
+
 ```bash
 # Quick deployment
 pnpm deploy:script
@@ -36,6 +38,7 @@ pnpm pm2:startup
 ```
 
 ### 📊 Monitoring Commands
+
 ```bash
 # Status and monitoring
 pnpm pm2:status         # Show process status
@@ -49,6 +52,7 @@ pnpm health:status      # Process status only
 ```
 
 ### 🔄 Update Workflow
+
 ```bash
 # Standard update process
 git pull origin main
@@ -60,6 +64,7 @@ pnpm pm2:save
 ```
 
 ## 🗂️ File Structure
+
 ```
 ├── ecosystem.config.js          # PM2 configuration
 ├── scripts/
@@ -76,6 +81,7 @@ pnpm pm2:save
 ## 🔍 Troubleshooting
 
 ### Common Issues
+
 ```bash
 # App won't start
 pnpm test:pm2                   # Check configuration
@@ -92,6 +98,7 @@ npx prisma migrate deploy       # Run migrations
 ```
 
 ### Log Locations
+
 - **PM2 Logs**: `./logs/pm2/`
 - **Deployment**: `./logs/deployment.log`
 - **Health Check**: `./logs/health-check.log`
@@ -100,6 +107,7 @@ npx prisma migrate deploy       # Run migrations
 ## 🌐 Environment Configuration
 
 ### Required Variables (.env.production)
+
 ```bash
 NODE_ENV=production
 DATABASE_URL="postgresql://user:pass@localhost:5432/manga_production"
@@ -110,6 +118,7 @@ PORT=3000
 ```
 
 ### Health Check Endpoint
+
 - **URL**: `/api/health`
 - **Methods**: GET, HEAD
 - **Response**: JSON health status
@@ -118,16 +127,19 @@ PORT=3000
 ## 🔧 PM2 Configuration Highlights
 
 ### Cluster Mode
+
 - **Instances**: Uses all CPU cores (`max`)
 - **Mode**: Cluster for load balancing
 - **Zero-downtime**: Reload without stopping
 
 ### Auto-restart
+
 - **Memory Limit**: 1GB per process
 - **Max Restarts**: 15 attempts
 - **Exponential Backoff**: Prevents restart loops
 
 ### Logging
+
 - **Format**: JSON structured logs
 - **Rotation**: Automatic log rotation
 - **Files**: Combined, output, and error logs
@@ -135,6 +147,7 @@ PORT=3000
 ## 🚨 Emergency Commands
 
 ### Quick Recovery
+
 ```bash
 # Application completely down
 pnpm pm2:delete && pnpm pm2:start
@@ -148,6 +161,7 @@ pnpm pm2:restart
 ```
 
 ### System Status Check
+
 ```bash
 # Full system health
 pnpm health:check

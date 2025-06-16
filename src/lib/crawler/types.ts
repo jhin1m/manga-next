@@ -30,15 +30,15 @@ export interface ProcessorOptions {
 
 // Định nghĩa manga chuẩn hóa
 export interface StandardManga {
-  sourceId: string;     // ID từ nguồn gốc
-  sourceName: string;   // Tên nguồn
+  sourceId: string; // ID từ nguồn gốc
+  sourceName: string; // Tên nguồn
   slug: string;
   title: string;
   alternativeTitles?: Record<string, string>;
   description?: string;
   coverUrl: string;
   status: string;
-  author?: string;      // Tác giả/Artist
+  author?: string; // Tác giả/Artist
   views: number;
   genres: StandardGenre[];
   createdAt: Date;

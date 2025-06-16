@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
  * Test script for view statistics system
- * 
+ *
  * This script tests the view statistics functionality without requiring a database connection
- * 
+ *
  * Usage:
  * node scripts/test-view-statistics.js
  */
@@ -18,7 +18,7 @@ const mockStatistics = {
   daily_views: 150,
   weekly_views: 1200,
   monthly_views: 5000,
-  total_views: 25000
+  total_views: 25000,
 };
 
 function formatViews(count) {
@@ -33,7 +33,7 @@ function formatViews(count) {
 function testViewStatisticsFormatting() {
   console.log('🧪 Testing View Statistics Formatting');
   console.log('=====================================');
-  
+
   console.log('Mock Statistics Data:');
   console.log(`  Daily Views: ${formatViews(mockStatistics.daily_views)}`);
   console.log(`  Weekly Views: ${formatViews(mockStatistics.weekly_views)}`);
@@ -45,7 +45,7 @@ function testViewStatisticsFormatting() {
 function testAPIEndpoints() {
   console.log('🔗 API Endpoints Available');
   console.log('===========================');
-  
+
   const endpoints = [
     'GET /api/view-statistics/comic/[id] - Get comic view statistics',
     'GET /api/view-statistics/chapter/[id] - Get chapter view statistics',
@@ -53,9 +53,9 @@ function testAPIEndpoints() {
     'POST /api/view-statistics/chapter/[id] - Update chapter view statistics',
     'POST /api/manga/[slug]/view - Track manga view',
     'GET /api/chapters/[id] - Track chapter view (automatic)',
-    'POST /api/jobs/view-stats-aggregation - Run aggregation job'
+    'POST /api/jobs/view-stats-aggregation - Run aggregation job',
   ];
-  
+
   endpoints.forEach((endpoint, index) => {
     console.log(`  ${index + 1}. ${endpoint}`);
   });
@@ -65,15 +65,15 @@ function testAPIEndpoints() {
 function testScheduledJobs() {
   console.log('⏰ Scheduled Jobs Available');
   console.log('============================');
-  
+
   const jobs = [
     'pnpm view-stats - Run complete aggregation',
     'pnpm view-stats:comics - Update comics only',
     'pnpm view-stats:chapters - Update chapters only',
     'pnpm view-stats:snapshots - Store daily snapshots',
-    'pnpm view-stats:cleanup - Clean up old data'
+    'pnpm view-stats:cleanup - Clean up old data',
   ];
-  
+
   jobs.forEach((job, index) => {
     console.log(`  ${index + 1}. ${job}`);
   });
@@ -83,13 +83,13 @@ function testScheduledJobs() {
 function testCronSchedule() {
   console.log('📅 Recommended Cron Schedule');
   console.log('=============================');
-  
+
   const cronJobs = [
     '0 */6 * * * - Full aggregation every 6 hours',
     '0 0 * * * - Daily snapshots at midnight',
-    '0 2 * * 0 - Weekly cleanup on Sundays at 2 AM'
+    '0 2 * * 0 - Weekly cleanup on Sundays at 2 AM',
   ];
-  
+
   cronJobs.forEach((job, index) => {
     console.log(`  ${index + 1}. ${job}`);
   });
@@ -99,19 +99,19 @@ function testCronSchedule() {
 function testDatabaseSchema() {
   console.log('🗄️  Database Schema Changes');
   console.log('============================');
-  
+
   console.log('New fields added to Comics table:');
   console.log('  - daily_views (INT, default 0)');
   console.log('  - weekly_views (INT, default 0)');
   console.log('  - monthly_views (INT, default 0)');
   console.log('');
-  
+
   console.log('New fields added to Chapters table:');
   console.log('  - daily_views (INT, default 0)');
   console.log('  - weekly_views (INT, default 0)');
   console.log('  - monthly_views (INT, default 0)');
   console.log('');
-  
+
   console.log('New View_Statistics table created:');
   console.log('  - entity_type (comic/chapter)');
   console.log('  - entity_id');
@@ -123,7 +123,7 @@ function testDatabaseSchema() {
 function testComponentUsage() {
   console.log('🎨 UI Component Usage');
   console.log('======================');
-  
+
   console.log('ViewStatistics Component:');
   console.log(`
   import { ViewStatistics } from '@/components/ui/ViewStatistics'
@@ -142,7 +142,7 @@ function testComponentUsage() {
     compact={true}
   />
   `);
-  
+
   console.log('InlineViewStats Component:');
   console.log(`
   import { InlineViewStats } from '@/components/ui/ViewStatistics'
@@ -164,7 +164,7 @@ function main() {
   console.log('===============================');
   console.log(`Time: ${new Date().toISOString()}`);
   console.log('');
-  
+
   try {
     testViewStatisticsFormatting();
     testAPIEndpoints();
@@ -172,7 +172,7 @@ function main() {
     testCronSchedule();
     testDatabaseSchema();
     testComponentUsage();
-    
+
     console.log('✅ All tests completed successfully!');
     console.log('');
     console.log('📋 Next Steps:');
@@ -183,7 +183,6 @@ function main() {
     console.log('4. Set up cron jobs for automated processing');
     console.log('5. Update UI components to use new ViewStatistics');
     console.log('');
-    
   } catch (error) {
     console.error('❌ Test failed:', error);
     process.exit(1);

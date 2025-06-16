@@ -36,35 +36,35 @@ Xử lý CORS ở tầng middleware:
 ### Cho API Routes mới
 
 ```typescript
-import { withCors } from '@/lib/cors'
-import { NextRequest, NextResponse } from 'next/server'
+import { withCors } from '@/lib/cors';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = withCors(async (request: NextRequest) => {
   // Your API logic here
-  return NextResponse.json({ data: 'Hello World' })
-})
+  return NextResponse.json({ data: 'Hello World' });
+});
 
 export const POST = withCors(async (request: NextRequest) => {
   // Your API logic here
-  return NextResponse.json({ success: true })
-})
+  return NextResponse.json({ success: true });
+});
 ```
 
 ### Cho responses tùy chỉnh
 
 ```typescript
-import { corsResponse } from '@/lib/cors'
+import { corsResponse } from '@/lib/cors';
 
 export const GET = withCors(async (request: NextRequest) => {
-  const data = { message: 'Custom response' }
-  
+  const data = { message: 'Custom response' };
+
   return corsResponse(data, request, {
     status: 200,
     headers: {
-      'X-Custom-Header': 'value'
-    }
-  })
-})
+      'X-Custom-Header': 'value',
+    },
+  });
+});
 ```
 
 ## Cấu hình Domain
@@ -90,7 +90,7 @@ origins: [
   'https://www.yourdomain.com',
   'https://admin.yourdomain.com',
   // Add more domains as needed
-]
+];
 ```
 
 ## Troubleshooting
@@ -98,10 +98,12 @@ origins: [
 ### Lỗi CORS phổ biến
 
 1. **"Access to fetch at '...' has been blocked by CORS policy"**
+
    - Kiểm tra domain có trong danh sách `origins`
    - Đảm bảo API route sử dụng `withCors` wrapper
 
 2. **Preflight request failed**
+
    - Kiểm tra middleware có xử lý OPTIONS requests
    - Verify headers configuration
 
@@ -115,9 +117,9 @@ Thêm logging để debug:
 
 ```typescript
 // Trong src/lib/cors.ts
-console.log('CORS Origin:', origin)
-console.log('Is Origin Allowed:', isOriginAllowed(origin))
-console.log('CORS Headers:', corsHeaders)
+console.log('CORS Origin:', origin);
+console.log('Is Origin Allowed:', isOriginAllowed(origin));
+console.log('CORS Headers:', corsHeaders);
 ```
 
 ## Security Notes
@@ -154,11 +156,11 @@ fetch('http://localhost:3000/api/manga', {
   headers: {
     'Content-Type': 'application/json',
   },
-  credentials: 'include'
+  credentials: 'include',
 })
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error('CORS Error:', error))
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('CORS Error:', error));
 ```
 
 ## Migration Guide
@@ -170,6 +172,7 @@ fetch('http://localhost:3000/api/manga', {
 3. Thay đổi từ `function` sang `const` export
 
 **Trước:**
+
 ```typescript
 export async function GET(request: Request) {
   // logic
@@ -177,10 +180,11 @@ export async function GET(request: Request) {
 ```
 
 **Sau:**
+
 ```typescript
 export const GET = withCors(async (request: NextRequest) => {
   // logic
-})
+});
 ```
 
 ### Kiểm tra sau khi migration

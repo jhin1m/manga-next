@@ -68,7 +68,7 @@ export function DesktopSearchButton() {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen(open => !open);
       }
     };
 
@@ -79,10 +79,10 @@ export function DesktopSearchButton() {
   return (
     <>
       <button
-        className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-primary"
+        className='flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-primary'
         onClick={() => setOpen(true)}
       >
-        <Search className="h-4 w-4" />
+        <Search className='h-4 w-4' />
         <span>{t('search')}</span>
       </button>
       <SearchBar open={open} setOpen={setOpen} />
@@ -100,7 +100,7 @@ export function SearchButton() {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen(open => !open);
       }
     };
 
@@ -110,14 +110,9 @@ export function SearchButton() {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-foreground"
-        onClick={() => setOpen(true)}
-      >
-        <Search className="h-5 w-5" />
-        <span className="sr-only">{t('searchManga')}</span>
+      <Button variant='ghost' size='icon' className='text-foreground' onClick={() => setOpen(true)}>
+        <Search className='h-5 w-5' />
+        <span className='sr-only'>{t('searchManga')}</span>
       </Button>
       <SearchBar open={open} setOpen={setOpen} />
     </>
@@ -163,9 +158,10 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
           title: comic.title || 'Unknown Title',
           slug: comic.slug || '',
           cover_image_url: comic.cover_image_url,
-          description: comic.description?.substring(0, 100) + (comic.description?.length > 100 ? '...' : ''),
+          description:
+            comic.description?.substring(0, 100) + (comic.description?.length > 100 ? '...' : ''),
           Comic_Genres: comic.Comic_Genres || [],
-          Chapters: comic.Chapters || []
+          Chapters: comic.Chapters || [],
         }));
         setPopularManga(transformedResults);
       }
@@ -226,9 +222,10 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
           title: comic.title || 'Unknown Title',
           slug: comic.slug || '',
           cover_image_url: comic.cover_image_url,
-          description: comic.description?.substring(0, 100) + (comic.description?.length > 100 ? '...' : ''),
+          description:
+            comic.description?.substring(0, 100) + (comic.description?.length > 100 ? '...' : ''),
           Comic_Genres: comic.Comic_Genres || [],
-          Chapters: comic.Chapters || []
+          Chapters: comic.Chapters || [],
         }));
         setLiveResults(transformedResults);
       } else {
@@ -309,41 +306,37 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="overflow-hidden p-0 shadow-lg max-w-2xl">
-        <DialogTitle className="sr-only">{tSearch('placeholder')}</DialogTitle>
+      <DialogContent className='overflow-hidden p-0 shadow-lg max-w-2xl'>
+        <DialogTitle className='sr-only'>{tSearch('placeholder')}</DialogTitle>
 
         {/* Search Input */}
-        <div className="flex items-center border-b px-4 py-3">
-          <Search className="mr-3 h-5 w-5 shrink-0 opacity-50" />
+        <div className='flex items-center border-b px-4 py-3'>
+          <Search className='mr-3 h-5 w-5 shrink-0 opacity-50' />
           <Input
             ref={inputRef}
             placeholder={tSearch('placeholder')}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="border-none bg-transparent text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+            className='border-none bg-transparent text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0'
           />
         </div>
 
         {/* Search Results */}
-        <div className={cn("max-h-[70vh] overflow-y-auto", className)}>
+        <div className={cn('max-h-[70vh] overflow-y-auto', className)}>
           {/* Loading State */}
           {isLoading && (
-            <div className="flex items-center justify-center py-8 px-4">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="ml-2 text-sm text-muted-foreground">{tSearch('searching')}</span>
+            <div className='flex items-center justify-center py-8 px-4'>
+              <Loader2 className='h-6 w-6 animate-spin text-primary' />
+              <span className='ml-2 text-sm text-muted-foreground'>{tSearch('searching')}</span>
             </div>
           )}
 
           {/* Error State */}
           {error && !isLoading && (
-            <div className="py-6 px-4 text-center">
-              <p className="text-sm text-red-500 mb-3">{error}</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => debouncedSearch(searchQuery)}
-              >
+            <div className='py-6 px-4 text-center'>
+              <p className='text-sm text-red-500 mb-3'>{error}</p>
+              <Button variant='outline' size='sm' onClick={() => debouncedSearch(searchQuery)}>
                 {tCommon('tryAgain')}
               </Button>
             </div>
@@ -351,57 +344,53 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
 
           {/* No Results */}
           {!isLoading && !error && searchQuery.length > 0 && liveResults.length === 0 && (
-            <div className="py-8 px-4 text-center">
-              <p className="text-sm text-muted-foreground">{tSearch('noResults')}</p>
+            <div className='py-8 px-4 text-center'>
+              <p className='text-sm text-muted-foreground'>{tSearch('noResults')}</p>
             </div>
           )}
 
           {/* Live Search Results */}
           {liveResults.length > 0 && !isLoading && (
-            <div className="px-4 py-2">
-              <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+            <div className='px-4 py-2'>
+              <div className='px-2 py-1.5 text-xs font-medium text-muted-foreground'>
                 {tSearch('searchFor')}
               </div>
-              <div className="space-y-1">
-                {liveResults.map((manga) => (
+              <div className='space-y-1'>
+                {liveResults.map(manga => (
                   <button
                     key={manga.id}
                     onClick={() => handleSelect(manga.slug)}
-                    className="w-full flex items-start gap-3 p-3 rounded-md hover:bg-accent transition-colors text-left"
+                    className='w-full flex items-start gap-3 p-3 rounded-md hover:bg-accent transition-colors text-left'
                   >
-                    <div className="flex-shrink-0 w-12 h-16 bg-muted rounded-md overflow-hidden relative">
+                    <div className='flex-shrink-0 w-12 h-16 bg-muted rounded-md overflow-hidden relative'>
                       {manga.cover_image_url ? (
                         <Image
                           src={manga.cover_image_url}
                           alt={manga.title}
                           fill
-                          sizes="48px"
-                          className="object-cover"
-                          loading="lazy"
+                          sizes='48px'
+                          className='object-cover'
+                          loading='lazy'
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted">
-                          <BookOpen className="h-6 w-6 text-muted-foreground" />
+                        <div className='w-full h-full flex items-center justify-center bg-muted'>
+                          <BookOpen className='h-6 w-6 text-muted-foreground' />
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <div className="font-semibold text-sm leading-tight line-clamp-2">
+                    <div className='flex-1 min-w-0 space-y-1'>
+                      <div className='font-semibold text-sm leading-tight line-clamp-2'>
                         {manga.title}
                       </div>
                       {manga.Chapters && manga.Chapters.length > 0 && manga.Chapters[0].title && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant='secondary' className='text-xs'>
                           {manga.Chapters[0].title}
                         </Badge>
                       )}
                       {manga.Comic_Genres && manga.Comic_Genres.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
+                        <div className='flex flex-wrap gap-1'>
                           {manga.Comic_Genres.slice(0, 3).map((cg, index) => (
-                            <Badge
-                              key={index}
-                              variant="outline"
-                              className="text-xs px-1.5 py-0.5"
-                            >
+                            <Badge key={index} variant='outline' className='text-xs px-1.5 py-0.5'>
                               {cg.Genres.name}
                             </Badge>
                           ))}
@@ -415,10 +404,13 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
                 {searchQuery.trim().length > 0 && (
                   <button
                     onClick={() => handleSearch(searchQuery)}
-                    className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-accent transition-colors text-primary"
+                    className='w-full flex items-center gap-3 p-3 rounded-md hover:bg-accent transition-colors text-primary'
                   >
-                    <Search className="h-5 w-5 flex-shrink-0" />
-                    <span>{tSearch('searchFor')} <span className="font-semibold">&quot;{searchQuery}&quot;</span></span>
+                    <Search className='h-5 w-5 flex-shrink-0' />
+                    <span>
+                      {tSearch('searchFor')}{' '}
+                      <span className='font-semibold'>&quot;{searchQuery}&quot;</span>
+                    </span>
                   </button>
                 )}
               </div>
@@ -426,47 +418,54 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
           )}
 
           {/* Search Button (when no live results yet) */}
-          {searchQuery && searchQuery.trim().length > 0 && liveResults.length === 0 && !isLoading && !error && (
-            <div className="px-4 py-2">
-              <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                {tSearch('searchFor')}
+          {searchQuery &&
+            searchQuery.trim().length > 0 &&
+            liveResults.length === 0 &&
+            !isLoading &&
+            !error && (
+              <div className='px-4 py-2'>
+                <div className='px-2 py-1.5 text-xs font-medium text-muted-foreground'>
+                  {tSearch('searchFor')}
+                </div>
+                <button
+                  onClick={() => handleSearch(searchQuery)}
+                  className='w-full flex items-center gap-3 p-3 rounded-md hover:bg-accent transition-colors'
+                >
+                  <Search className='h-5 w-5 flex-shrink-0' />
+                  <span>
+                    {tSearch('searchFor')}{' '}
+                    <span className='font-semibold'>&quot;{searchQuery}&quot;</span>
+                  </span>
+                </button>
               </div>
-              <button
-                onClick={() => handleSearch(searchQuery)}
-                className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-accent transition-colors"
-              >
-                <Search className="h-5 w-5 flex-shrink-0" />
-                <span>{tSearch('searchFor')} <span className="font-semibold">&quot;{searchQuery}&quot;</span></span>
-              </button>
-            </div>
-          )}
+            )}
 
           {/* Recent Searches */}
           {recentSearches.length > 0 && !searchQuery && (
-            <div className="px-4 py-2">
-              <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+            <div className='px-4 py-2'>
+              <div className='px-2 py-1.5 text-xs font-medium text-muted-foreground'>
                 {tSearch('recentSearches')}
               </div>
-              <div className="space-y-1">
-                {recentSearches.map((term) => (
+              <div className='space-y-1'>
+                {recentSearches.map(term => (
                   <div
                     key={term}
-                    className="flex items-center group px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                    className='flex items-center group px-3 py-2 rounded-md hover:bg-accent transition-colors'
                   >
                     <button
                       onClick={() => handleSearch(term)}
-                      className="flex items-center gap-3 flex-1 text-left min-w-0"
+                      className='flex items-center gap-3 flex-1 text-left min-w-0'
                     >
-                      <Clock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                      <span className="text-sm truncate">{term}</span>
+                      <Clock className='h-5 w-5 text-muted-foreground flex-shrink-0' />
+                      <span className='text-sm truncate'>{term}</span>
                     </button>
                     <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
-                      onClick={(e) => handleRemoveRecentSearch(e, term)}
+                      variant='ghost'
+                      size='icon'
+                      className='h-6 w-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive'
+                      onClick={e => handleRemoveRecentSearch(e, term)}
                     >
-                      <X className="h-3 w-3" />
+                      <X className='h-3 w-3' />
                     </Button>
                   </div>
                 ))}
@@ -476,55 +475,55 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
 
           {/* Popular Manga */}
           {!searchQuery && (
-            <div className="px-4 py-2">
-              <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+            <div className='px-4 py-2'>
+              <div className='px-2 py-1.5 text-xs font-medium text-muted-foreground'>
                 {tSearch('popularManga')}
               </div>
               {isLoadingPopular ? (
-                <div className="flex items-center justify-center py-6">
-                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                  <span className="ml-2 text-sm text-muted-foreground">{tCommon('loading')}</span>
+                <div className='flex items-center justify-center py-6'>
+                  <Loader2 className='h-5 w-5 animate-spin text-primary' />
+                  <span className='ml-2 text-sm text-muted-foreground'>{tCommon('loading')}</span>
                 </div>
               ) : (
-                <div className="space-y-1">
-                  {popularManga.map((manga) => (
+                <div className='space-y-1'>
+                  {popularManga.map(manga => (
                     <button
                       key={manga.id}
                       onClick={() => handleSelect(manga.slug)}
-                      className="w-full flex items-start gap-3 p-3 rounded-md hover:bg-accent transition-colors text-left"
+                      className='w-full flex items-start gap-3 p-3 rounded-md hover:bg-accent transition-colors text-left'
                     >
-                      <div className="flex-shrink-0 w-12 h-16 bg-muted rounded-md overflow-hidden relative">
+                      <div className='flex-shrink-0 w-12 h-16 bg-muted rounded-md overflow-hidden relative'>
                         {manga.cover_image_url ? (
                           <Image
                             src={manga.cover_image_url}
                             alt={manga.title}
                             fill
-                            sizes="48px"
-                            className="object-cover"
-                            loading="lazy"
+                            sizes='48px'
+                            className='object-cover'
+                            loading='lazy'
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-muted">
-                            <BookOpen className="h-6 w-6 text-muted-foreground" />
+                          <div className='w-full h-full flex items-center justify-center bg-muted'>
+                            <BookOpen className='h-6 w-6 text-muted-foreground' />
                           </div>
                         )}
                       </div>
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <div className="font-semibold text-sm leading-tight line-clamp-2">
+                      <div className='flex-1 min-w-0 space-y-1'>
+                        <div className='font-semibold text-sm leading-tight line-clamp-2'>
                           {manga.title}
                         </div>
                         {manga.Chapters && manga.Chapters.length > 0 && manga.Chapters[0].title && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant='secondary' className='text-xs'>
                             {manga.Chapters[0].title}
                           </Badge>
                         )}
                         {manga.Comic_Genres && manga.Comic_Genres.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
+                          <div className='flex flex-wrap gap-1'>
                             {manga.Comic_Genres.slice(0, 3).map((cg, index) => (
                               <Badge
                                 key={index}
-                                variant="outline"
-                                className="text-xs px-1.5 py-0.5"
+                                variant='outline'
+                                className='text-xs px-1.5 py-0.5'
                               >
                                 {cg.Genres.name}
                               </Badge>
@@ -542,6 +541,6 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
       </DialogContent>
     </Dialog>
   );
-})
+});
 
-export default SearchBar
+export default SearchBar;

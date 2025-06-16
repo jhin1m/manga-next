@@ -1,44 +1,44 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 // Chapter report types
 export interface ChapterReport {
-  id: number
-  user_id: number
-  chapter_id: number
-  reason: string
-  details?: string
-  status: 'pending' | 'resolved' | 'dismissed'
-  created_at: string
-  updated_at: string
+  id: number;
+  user_id: number;
+  chapter_id: number;
+  reason: string;
+  details?: string;
+  status: 'pending' | 'resolved' | 'dismissed';
+  created_at: string;
+  updated_at: string;
   Users?: {
-    id: number
-    username: string
-    role: string
-  }
+    id: number;
+    username: string;
+    role: string;
+  };
   Chapters?: {
-    id: number
-    title?: string
-    chapter_number: number
+    id: number;
+    title?: string;
+    chapter_number: number;
     Comics: {
-      id: number
-      title: string
-      slug: string
-    }
-  }
+      id: number;
+      title: string;
+      slug: string;
+    };
+  };
 }
 
 export interface ChapterReportRequest {
-  reason: string
-  details?: string
+  reason: string;
+  details?: string;
 }
 
 export interface ChapterReportResponse {
-  message: string
+  message: string;
   report: {
-    id: number
-    reason: string
-    created_at: string
-  }
+    id: number;
+    reason: string;
+    created_at: string;
+  };
 }
 
 // Validation schemas
@@ -51,22 +51,23 @@ export const chapterReportSchema = z.object({
     'poor_quality',
     'wrong_chapter',
     'corrupted_content',
-    'other'
+    'other',
   ]),
-  details: z.string()
+  details: z
+    .string()
     .max(300, 'Details cannot exceed 50 words (approximately 300 characters)')
     .optional()
     .refine(
-      (value) => {
+      value => {
         if (!value || value.trim().length === 0) return true;
         const wordCount = value.trim().split(/\s+/).length;
         return wordCount <= 50;
       },
       {
-        message: 'Details cannot exceed 50 words'
+        message: 'Details cannot exceed 50 words',
       }
     ),
-})
+});
 
 // Schema factory with i18n support
 export function createChapterReportSchema(t: (key: string) => string) {
@@ -79,27 +80,28 @@ export function createChapterReportSchema(t: (key: string) => string) {
       'poor_quality',
       'wrong_chapter',
       'corrupted_content',
-      'other'
+      'other',
     ]),
-    details: z.string()
+    details: z
+      .string()
       .max(300, t('characterLimitExceeded'))
       .optional()
       .refine(
-        (value) => {
+        value => {
           if (!value || value.trim().length === 0) return true;
           const wordCount = value.trim().split(/\s+/).length;
           return wordCount <= 50;
         },
         {
-          message: t('wordLimitExceeded')
+          message: t('wordLimitExceeded'),
         }
       ),
-  })
+  });
 }
 
 export const chapterReportModerationSchema = z.object({
   status: z.enum(['pending', 'resolved', 'dismissed']),
-})
+});
 
 // Report reason labels for UI (fallback - use i18n translations instead)
 export const CHAPTER_REPORT_REASONS = {
@@ -110,10 +112,10 @@ export const CHAPTER_REPORT_REASONS = {
   poor_quality: 'Poor image quality',
   wrong_chapter: 'Wrong chapter content',
   corrupted_content: 'Corrupted or unreadable content',
-  other: 'Other issue'
-} as const
+  other: 'Other issue',
+} as const;
 
-export type ChapterReportReason = keyof typeof CHAPTER_REPORT_REASONS
+export type ChapterReportReason = keyof typeof CHAPTER_REPORT_REASONS;
 
 // Function to get translated reason labels
 export function getTranslatedReasons(t: (key: string) => string) {
@@ -125,6 +127,6 @@ export function getTranslatedReasons(t: (key: string) => string) {
     poor_quality: t('reasons.poor_quality'),
     wrong_chapter: t('reasons.wrong_chapter'),
     corrupted_content: t('reasons.corrupted_content'),
-    other: t('reasons.other')
-  } as const
+    other: t('reasons.other'),
+  } as const;
 }

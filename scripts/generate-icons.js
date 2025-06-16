@@ -37,7 +37,7 @@ const iconSizes = [
 async function generateIcons() {
   const svgPath = path.join(__dirname, '../src/app/icon.svg');
   const publicDir = path.join(__dirname, '../public');
-  
+
   // Check if SVG exists
   if (!fs.existsSync(svgPath)) {
     console.error('❌ SVG icon not found at:', svgPath);
@@ -56,10 +56,7 @@ async function generateIcons() {
     // Generate all icons
     for (const { size, name, purpose } of iconSizes) {
       const outputPath = path.join(publicDir, name);
-      await sharp(svgPath)
-        .resize(size, size)
-        .png()
-        .toFile(outputPath);
+      await sharp(svgPath).resize(size, size).png().toFile(outputPath);
 
       const purposeText = purpose ? ` (${purpose})` : '';
       const iconType = name.includes('apple') ? '🍎' : '✅';
@@ -69,10 +66,7 @@ async function generateIcons() {
     // Generate ICO file (requires to-ico package)
     try {
       const toIco = require('to-ico');
-      const pngBuffer = await sharp(svgPath)
-        .resize(32, 32)
-        .png()
-        .toBuffer();
+      const pngBuffer = await sharp(svgPath).resize(32, 32).png().toBuffer();
 
       const icoBuffer = await toIco([pngBuffer]);
       fs.writeFileSync(path.join(publicDir, 'favicon.ico'), icoBuffer);
@@ -89,7 +83,6 @@ async function generateIcons() {
     console.log('- apple-icon.png (180x180) - any');
     console.log('- Additional favicon sizes: 16x16, 32x32, 48x48');
     console.log('- favicon.ico');
-    
   } catch (error) {
     console.error('❌ Error generating icons:', error);
   }

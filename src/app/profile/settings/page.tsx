@@ -1,26 +1,26 @@
-import { Metadata } from 'next'
-import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
-import { Separator } from '@/components/ui/separator'
-import { ProfileForm } from '@/components/profile/profile-form'
-import { PasswordForm } from '@/components/profile/password-form'
-import { NotificationSettings } from '@/components/notifications/NotificationSettings'
-import { defaultViewport } from '@/lib/seo/viewport'
+import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/db';
+import { Separator } from '@/components/ui/separator';
+import { ProfileForm } from '@/components/profile/profile-form';
+import { PasswordForm } from '@/components/profile/password-form';
+import { NotificationSettings } from '@/components/notifications/NotificationSettings';
+import { defaultViewport } from '@/lib/seo/viewport';
 
 export const metadata: Metadata = {
   title: 'Settings',
   description: 'Manage your account settings',
-}
+};
 
 export const viewport = defaultViewport;
 
 export default async function SettingsPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    redirect('/auth/login?callbackUrl=/profile/settings')
+    redirect('/auth/login?callbackUrl=/profile/settings');
   }
 
   const user = await prisma.users.findUnique({
@@ -30,26 +30,24 @@ export default async function SettingsPage() {
       username: true,
       email: true,
       avatar_url: true,
-    }
-  })
+    },
+  });
 
   if (!user) {
-    redirect('/auth/login')
+    redirect('/auth/login');
   }
 
   return (
-    <div className="container py-10">
-      <div className="mx-auto max-w-4xl space-y-6">
+    <div className='container py-10'>
+      <div className='mx-auto max-w-4xl space-y-6'>
         <div>
-          <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences.
-          </p>
+          <h1 className='text-3xl font-bold'>Settings</h1>
+          <p className='text-muted-foreground'>Manage your account settings and preferences.</p>
         </div>
 
         <Separator />
 
-        <div className="grid gap-10">
+        <div className='grid gap-10'>
           <ProfileForm user={user} />
           <Separator />
           <PasswordForm />
@@ -58,5 +56,5 @@ export default async function SettingsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

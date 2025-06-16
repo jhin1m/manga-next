@@ -40,31 +40,34 @@ export class MangaProcessor {
         cover_image_url: coverImageUrl,
         status: manga.status,
         total_views: manga.views,
-        updated_at: new Date()
+        updated_at: new Date(),
       };
 
       // Sử dụng transaction với timeout tăng lên 30 giây
-      const comic = await prisma.$transaction(async (tx) => {
-        // Upsert manga
-        const comic = await tx.comics.upsert({
-          where: { slug: manga.slug },
-          update: comicData,
-          create: {
-            ...comicData,
-            created_at: manga.createdAt
+      const comic = await prisma.$transaction(
+        async tx => {
+          // Upsert manga
+          const comic = await tx.comics.upsert({
+            where: { slug: manga.slug },
+            update: comicData,
+            create: {
+              ...comicData,
+              created_at: manga.createdAt,
+            },
+          });
+
+          // Xử lý genres nếu có - truyền transaction client
+          if (manga.genres && manga.genres.length > 0) {
+            await this.processGenres(tx, comic.id, manga.genres);
           }
-        });
 
-        // Xử lý genres nếu có - truyền transaction client
-        if (manga.genres && manga.genres.length > 0) {
-          await this.processGenres(tx, comic.id, manga.genres);
+          return comic;
+        },
+        {
+          maxWait: 30000, // Tăng thời gian chờ tối đa lên 30 giây
+          timeout: 30000, // Tăng thời gian timeout lên 30 giây
         }
-
-        return comic;
-      }, {
-        maxWait: 30000, // Tăng thời gian chờ tối đa lên 30 giây
-        timeout: 30000  // Tăng thời gian timeout lên 30 giây
-      });
+      );
 
       console.log(`Successfully processed manga: ${manga.title} (ID: ${comic.id})`);
       return comic.id;
@@ -76,7 +79,9 @@ export class MangaProcessor {
         console.error(`Error name: ${error.name}`);
         console.error(`Error message: ${error.message}`);
         if (error.message.includes('P2003')) {
-          console.error('Foreign key constraint violation detected. This may be due to transaction scope issues.');
+          console.error(
+            'Foreign key constraint violation detected. This may be due to transaction scope issues.'
+          );
         }
       }
 
@@ -91,7 +96,11 @@ export class MangaProcessor {
    * @param options Tùy chọn xử lý
    * @returns URL của cover image đã xử lý
    */
-  private async processCoverImage(url: string, slug: string, options: ProcessorOptions): Promise<string> {
+  private async processCoverImage(
+    url: string,
+    slug: string,
+    options: ProcessorOptions
+  ): Promise<string> {
     // Nếu không download ảnh, trả về URL gốc
     if (options.useOriginalImages) {
       return url;
@@ -103,7 +112,7 @@ export class MangaProcessor {
       const filePath = path.join(COVERS_DIR, filename);
 
       // Kiểm tra nếu file đã tồn tại và không cần tải lại
-      if (await fs.pathExists(filePath) && options.skipExisting) {
+      if ((await fs.pathExists(filePath)) && options.skipExisting) {
         return `/images/covers/${filename}`;
       }
 
@@ -144,7 +153,7 @@ export class MangaProcessor {
 
       // Xóa genres cũ
       await tx.comic_Genres.deleteMany({
-        where: { comic_id: comicId }
+        where: { comic_id: comicId },
       });
 
       // Thêm genres mới
@@ -162,16 +171,16 @@ export class MangaProcessor {
           create: {
             name: genre.name,
             slug: genre.slug,
-            created_at: new Date()
-          }
+            created_at: new Date(),
+          },
         });
 
         // Liên kết comic với genre
         await tx.comic_Genres.create({
           data: {
             comic_id: comicId,
-            genre_id: savedGenre.id
-          }
+            genre_id: savedGenre.id,
+          },
         });
       }
     } catch (error) {

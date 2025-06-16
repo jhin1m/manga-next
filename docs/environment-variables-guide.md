@@ -5,6 +5,7 @@
 ### 🔍 **How Environment Variables Work in Our Docker Setup**
 
 #### **Build Time (Dockerfile)**
+
 ```dockerfile
 # Builder stage - only for build process
 ENV NEXT_TELEMETRY_DISABLED 1
@@ -19,6 +20,7 @@ ENV HOSTNAME "0.0.0.0"
 ```
 
 #### **Runtime (docker-compose.yml)**
+
 ```yaml
 environment:
   - NODE_ENV=production
@@ -30,12 +32,14 @@ environment:
 ```
 
 ### ✅ **What's Good About Current Setup**
+
 1. **No .env files in image** - Secrets not baked into image
 2. **Dummy DATABASE_URL for build** - Real credentials not in image layers
 3. **Runtime injection** - Variables provided at container start
 4. **Multi-stage separation** - Build vs runtime environment isolation
 
 ### ⚠️ **Security Concerns in Current Setup**
+
 1. **Hardcoded secrets in docker-compose.yml** - Visible in plain text
 2. **No encryption** - Secrets stored unencrypted
 3. **Version control risk** - docker-compose.yml might be committed with secrets
@@ -44,17 +48,19 @@ environment:
 ## 🔒 **Recommended Production Security Improvements**
 
 ### **Method 1: Environment Files (Recommended for Development)**
+
 ```yaml
 # docker-compose.prod.yml
 services:
   app:
     env_file:
-      - .env.production  # Not committed to git
+      - .env.production # Not committed to git
     environment:
       - NODE_ENV=production
 ```
 
 ### **Method 2: Docker Secrets (Recommended for Production)**
+
 ```yaml
 # docker-compose.prod.yml
 services:
@@ -74,6 +80,7 @@ secrets:
 ```
 
 ### **Method 3: External Secret Management**
+
 - **Railway**: Environment variables in dashboard
 - **Vercel**: Environment variables in project settings
 - **AWS**: Parameter Store / Secrets Manager
@@ -82,6 +89,7 @@ secrets:
 ## 🚀 **Implementation Examples**
 
 ### **For Railway Deployment**
+
 ```bash
 # Set via Railway CLI
 railway variables set DATABASE_URL="postgresql://..."
@@ -90,6 +98,7 @@ railway variables set NEXTAUTH_URL="https://your-app.railway.app"
 ```
 
 ### **For Production VPS**
+
 ```bash
 # Use external .env file
 docker compose --env-file .env.production up -d
@@ -101,6 +110,7 @@ docker compose up -d
 ```
 
 ### **For Kubernetes**
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -108,13 +118,14 @@ metadata:
   name: manga-secrets
 type: Opaque
 stringData:
-  database-url: "postgresql://..."
-  nextauth-secret: "your-secret"
+  database-url: 'postgresql://...'
+  nextauth-secret: 'your-secret'
 ```
 
 ## 📝 **Best Practices Summary**
 
 ### ✅ **DO**
+
 - Use external secret management in production
 - Rotate secrets regularly
 - Use different secrets per environment
@@ -123,6 +134,7 @@ stringData:
 - Mount secrets as files, not environment variables
 
 ### ❌ **DON'T**
+
 - Hardcode secrets in Dockerfile or docker-compose.yml
 - Commit .env files with real secrets
 - Use the same secrets across environments
@@ -130,6 +142,7 @@ stringData:
 - Log environment variables containing secrets
 
 ## 🔧 **Next Steps for Security**
+
 1. Create separate docker-compose files for different environments
 2. Implement Docker secrets for production
 3. Add environment variable validation

@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
-import { requireAdminAuth, logAdminAction, AdminPermissions } from '@/lib/admin/middleware'
-import { AdminRole, userBanSchema } from '@/types/admin'
-import { prisma } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { requireAdminAuth, logAdminAction, AdminPermissions } from '@/lib/admin/middleware';
+import { AdminRole, userBanSchema } from '@/types/admin';
+import { prisma } from '@/lib/db';
 
 /**
  * POST /api/admin/users/[id]/ban
@@ -11,98 +11,98 @@ import { prisma } from '@/lib/db'
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.MODERATOR)
+    const authResult = await requireAdminAuth(request, AdminRole.MODERATOR);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { user } = authResult
-    const { id } = await params
-    const userId = parseInt(id)
+    const { user } = authResult;
+    const { id } = await params;
+    const userId = parseInt(id);
 
     if (isNaN(userId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid user ID' 
+          error: 'Invalid user ID',
         },
         { status: 400 }
-      )
+      );
     }
 
-    const body = await request.json()
-    const validatedData = userBanSchema.parse(body)
+    const body = await request.json();
+    const validatedData = userBanSchema.parse(body);
 
     // Check permissions
-    const permissions = new AdminPermissions(user.role)
+    const permissions = new AdminPermissions(user.role);
     if (!permissions.canBanUsers()) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Insufficient permissions to ban users' 
+          error: 'Insufficient permissions to ban users',
         },
         { status: 403 }
-      )
+      );
     }
 
     // Prevent self-ban
     if (userId === parseInt(user.id)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Cannot ban your own account' 
+          error: 'Cannot ban your own account',
         },
         { status: 400 }
-      )
+      );
     }
 
     // Check if target user exists
     const targetUser = await prisma.users.findUnique({
       where: { id: userId },
-      select: { 
-        id: true, 
-        username: true, 
-        email: true, 
-        role: true 
-      }
-    })
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+      },
+    });
 
     if (!targetUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User not found' 
+          error: 'User not found',
         },
         { status: 404 }
-      )
+      );
     }
 
     // Prevent banning other admins (unless super admin)
     if (targetUser.role !== 'user' && user.role !== 'super_admin') {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Cannot ban admin users' 
+          error: 'Cannot ban admin users',
         },
         { status: 403 }
-      )
+      );
     }
 
     // Check if user is already banned
     if (targetUser.role === 'banned') {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User is already banned' 
+          error: 'User is already banned',
         },
         { status: 400 }
-      )
+      );
     }
 
     // Calculate expiration date if duration is provided
-    let expiresAt: Date | undefined
+    let expiresAt: Date | undefined;
     if (validatedData.duration) {
-      expiresAt = new Date()
-      expiresAt.setDate(expiresAt.getDate() + validatedData.duration)
+      expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + validatedData.duration);
     }
 
     // Update user role to banned
@@ -110,16 +110,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       where: { id: userId },
       data: {
         role: 'banned',
-        updated_at: new Date()
+        updated_at: new Date(),
       },
       select: {
         id: true,
         username: true,
         email: true,
         role: true,
-        updated_at: true
-      }
-    })
+        updated_at: true,
+      },
+    });
 
     // TODO: Create ban record in a separate table for tracking
     // This would include ban reason, duration, banned_by, etc.
@@ -131,21 +131,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       'BAN_USER',
       'user',
       userId,
-      { 
+      {
         username: targetUser.username,
         email: targetUser.email,
         reason: validatedData.reason,
         duration: validatedData.duration,
         expiresAt: expiresAt?.toISOString(),
-        notify: validatedData.notify
+        notify: validatedData.notify,
       },
       request
-    )
+    );
 
     // TODO: Send notification to user if notify is true
     if (validatedData.notify) {
       // Implement notification logic here
-      console.log(`Sending ban notification to user ${targetUser.username}`)
+      console.log(`Sending ban notification to user ${targetUser.username}`);
     }
 
     return NextResponse.json({
@@ -158,31 +158,30 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           duration: validatedData.duration,
           expiresAt: expiresAt?.toISOString(),
           bannedBy: parseInt(user.id),
-          bannedAt: new Date().toISOString()
-        }
-      }
-    })
-
+          bannedAt: new Date().toISOString(),
+        },
+      },
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Invalid request data',
-          details: error.errors 
+          details: error.errors,
         },
         { status: 400 }
-      )
+      );
     }
 
-    console.error('[ADMIN_USER_BAN_ERROR]', error)
+    console.error('[ADMIN_USER_BAN_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to ban user' 
+        error: 'Failed to ban user',
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -193,65 +192,65 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.MODERATOR)
+    const authResult = await requireAdminAuth(request, AdminRole.MODERATOR);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { user } = authResult
-    const { id } = await params
-    const userId = parseInt(id)
+    const { user } = authResult;
+    const { id } = await params;
+    const userId = parseInt(id);
 
     if (isNaN(userId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid user ID' 
+          error: 'Invalid user ID',
         },
         { status: 400 }
-      )
+      );
     }
 
     // Check permissions
-    const permissions = new AdminPermissions(user.role)
+    const permissions = new AdminPermissions(user.role);
     if (!permissions.canBanUsers()) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Insufficient permissions to unban users' 
+          error: 'Insufficient permissions to unban users',
         },
         { status: 403 }
-      )
+      );
     }
 
     // Check if target user exists and is banned
     const targetUser = await prisma.users.findUnique({
       where: { id: userId },
-      select: { 
-        id: true, 
-        username: true, 
-        email: true, 
-        role: true 
-      }
-    })
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+      },
+    });
 
     if (!targetUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User not found' 
+          error: 'User not found',
         },
         { status: 404 }
-      )
+      );
     }
 
     if (targetUser.role !== 'banned') {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User is not banned' 
+          error: 'User is not banned',
         },
         { status: 400 }
-      )
+      );
     }
 
     // Restore user role to 'user'
@@ -259,16 +258,16 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       where: { id: userId },
       data: {
         role: 'user',
-        updated_at: new Date()
+        updated_at: new Date(),
       },
       select: {
         id: true,
         username: true,
         email: true,
         role: true,
-        updated_at: true
-      }
-    })
+        updated_at: true,
+      },
+    });
 
     // Log admin action
     await logAdminAction(
@@ -276,28 +275,27 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       'UNBAN_USER',
       'user',
       userId,
-      { 
+      {
         username: targetUser.username,
-        email: targetUser.email
+        email: targetUser.email,
       },
       request
-    )
+    );
 
     return NextResponse.json({
       success: true,
       message: 'User unbanned successfully',
-      data: updatedUser
-    })
-
+      data: updatedUser,
+    });
   } catch (error) {
-    console.error('[ADMIN_USER_UNBAN_ERROR]', error)
+    console.error('[ADMIN_USER_UNBAN_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to unban user' 
+        error: 'Failed to unban user',
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -308,59 +306,61 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(_request, AdminRole.MODERATOR)
+    const authResult = await requireAdminAuth(_request, AdminRole.MODERATOR);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { id } = await params
-    const userId = parseInt(id)
+    const { id } = await params;
+    const userId = parseInt(id);
 
     if (isNaN(userId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid user ID' 
+          error: 'Invalid user ID',
         },
         { status: 400 }
-      )
+      );
     }
 
     // Check if target user exists
     const targetUser = await prisma.users.findUnique({
       where: { id: userId },
-      select: { 
-        id: true, 
-        username: true, 
-        email: true, 
+      select: {
+        id: true,
+        username: true,
+        email: true,
         role: true,
-        updated_at: true
-      }
-    })
+        updated_at: true,
+      },
+    });
 
     if (!targetUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User not found' 
+          error: 'User not found',
         },
         { status: 404 }
-      )
+      );
     }
 
-    const isBanned = targetUser.role === 'banned'
+    const isBanned = targetUser.role === 'banned';
 
     // TODO: Get ban details from ban records table
     // For now, return basic information
-    const banInfo = isBanned ? {
-      isBanned: true,
-      bannedAt: targetUser.updated_at, // Approximation
-      reason: 'Ban reason not available', // Would come from ban records
-      duration: null, // Would come from ban records
-      expiresAt: null, // Would come from ban records
-      bannedBy: null // Would come from ban records
-    } : {
-      isBanned: false
-    }
+    const banInfo = isBanned
+      ? {
+          isBanned: true,
+          bannedAt: targetUser.updated_at, // Approximation
+          reason: 'Ban reason not available', // Would come from ban records
+          duration: null, // Would come from ban records
+          expiresAt: null, // Would come from ban records
+          bannedBy: null, // Would come from ban records
+        }
+      : {
+          isBanned: false,
+        };
 
     return NextResponse.json({
       success: true,
@@ -369,20 +369,19 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
           id: targetUser.id,
           username: targetUser.username,
           email: targetUser.email,
-          role: targetUser.role
+          role: targetUser.role,
         },
-        banInfo
-      }
-    })
-
+        banInfo,
+      },
+    });
   } catch (error) {
-    console.error('[ADMIN_USER_BAN_INFO_ERROR]', error)
+    console.error('[ADMIN_USER_BAN_INFO_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to fetch ban information' 
+        error: 'Failed to fetch ban information',
       },
       { status: 500 }
-    )
+    );
   }
 }

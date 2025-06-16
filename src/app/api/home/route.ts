@@ -12,12 +12,10 @@ function transformHotMangaData(comics: any[]) {
     views: comic.total_views || 0,
     status: comic.status,
     chapterCount: comic.chapter_count || 0,
-      latestChapter: comic.Chapters && comic.Chapters.length > 0
-        ? comic.Chapters[0].title
-        : undefined,
-      latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
-        ? comic.Chapters[0].slug
-        : undefined,
+    latestChapter:
+      comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].title : undefined,
+    latestChapterSlug:
+      comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].slug : undefined,
     updatedAt: comic.last_chapter_uploaded_at,
   }));
 }
@@ -28,12 +26,10 @@ function transformLatestMangaData(comics: any[]) {
     title: comic.title,
     coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
     slug: comic.slug,
-    latestChapter: comic.Chapters && comic.Chapters.length > 0
-      ? comic.Chapters[0].title
-      : undefined,
-    latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
-      ? comic.Chapters[0].slug
-      : undefined,
+    latestChapter:
+      comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].title : undefined,
+    latestChapterSlug:
+      comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].slug : undefined,
     genres: comic.genres?.map((g: any) => g.name) || [],
     rating: comic.average_rating || 8,
     views: comic.total_views || 0,
@@ -50,7 +46,7 @@ function transformRankingsData(rankings: any[]) {
     slug: item.slug,
     coverImage: item.cover_image_url || 'https://placehold.co/100x150/png',
     views: item.weekly_views || item.total_views || 0, // Use weekly_views first, fallback to total_views
-    rank: item.rank || (index + 1), // Use API rank if available, otherwise calculate
+    rank: item.rank || index + 1, // Use API rank if available, otherwise calculate
   }));
 }
 
@@ -64,54 +60,54 @@ function transformRecommendedMangaData(comics: any[]) {
     status: comic.status,
     views: comic.total_views || 0,
     genres: comic.genres?.map((g: any) => g.name) || [],
-    latestChapter: comic.Chapters && comic.Chapters.length > 0
-      ? comic.Chapters[0].title
-      : undefined,
-    latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
-      ? comic.Chapters[0].slug
-      : undefined,
+    latestChapter:
+      comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].title : undefined,
+    latestChapterSlug:
+      comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].slug : undefined,
   }));
 }
 
 // Parallel data fetching function (copied from page.tsx)
 async function fetchAllHomePageData(page: number = 1) {
   try {
-    const [
-      popularMangaData,
-      latestMangaData,
-      sidebarRankingsData,
-      recentCommentsData
-    ] = await Promise.all([
-      mangaApi.getList({
-        sort: 'popular',
-        limit: 10,
-      }).catch(err => {
-        console.error('Error fetching popular manga:', err);
-        return { comics: [] };
-      }),
+    const [popularMangaData, latestMangaData, sidebarRankingsData, recentCommentsData] =
+      await Promise.all([
+        mangaApi
+          .getList({
+            sort: 'popular',
+            limit: 10,
+          })
+          .catch(err => {
+            console.error('Error fetching popular manga:', err);
+            return { comics: [] };
+          }),
 
-      mangaApi.getList({
-        sort: 'latest',
-        limit: 24,
-        page,
-      }).catch(err => {
-        console.error('Error fetching latest manga:', err);
-        return { comics: [], totalPages: 1, currentPage: 1, total: 0 };
-      }),
+        mangaApi
+          .getList({
+            sort: 'latest',
+            limit: 24,
+            page,
+          })
+          .catch(err => {
+            console.error('Error fetching latest manga:', err);
+            return { comics: [], totalPages: 1, currentPage: 1, total: 0 };
+          }),
 
-      rankingsApi.getSidebarRankings({
-        period: 'weekly',
-        limit: 10
-      }).catch(err => {
-        console.error('Error fetching rankings:', err);
-        return { success: false, data: { rankings: [] } };
-      }),
+        rankingsApi
+          .getSidebarRankings({
+            period: 'weekly',
+            limit: 10,
+          })
+          .catch(err => {
+            console.error('Error fetching rankings:', err);
+            return { success: false, data: { rankings: [] } };
+          }),
 
-      commentApi.getRecent({ limit: 5 }).catch(err => {
-        console.error('Error fetching recent comments:', err);
-        return { comments: [] };
-      })
-    ]);
+        commentApi.getRecent({ limit: 5 }).catch(err => {
+          console.error('Error fetching recent comments:', err);
+          return { comments: [] };
+        }),
+      ]);
 
     const hotMangaComics = popularMangaData.comics || [];
     const recommendedMangaComics = popularMangaData.comics || [];
@@ -122,13 +118,15 @@ async function fetchAllHomePageData(page: number = 1) {
       latestMangaPagination: {
         totalPages: latestMangaData.totalPages || 1,
         currentPage: latestMangaData.currentPage || 1,
-        totalResults: latestMangaData.total || 0
+        totalResults: latestMangaData.total || 0,
       },
       sidebarData: {
-        rankings: transformRankingsData(sidebarRankingsData.success ? sidebarRankingsData.data.rankings : []),
+        rankings: transformRankingsData(
+          sidebarRankingsData.success ? sidebarRankingsData.data.rankings : []
+        ),
         recentComments: recentCommentsData.comments || [],
-        recommendedManga: transformRecommendedMangaData(recommendedMangaComics)
-      }
+        recommendedManga: transformRecommendedMangaData(recommendedMangaComics),
+      },
     };
   } catch (error) {
     console.error('Error fetching homepage data:', error);
@@ -139,8 +137,8 @@ async function fetchAllHomePageData(page: number = 1) {
       sidebarData: {
         rankings: [],
         recentComments: [],
-        recommendedManga: []
-      }
+        recommendedManga: [],
+      },
     };
   }
 }
@@ -159,9 +157,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Homepage API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch homepage data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch homepage data' }, { status: 500 });
   }
 }

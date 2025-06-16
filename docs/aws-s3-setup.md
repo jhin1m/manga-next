@@ -5,11 +5,13 @@ This guide will help you set up AWS S3 for avatar upload functionality as an alt
 ## 1. Create AWS Account and S3 Bucket
 
 ### Step 1: AWS Account Setup
+
 1. Go to [AWS Console](https://aws.amazon.com/) and create an account
 2. Navigate to the S3 service
 3. Create a new bucket for your manga website
 
 ### Step 2: S3 Bucket Configuration
+
 1. **Bucket Name**: Choose a unique name (e.g., `manga-website-storage`)
 2. **Region**: Select a region close to your users (e.g., `us-east-1`)
 3. **Public Access**: Configure based on your needs
@@ -17,6 +19,7 @@ This guide will help you set up AWS S3 for avatar upload functionality as an alt
 5. **Encryption**: Enable server-side encryption
 
 ### Step 3: Bucket Policy (for public read access)
+
 Add this bucket policy to allow public read access to uploaded avatars:
 
 ```json
@@ -37,11 +40,13 @@ Add this bucket policy to allow public read access to uploaded avatars:
 ## 2. Create IAM User and Access Keys
 
 ### Step 1: Create IAM User
+
 1. Go to IAM service in AWS Console
 2. Create a new user (e.g., `manga-website-uploader`)
 3. Select "Programmatic access"
 
 ### Step 2: Attach Permissions
+
 Create a custom policy with these permissions:
 
 ```json
@@ -50,20 +55,12 @@ Create a custom policy with these permissions:
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:DeleteObject",
-        "s3:PutObjectAcl"
-      ],
+      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:PutObjectAcl"],
       "Resource": "arn:aws:s3:::your-bucket-name/manga-website/*"
     },
     {
       "Effect": "Allow",
-      "Action": [
-        "s3:ListBucket",
-        "s3:HeadBucket"
-      ],
+      "Action": ["s3:ListBucket", "s3:HeadBucket"],
       "Resource": "arn:aws:s3:::your-bucket-name"
     }
   ]
@@ -71,6 +68,7 @@ Create a custom policy with these permissions:
 ```
 
 ### Step 3: Get Access Keys
+
 1. After creating the user, download the Access Key ID and Secret Access Key
 2. Store these securely - you'll need them for environment variables
 
@@ -97,17 +95,20 @@ AWS_CLOUDFRONT_URL="https://your-cloudfront-domain.cloudfront.net"
 For better performance, set up CloudFront CDN:
 
 ### Step 1: Create CloudFront Distribution
+
 1. Go to CloudFront service in AWS Console
 2. Create a new distribution
 3. Set origin domain to your S3 bucket
 4. Configure caching behaviors
 
 ### Step 2: Configure Origin Access Control (OAC)
+
 1. Create an Origin Access Control
 2. Update S3 bucket policy to allow CloudFront access
 3. Block public access to S3 and serve only through CloudFront
 
 ### Step 3: Update Environment Variables
+
 ```bash
 AWS_CLOUDFRONT_URL="https://d1234567890.cloudfront.net"
 ```
@@ -139,17 +140,20 @@ Configure CORS on your S3 bucket to allow uploads from your domain:
 ## 7. Production Considerations
 
 ### Security
+
 - Use IAM roles instead of access keys in production (if deploying on AWS)
 - Implement signed URLs for sensitive uploads
 - Enable S3 access logging
 - Use least privilege principle for IAM permissions
 
 ### Performance
+
 - Enable CloudFront CDN for global distribution
 - Configure appropriate cache headers
 - Use S3 Transfer Acceleration for faster uploads
 
 ### Cost Optimization
+
 - Set up S3 lifecycle policies to move old files to cheaper storage classes
 - Monitor usage with AWS Cost Explorer
 - Consider S3 Intelligent Tiering
@@ -180,7 +184,9 @@ your-bucket-name/
 4. **Images Not Loading**: Verify bucket policy allows public read access
 
 ### Debug Mode:
+
 Check storage health with:
+
 ```bash
 curl http://localhost:3000/api/storage/health
 ```
@@ -188,6 +194,7 @@ curl http://localhost:3000/api/storage/health
 ## 10. Cost Estimation
 
 AWS S3 pricing (approximate):
+
 - Storage: $0.023 per GB per month
 - PUT requests: $0.0005 per 1,000 requests
 - GET requests: $0.0004 per 10,000 requests

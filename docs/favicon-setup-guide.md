@@ -1,6 +1,7 @@
 # Favicon Configuration Guide for NextJS 15
 
 ## Current Setup
+
 Your project already has a basic favicon setup with `src/app/favicon.ico`. NextJS 15 automatically serves this as the favicon.
 
 ## Complete Favicon Setup
@@ -19,13 +20,14 @@ src/app/
 ### 2. File Specifications:
 
 - **favicon.ico**: 32x32px, ICO format
-- **icon.png**: 32x32px, PNG format  
+- **icon.png**: 32x32px, PNG format
 - **icon.svg**: Vector format, scalable
 - **apple-icon.png**: 180x180px, PNG format for iOS devices
 
 ### 3. Advanced Configuration
 
 #### Option A: Static Files (Recommended)
+
 Place these files directly in `src/app/`:
 
 ```typescript
@@ -37,6 +39,7 @@ Place these files directly in `src/app/`:
 ```
 
 #### Option B: Dynamic Icons
+
 Create `src/app/icon.tsx` for dynamic favicon:
 
 ```typescript
@@ -94,7 +97,7 @@ Create `src/app/manifest.json`:
       "type": "image/png"
     },
     {
-      "src": "/icon-512.png", 
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
@@ -142,10 +145,11 @@ pnpm run generate:icons
 ```
 
 The script will create:
+
 - favicon.ico (32x32)
-- favicon-*.png (16x16 to 144x144)
-- icon-*.png (192x192 to 512x512)
-- apple-touch-icon-*.png (57x57 to 180x180)
+- favicon-\*.png (16x16 to 144x144)
+- icon-\*.png (192x192 to 512x512)
+- apple-touch-icon-\*.png (57x57 to 180x180)
 
 ### 9. Troubleshooting
 

@@ -1,20 +1,20 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import MangaCard from "@/components/feature/MangaCard";
-import FilterSortBar from "@/components/feature/FilterSortBar";
-import PaginationWrapper from "@/components/feature/PaginationWrapper";
-import { constructMetadata, constructGenreMetadata } from "@/lib/seo/metadata";
-import JsonLdScript from "@/components/seo/JsonLdScript";
-import { generateGenreJsonLd } from "@/lib/seo/jsonld";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import MangaCard from '@/components/feature/MangaCard';
+import FilterSortBar from '@/components/feature/FilterSortBar';
+import PaginationWrapper from '@/components/feature/PaginationWrapper';
+import { constructMetadata, constructGenreMetadata } from '@/lib/seo/metadata';
+import JsonLdScript from '@/components/seo/JsonLdScript';
+import { generateGenreJsonLd } from '@/lib/seo/jsonld';
 import { genreApi } from '@/lib/api/client';
 
 import { seoConfig } from '@/config/seo.config';
 
 // Generate metadata for the page
 export async function generateMetadata({
-  params
+  params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
 
@@ -27,7 +27,7 @@ export async function generateMetadata({
       return constructMetadata({
         title: 'Genre Not Found',
         description: 'The requested genre could not be found.',
-        noIndex: true
+        noIndex: true,
       });
     }
 
@@ -42,7 +42,13 @@ export async function generateMetadata({
     return constructMetadata({
       title: `Manga by Genre | ${seoConfig.site.name}`,
       description: `Browse manga by genre on ${seoConfig.site.name}. Find and read your favorite manga series by genre.`,
-      keywords: ['manga genres', 'manga categories', 'manga by genre', 'read manga online', seoConfig.site.name.toLowerCase()]
+      keywords: [
+        'manga genres',
+        'manga categories',
+        'manga by genre',
+        'read manga online',
+        seoConfig.site.name.toLowerCase(),
+      ],
     });
   }
 }
@@ -52,7 +58,7 @@ async function fetchMangaByGenre({
   genre,
   page = 1,
   limit = 20,
-  sort = 'latest'
+  sort = 'latest',
 }: {
   genre: string;
   page?: number;
@@ -84,12 +90,10 @@ async function fetchMangaByGenre({
         views: comic.total_views || 0,
         rating: 0, // Not implemented in the API yet
         chapterCount: comic._chapterCount || 0,
-        latestChapter: comic.Chapters && comic.Chapters.length > 0
-          ? comic.Chapters[0].title
-          : undefined,
-        latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
-          ? comic.Chapters[0].slug
-          : undefined,
+        latestChapter:
+          comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].title : undefined,
+        latestChapterSlug:
+          comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].slug : undefined,
         updatedAt: comic.last_chapter_uploaded_at || undefined,
       };
     });
@@ -98,7 +102,7 @@ async function fetchMangaByGenre({
       data: manga,
       totalPages: data.totalPages,
       currentPage: data.currentPage,
-      totalManga: data.totalComics
+      totalManga: data.totalComics,
     };
   } catch (error) {
     console.error('Error fetching manga by genre:', error);
@@ -106,7 +110,7 @@ async function fetchMangaByGenre({
       data: [],
       totalPages: 0,
       currentPage: 1,
-      totalManga: 0
+      totalManga: 0,
     };
   }
 }
@@ -125,10 +129,10 @@ async function fetchGenreInfo(slug: string) {
 
 export default async function GenrePage({
   params,
-  searchParams
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { slug } = await params;
   const searchParamsData = await searchParams;
@@ -159,20 +163,18 @@ export default async function GenrePage({
   const jsonLd = generateGenreJsonLd(genre.name, genre.slug);
 
   return (
-    <div className="container mx-auto py-8">
-      <JsonLdScript id="genre-jsonld" jsonLd={jsonLd} />
-      <h1 className="text-2xl font-bold mb-2">{genre.name} Manga</h1>
-      {genre.description && (
-        <p className="text-muted-foreground mb-6">{genre.description}</p>
-      )}
+    <div className='container mx-auto py-8'>
+      <JsonLdScript id='genre-jsonld' jsonLd={jsonLd} />
+      <h1 className='text-2xl font-bold mb-2'>{genre.name} Manga</h1>
+      {genre.description && <p className='text-muted-foreground mb-6'>{genre.description}</p>}
 
-      <div className="mb-6">
+      <div className='mb-6'>
         <FilterSortBar />
       </div>
 
       {manga.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+          <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8'>
             {manga.map((item: any) => (
               <MangaCard
                 key={item.id}
@@ -199,10 +201,8 @@ export default async function GenrePage({
           />
         </>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">
-            No manga found in this genre.
-          </p>
+        <div className='text-center py-12'>
+          <p className='text-muted-foreground'>No manga found in this genre.</p>
         </div>
       )}
     </div>

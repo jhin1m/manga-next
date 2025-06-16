@@ -35,12 +35,10 @@ async function fetchManga(params: {
         title: comic.title,
         coverImage: comic.cover_image_url || 'https://placehold.co/300x450/png',
         slug: comic.slug,
-        latestChapter: comic.Chapters && comic.Chapters.length > 0
-          ? `${comic.Chapters[0].title}`
-          : undefined,
-        latestChapterSlug: comic.Chapters && comic.Chapters.length > 0
-          ? comic.Chapters[0].slug
-          : undefined,
+        latestChapter:
+          comic.Chapters && comic.Chapters.length > 0 ? `${comic.Chapters[0].title}` : undefined,
+        latestChapterSlug:
+          comic.Chapters && comic.Chapters.length > 0 ? comic.Chapters[0].slug : undefined,
         genres: comic.Comic_Genres?.map((cg: any) => cg.Genres.name) || [],
         rating: comic.rating,
         views: comic.total_views || 0,
@@ -50,7 +48,7 @@ async function fetchManga(params: {
       })),
       totalPages: data.totalPages,
       currentPage: data.currentPage,
-      totalResults: data.totalComics
+      totalResults: data.totalComics,
     };
   } catch (error) {
     console.error('Error fetching manga list:', error);
@@ -138,8 +136,6 @@ export default async function MangaPage({
   // Get page title using configurable system
   const pageTitle = getServerPageTitle('manga', { sort, status, genre }, currentLocale);
 
-
-
   // Helper function to build query string
   function buildQueryString(sort: string, status?: string, genre?: string): string {
     const params = new URLSearchParams();
@@ -165,7 +161,7 @@ export default async function MangaPage({
 
   return (
     <div>
-      <JsonLdScript id="manga-list-jsonld" jsonLd={jsonLd} />
+      <JsonLdScript id='manga-list-jsonld' jsonLd={jsonLd} />
       <MangaPageTracker
         pageTitle={pageTitle}
         sort={sort}

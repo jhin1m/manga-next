@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * On-demand Revalidation API Endpoint
- * 
+ *
  * This endpoint allows triggering cache revalidation for specific tags or paths
  * when data is updated in the database, solving the issue where PostgreSQL updates
  * don't automatically reflect in the NextJS application.
- * 
+ *
  * Usage:
  * POST /api/revalidate
  * {
@@ -34,10 +34,7 @@ export async function POST(request: NextRequest) {
     // Optional security check
     if (process.env.REVALIDATION_SECRET && secret !== process.env.REVALIDATION_SECRET) {
       console.warn('Revalidation attempt with invalid secret');
-      return NextResponse.json(
-        { message: 'Invalid secret', success: false }, 
-        { status: 401 }
-      );
+      return NextResponse.json({ message: 'Invalid secret', success: false }, { status: 401 });
     }
 
     // Auto-generate tags and paths based on context
@@ -67,11 +64,7 @@ export async function POST(request: NextRequest) {
 
     // Auto-generate tags for genre updates
     if (genreSlug) {
-      allTags.push(
-        `manga-genre-${genreSlug}`,
-        'genres',
-        'manga-list'
-      );
+      allTags.push(`manga-genre-${genreSlug}`, 'genres', 'manga-list');
       allPaths.push(`/genres/${genreSlug}`);
     }
 
@@ -110,29 +103,28 @@ export async function POST(request: NextRequest) {
       revalidated: {
         tags: revalidatedTags,
         paths: revalidatedPaths,
-        count: revalidatedTags.length + revalidatedPaths.length
+        count: revalidatedTags.length + revalidatedPaths.length,
       },
       context: {
         mangaSlug: mangaSlug || null,
         chapterId: chapterId || null,
-        genreSlug: genreSlug || null
-      }
+        genreSlug: genreSlug || null,
+      },
     };
 
     console.log('🔄 Revalidation summary:', response);
 
     return NextResponse.json(response, { status: 200 });
-
   } catch (error) {
     console.error('❌ Revalidation error:', error);
-    
+
     return NextResponse.json(
-      { 
+      {
         success: false,
-        message: 'Error during revalidation', 
+        message: 'Error during revalidation',
         error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
-      }, 
+        timestamp: new Date().toISOString(),
+      },
       { status: 500 }
     );
   }
@@ -142,7 +134,7 @@ export async function POST(request: NextRequest) {
  * GET endpoint for testing and health check
  */
 export async function GET() {
-  return NextResponse.json({ 
+  return NextResponse.json({
     message: 'On-demand Revalidation API is working',
     version: '1.0.0',
     usage: {
@@ -154,31 +146,31 @@ export async function GET() {
         secret: 'optional secret key for security',
         mangaSlug: 'auto-generates manga-related tags',
         chapterId: 'auto-generates chapter-related tags',
-        genreSlug: 'auto-generates genre-related tags'
-      }
+        genreSlug: 'auto-generates genre-related tags',
+      },
     },
     examples: [
       {
         description: 'Revalidate manga list and homepage',
         body: {
           tags: ['manga-list', 'manga-latest'],
-          paths: ['/manga', '/']
-        }
+          paths: ['/manga', '/'],
+        },
       },
       {
         description: 'Revalidate specific manga',
         body: {
-          mangaSlug: 'one-piece'
-        }
+          mangaSlug: 'one-piece',
+        },
       },
       {
         description: 'Revalidate after chapter update',
         body: {
           mangaSlug: 'one-piece',
-          chapterId: '123'
-        }
-      }
-    ]
+          chapterId: '123',
+        },
+      },
+    ],
   });
 }
 

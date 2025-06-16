@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
-import { addToReadingHistory } from "@/lib/utils/readingHistory";
-import { readingProgressApi } from "@/lib/api/client";
+import { useEffect, useRef } from 'react';
+import { useSession } from 'next-auth/react';
+import { addToReadingHistory } from '@/lib/utils/readingHistory';
+import { readingProgressApi } from '@/lib/api/client';
 
 type UseReadingHistoryProps = {
   mangaId: string;
@@ -81,7 +81,18 @@ export function useReadingHistory({
         clearTimeout(syncTimeoutRef.current);
       }
     };
-  }, [mangaId, mangaTitle, mangaSlug, coverImage, chapterId, chapterTitle, chapterNumber, chapterSlug, session, status]);
+  }, [
+    mangaId,
+    mangaTitle,
+    mangaSlug,
+    coverImage,
+    chapterId,
+    chapterTitle,
+    chapterNumber,
+    chapterSlug,
+    session,
+    status,
+  ]);
 
   // Function to sync reading progress to database with improved error handling
   const syncToDatabase = async (comicId: string, chapterId?: string) => {

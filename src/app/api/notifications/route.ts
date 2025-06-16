@@ -1,42 +1,51 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/db';
 
 // Validation schema for pagination
 const notificationQuerySchema = z.object({
-  page: z.string().optional().transform((val) => (val ? parseInt(val) : 1)),
-  limit: z.string().optional().transform((val) => (val ? parseInt(val) : 20)),
-  unread_only: z.string().optional().transform((val) => val === 'true'),
-})
+  page: z
+    .string()
+    .optional()
+    .transform(val => (val ? parseInt(val) : 1)),
+  limit: z
+    .string()
+    .optional()
+    .transform(val => (val ? parseInt(val) : 20)),
+  unread_only: z
+    .string()
+    .optional()
+    .transform(val => val === 'true'),
+});
 
 /**
  * GET /api/notifications
  * Get user's notifications with pagination - OPTIMIZED
  */
 export async function GET(request: Request) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { searchParams } = new URL(request.url)
-    const query = Object.fromEntries(searchParams.entries())
-    const { page, limit, unread_only } = notificationQuerySchema.parse(query)
+    const { searchParams } = new URL(request.url);
+    const query = Object.fromEntries(searchParams.entries());
+    const { page, limit, unread_only } = notificationQuerySchema.parse(query);
 
-    const userId = parseInt(session.user.id)
-    const skip = (page - 1) * limit
+    const userId = parseInt(session.user.id);
+    const skip = (page - 1) * limit;
 
     // Build where clause
     const whereClause: any = {
       user_id: userId,
-    }
+    };
 
     if (unread_only) {
-      whereClause.is_read = false
+      whereClause.is_read = false;
     }
 
     // OPTIMIZATION: Use Promise.all for parallel queries
@@ -75,51 +84,50 @@ export async function GET(request: Request) {
               is_read: false,
             },
           }),
-    ])
+    ]);
 
     // OPTIMIZATION: Skip formatting if only getting count
-    const formattedNotifications = unread_only && limit === 1
-      ? [] // Don't format notifications for count-only requests
-      : notifications.map((notification) => ({
-          id: notification.id,
-          type: notification.type,
-          title: notification.title,
-          message: notification.message,
-          data: notification.data,
-          is_read: notification.is_read,
-          created_at: notification.created_at,
-          read_at: notification.read_at,
-        }))
+    const formattedNotifications =
+      unread_only && limit === 1
+        ? [] // Don't format notifications for count-only requests
+        : notifications.map(notification => ({
+            id: notification.id,
+            type: notification.type,
+            title: notification.title,
+            message: notification.message,
+            data: notification.data,
+            is_read: notification.is_read,
+            created_at: notification.created_at,
+            read_at: notification.read_at,
+          }));
 
     // OPTIMIZATION: Calculate unread count from results when possible
     const finalUnreadCount = unread_only
       ? totalNotifications // For unread_only, total = unread
-      : unreadCount
+      : unreadCount;
 
     return NextResponse.json({
       notifications: formattedNotifications,
       unread_count: finalUnreadCount,
-      pagination: unread_only && limit === 1
-        ? null // Skip pagination for count-only requests
-        : {
-            total: totalNotifications,
-            currentPage: page,
-            totalPages: Math.ceil(totalNotifications / limit),
-            perPage: limit,
-          },
-    })
+      pagination:
+        unread_only && limit === 1
+          ? null // Skip pagination for count-only requests
+          : {
+              total: totalNotifications,
+              currentPage: page,
+              totalPages: Math.ceil(totalNotifications / limit),
+              perPage: limit,
+            },
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
         { status: 400 }
-      )
+      );
     }
 
-    return NextResponse.json(
-      { error: 'Failed to fetch notifications' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
   }
 }
 
@@ -128,15 +136,15 @@ export async function GET(request: Request) {
  * Create a new notification (admin only)
  */
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const body = await request.json()
-    const { user_id, type, title, message, data } = body
+    const body = await request.json();
+    const { user_id, type, title, message, data } = body;
 
     const notification = await prisma.userNotification.create({
       data: {
@@ -146,16 +154,13 @@ export async function POST(request: Request) {
         message,
         data,
       },
-    })
+    });
 
     return NextResponse.json({
       message: 'Notification created successfully',
       notification,
-    })
+    });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create notification' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 });
   }
 }

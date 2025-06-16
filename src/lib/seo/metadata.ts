@@ -1,12 +1,18 @@
-import { Metadata } from "next";
+import { Metadata } from 'next';
 import { seoConfig, getSiteUrl, getPageTitle } from '@/config/seo.config';
-import { getMangaTemplate, getChapterTemplate, getGenreTemplate, getSearchTemplate, getMangaListTemplate } from './templates';
+import {
+  getMangaTemplate,
+  getChapterTemplate,
+  getGenreTemplate,
+  getSearchTemplate,
+  getMangaListTemplate,
+} from './templates';
 import type {
   EnhancedMetadataProps,
   MangaMetadataProps,
   ChapterMetadataProps,
   GenreMetadataProps,
-  SearchMetadataProps
+  SearchMetadataProps,
 } from './types';
 
 // Legacy interface for backward compatibility

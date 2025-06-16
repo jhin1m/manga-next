@@ -1,28 +1,28 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/db';
 
 // Validation schema for notification settings
 const notificationSettingsSchema = z.object({
   in_app_notifications: z.boolean().optional(),
   new_chapter_alerts: z.boolean().optional(),
-})
+});
 
 /**
  * GET /api/notifications/settings
  * Get user's notification settings - OPTIMIZED
  */
 export async function GET(request: Request) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const userId = parseInt(session.user.id)
+    const userId = parseInt(session.user.id);
 
     // OPTIMIZATION: Use upsert to get or create in single query
     const settings = await prisma.notificationSettings.upsert({
@@ -37,19 +37,16 @@ export async function GET(request: Request) {
         in_app_notifications: true,
         new_chapter_alerts: true,
       },
-    })
+    });
 
     return NextResponse.json({
       settings: {
         in_app_notifications: settings.in_app_notifications,
         new_chapter_alerts: settings.new_chapter_alerts,
       },
-    })
+    });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch notification settings' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch notification settings' }, { status: 500 });
   }
 }
 
@@ -58,16 +55,16 @@ export async function GET(request: Request) {
  * Update user's notification settings
  */
 export async function PATCH(request: Request) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const body = await request.json()
-    const validatedData = notificationSettingsSchema.parse(body)
-    const userId = parseInt(session.user.id)
+    const body = await request.json();
+    const validatedData = notificationSettingsSchema.parse(body);
+    const userId = parseInt(session.user.id);
 
     // Update or create notification settings
     const settings = await prisma.notificationSettings.upsert({
@@ -81,7 +78,7 @@ export async function PATCH(request: Request) {
         in_app_notifications: validatedData.in_app_notifications ?? true,
         new_chapter_alerts: validatedData.new_chapter_alerts ?? true,
       },
-    })
+    });
 
     return NextResponse.json({
       message: 'Notification settings updated successfully',
@@ -89,18 +86,15 @@ export async function PATCH(request: Request) {
         in_app_notifications: settings.in_app_notifications,
         new_chapter_alerts: settings.new_chapter_alerts,
       },
-    })
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
         { status: 400 }
-      )
+      );
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update notification settings' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update notification settings' }, { status: 500 });
   }
 }

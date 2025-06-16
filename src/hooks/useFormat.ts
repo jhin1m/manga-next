@@ -1,7 +1,14 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
-import { formatViewsI18n, formatDateI18n, formatNumberWithLocale, formatDateWithLocale, formatCurrencyWithLocale, formatPercentageWithLocale } from '@/lib/utils/format-i18n';
+import {
+  formatViewsI18n,
+  formatDateI18n,
+  formatNumberWithLocale,
+  formatDateWithLocale,
+  formatCurrencyWithLocale,
+  formatPercentageWithLocale,
+} from '@/lib/utils/format-i18n';
 
 /**
  * Hook để sử dụng format functions với i18n
@@ -30,25 +37,25 @@ export function useFormat() {
     /**
      * Định dạng số với locale hiện tại
      */
-    formatNumber: (number: number, options?: Intl.NumberFormatOptions) => 
+    formatNumber: (number: number, options?: Intl.NumberFormatOptions) =>
       formatNumberWithLocale(number, intlLocale, options),
 
     /**
      * Định dạng ngày với locale hiện tại
      */
-    formatDateLocale: (date: Date | string, options?: Intl.DateTimeFormatOptions) => 
+    formatDateLocale: (date: Date | string, options?: Intl.DateTimeFormatOptions) =>
       formatDateWithLocale(date, intlLocale, options),
 
     /**
      * Định dạng tiền tệ với locale hiện tại
      */
-    formatCurrency: (amount: number, currency: string = 'USD') => 
+    formatCurrency: (amount: number, currency: string = 'USD') =>
       formatCurrencyWithLocale(amount, currency, intlLocale),
 
     /**
      * Định dạng phần trăm với locale hiện tại
      */
-    formatPercentage: (value: number, options?: Intl.NumberFormatOptions) => 
+    formatPercentage: (value: number, options?: Intl.NumberFormatOptions) =>
       formatPercentageWithLocale(value, intlLocale, options),
 
     /**
@@ -59,6 +66,6 @@ export function useFormat() {
     /**
      * Intl locale string
      */
-    intlLocale
+    intlLocale,
   };
 }

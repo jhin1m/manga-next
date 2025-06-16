@@ -18,25 +18,27 @@ The issue was caused by a **transaction scope problem**:
 ### 1. Updated Transaction Flow
 
 **Before (Problematic):**
+
 ```typescript
 const comic = await prisma.$transaction(async (tx) => {
   const comic = await tx.comics.upsert({...});
-  
+
   // ❌ Using global prisma instance - can't see uncommitted comic
   await this.processGenres(comic.id, manga.genres);
-  
+
   return comic;
 });
 ```
 
 **After (Fixed):**
+
 ```typescript
 const comic = await prisma.$transaction(async (tx) => {
   const comic = await tx.comics.upsert({...});
-  
+
   // ✅ Passing transaction client - can see uncommitted comic
   await this.processGenres(tx, comic.id, manga.genres);
-  
+
   return comic;
 });
 ```
@@ -44,18 +46,20 @@ const comic = await prisma.$transaction(async (tx) => {
 ### 2. Updated Function Signature
 
 **Before:**
+
 ```typescript
 private async processGenres(
-  comicId: number, 
+  comicId: number,
   genres: { sourceId: number | string; name: string; slug: string }[]
 ): Promise<void>
 ```
 
 **After:**
+
 ```typescript
 private async processGenres(
   tx: Prisma.TransactionClient,
-  comicId: number, 
+  comicId: number,
   genres: { sourceId: number | string; name: string; slug: string }[]
 ): Promise<void>
 ```
@@ -65,6 +69,7 @@ private async processGenres(
 All database operations within `processGenres` now use the transaction client:
 
 **Before:**
+
 ```typescript
 await prisma.comic_Genres.deleteMany({...});
 await prisma.genres.upsert({...});
@@ -72,6 +77,7 @@ await prisma.comic_Genres.create({...});
 ```
 
 **After:**
+
 ```typescript
 await tx.comic_Genres.deleteMany({...});
 await tx.genres.upsert({...});
@@ -81,16 +87,19 @@ await tx.comic_Genres.create({...});
 ## Additional Improvements
 
 ### 1. Enhanced Error Handling
+
 - Added specific P2003 error detection and logging
 - Added parameter validation for `processGenres`
 - Added detailed error messages for debugging
 
 ### 2. Better Logging
+
 - Added success logging for manga processing
 - Added genre validation warnings
 - Added detailed error context for troubleshooting
 
 ### 3. Type Safety
+
 - Added proper TypeScript typing with `Prisma.TransactionClient`
 - Imported `Prisma` type from `@prisma/client`
 
@@ -113,6 +122,7 @@ Created a comprehensive test script (`src/scripts/test-manga-processor.ts`) that
 5. ✅ Cleanup operations
 
 ### Test Results
+
 ```
 🧪 Testing MangaProcessor Foreign Key Fix
 ==========================================

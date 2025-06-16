@@ -2,7 +2,7 @@
  * Utility functions for managing reading history in localStorage and database
  */
 
-import { readingProgressApi } from '@/lib/api/client'
+import { readingProgressApi } from '@/lib/api/client';
 
 export type ReadingHistory = {
   id: string;
@@ -110,9 +110,7 @@ export function addToReadingHistory(historyItem: Omit<ReadingHistory, 'readAt'>)
 
     // Remove ANY existing entry for the same manga (regardless of chapter)
     // This ensures only one entry per manga is kept, showing the most recent chapter
-    const filteredHistory = history.filter(
-      item => item.manga.id !== newItem.manga.id
-    );
+    const filteredHistory = history.filter(item => item.manga.id !== newItem.manga.id);
 
     // Add new item at the beginning
     const updatedHistory = [newItem, ...filteredHistory];
@@ -167,14 +165,16 @@ export function convertDbToLocalHistory(dbProgress: DatabaseReadingProgress[]): 
       slug: progress.Comics.slug,
       coverImage: progress.Comics.cover_image_url || '',
     },
-    ...(progress.Chapters ? {
-      chapter: {
-        id: progress.last_read_chapter_id!.toString(),
-        title: progress.Chapters.title || '',
-        number: progress.Chapters.chapter_number,
-        slug: progress.Chapters.slug,
-      }
-    } : {}),
+    ...(progress.Chapters
+      ? {
+          chapter: {
+            id: progress.last_read_chapter_id!.toString(),
+            title: progress.Chapters.title || '',
+            number: progress.Chapters.chapter_number,
+            slug: progress.Chapters.slug,
+          },
+        }
+      : {}),
     readAt: progress.updated_at,
   }));
 }
@@ -232,7 +232,10 @@ export function getUnsyncedHistory(): ReadingHistory[] {
 /**
  * Remove item from both localStorage and database (for authenticated users)
  */
-export async function removeFromReadingHistoryComplete(itemId: string, isAuthenticated: boolean = false): Promise<void> {
+export async function removeFromReadingHistoryComplete(
+  itemId: string,
+  isAuthenticated: boolean = false
+): Promise<void> {
   // Always remove from localStorage first
   removeFromReadingHistory(itemId);
 

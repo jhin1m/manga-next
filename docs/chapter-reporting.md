@@ -7,6 +7,7 @@ The chapter error reporting system allows users to report technical issues with 
 ## Features
 
 ### User Features
+
 - **Report Chapter Issues**: Users can report various types of chapter problems
 - **Issue Categories**: Predefined categories for common issues
 - **Additional Details**: Optional text field for detailed descriptions
@@ -14,6 +15,7 @@ The chapter error reporting system allows users to report technical issues with 
 - **Authentication Required**: Users must be logged in to report issues
 
 ### Admin Features
+
 - **View All Reports**: Admins can view all chapter reports
 - **Report Management**: Update report status (pending, resolved, dismissed)
 - **Detailed Information**: See reporter details and chapter information
@@ -33,10 +35,12 @@ The chapter error reporting system allows users to report technical issues with 
 ## User Interface
 
 ### Report Button Locations
+
 1. **Navigation Bar**: Icon-only button in the chapter reader navigation
 2. **End of Chapter**: Full button with text at the end of each chapter
 
 ### Report Dialog
+
 - **Issue Type Selection**: Dropdown with predefined categories
 - **Details Field**: Optional text area for additional information
 - **Validation**: Required fields and character limits
@@ -45,16 +49,19 @@ The chapter error reporting system allows users to report technical issues with 
 ## API Endpoints
 
 ### User Endpoints
+
 - `POST /api/chapters/[id]/report` - Submit a chapter report
 - `GET /api/chapters/[id]/report` - Get reports for a chapter (admin only)
 
 ### Admin Endpoints
+
 - `GET /api/admin/chapter-reports` - Get all chapter reports with pagination
 - `PATCH /api/admin/chapter-reports` - Update report status
 
 ## Database Schema
 
 ### ChapterReport Model
+
 ```prisma
 model ChapterReport {
   id         Int      @id @default(autoincrement())
@@ -77,16 +84,19 @@ model ChapterReport {
 ## Implementation Details
 
 ### Components
+
 - `ChapterReportButton` - Reusable report button component
 - `ChapterReportDialog` - Modal dialog for submitting reports
 - Integrated into `MangaReader` and `ReaderNavigation` components
 
 ### Validation
+
 - Zod schemas for request validation
 - TypeScript types for type safety
 - Client-side and server-side validation
 
 ### Security
+
 - Authentication required for reporting
 - Rate limiting through unique constraint
 - Admin-only access for report management
@@ -94,22 +104,20 @@ model ChapterReport {
 ## Usage Examples
 
 ### Basic Report Button
+
 ```tsx
-<ChapterReportButton
-  chapterId={123}
-  chapterTitle="Chapter 1"
-  mangaTitle="Example Manga"
-/>
+<ChapterReportButton chapterId={123} chapterTitle='Chapter 1' mangaTitle='Example Manga' />
 ```
 
 ### Icon-Only Button
+
 ```tsx
 <ChapterReportButton
   chapterId={123}
-  chapterTitle="Chapter 1"
-  mangaTitle="Example Manga"
-  variant="ghost"
-  size="icon"
+  chapterTitle='Chapter 1'
+  mangaTitle='Example Manga'
+  variant='ghost'
+  size='icon'
   iconOnly={true}
 />
 ```

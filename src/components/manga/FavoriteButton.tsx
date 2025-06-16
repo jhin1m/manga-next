@@ -1,22 +1,24 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Heart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useFavorites } from '@/hooks/useFavorites'
-import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { cn } from '@/lib/utils'
+import { useState } from 'react';
+import { Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useFavorites } from '@/hooks/useFavorites';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 
 interface FavoriteButtonProps {
-  comicId: number
-  initialIsFavorite?: boolean
-  variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive'
-  size?: 'default' | 'sm' | 'lg' | 'icon'
-  showText?: boolean
-  className?: string
-  onToggleComplete?: (result: { action: 'added' | 'removed', isFavorite: boolean } | undefined) => void
+  comicId: number;
+  initialIsFavorite?: boolean;
+  variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  showText?: boolean;
+  className?: string;
+  onToggleComplete?: (
+    result: { action: 'added' | 'removed'; isFavorite: boolean } | undefined
+  ) => void;
 }
 
 export function FavoriteButton({
@@ -28,33 +30,33 @@ export function FavoriteButton({
   className,
   onToggleComplete,
 }: FavoriteButtonProps) {
-  const router = useRouter()
-  const t = useTranslations('manga')
+  const router = useRouter();
+  const t = useTranslations('manga');
   const { isFavorite, isLoading, toggleFavorite, isAuthenticated } = useFavorites({
     comicId,
     initialIsFavorite,
-  })
-  const [isHovering, setIsHovering] = useState(false)
+  });
+  const [isHovering, setIsHovering] = useState(false);
 
   const handleToggleFavorite = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
 
     if (!isAuthenticated) {
       // Redirect to login page if not authenticated
-      router.push('/auth/login?callbackUrl=' + encodeURIComponent(window.location.pathname))
-      return
+      router.push('/auth/login?callbackUrl=' + encodeURIComponent(window.location.pathname));
+      return;
     }
 
-    const result = await toggleFavorite()
+    const result = await toggleFavorite();
 
     // Call the callback if provided
     if (onToggleComplete) {
-      onToggleComplete(result)
+      onToggleComplete(result);
     }
 
     // No need for router.refresh() - state is managed by the hook
-  }
+  };
 
   return (
     <TooltipProvider>
@@ -83,7 +85,7 @@ export function FavoriteButton({
               })}
             />
             {showText && (
-              <span className="ml-2 md:hidden">
+              <span className='ml-2 md:hidden'>
                 {isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
               </span>
             )}
@@ -94,5 +96,5 @@ export function FavoriteButton({
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  )
+  );
 }

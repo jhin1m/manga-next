@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { signIn } from 'next-auth/react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -17,85 +17,86 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 // Login form schema - sẽ được tạo động với translations
-const createLoginSchema = (t: any) => z.object({
-  emailOrUsername: z.string().min(1, { message: t('emailOrUsernameRequired') }),
-  password: z.string().min(1, { message: t('passwordRequired') }),
-})
+const createLoginSchema = (t: any) =>
+  z.object({
+    emailOrUsername: z.string().min(1, { message: t('emailOrUsernameRequired') }),
+    password: z.string().min(1, { message: t('passwordRequired') }),
+  });
 
 type LoginFormValues = {
-  emailOrUsername: string
-  password: string
-}
+  emailOrUsername: string;
+  password: string;
+};
 
 export function LoginForm() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/'
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const [isLoading, setIsLoading] = useState(false);
 
-  const t = useTranslations('auth')
-  const tErrors = useTranslations('errors')
+  const t = useTranslations('auth');
+  const tErrors = useTranslations('errors');
 
   // Initialize form
-  const loginSchema = createLoginSchema(tErrors)
+  const loginSchema = createLoginSchema(tErrors);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       emailOrUsername: '',
       password: '',
     },
-  })
+  });
 
   // Form submission handler
   async function onSubmit(data: LoginFormValues) {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const result = await signIn('credentials', {
         emailOrUsername: data.emailOrUsername,
         password: data.password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        toast.error(t('loginError'))
-        return
+        toast.error(t('loginError'));
+        return;
       }
 
-      toast.success(t('loginSuccess'))
-      router.push(callbackUrl)
-      router.refresh()
+      toast.success(t('loginSuccess'));
+      router.push(callbackUrl);
+      router.refresh();
     } catch (error) {
-      toast.error(tErrors('somethingWentWrong'))
-      console.error('Login error:', error)
+      toast.error(tErrors('somethingWentWrong'));
+      console.error('Login error:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   return (
-    <div className="mx-auto max-w-md space-y-6 p-6 bg-card rounded-lg border shadow-sm">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">{t('login')}</h1>
-        <p className="text-muted-foreground">{t('enterCredentials')}</p>
+    <div className='mx-auto max-w-md space-y-6 p-6 bg-card rounded-lg border shadow-sm'>
+      <div className='space-y-2 text-center'>
+        <h1 className='text-3xl font-bold'>{t('login')}</h1>
+        <p className='text-muted-foreground'>{t('enterCredentials')}</p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
           <FormField
             control={form.control}
-            name="emailOrUsername"
+            name='emailOrUsername'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('emailOrUsername')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="email@example.com or username" {...field} />
+                  <Input placeholder='email@example.com or username' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -104,22 +105,22 @@ export function LoginForm() {
 
           <FormField
             control={form.control}
-            name="password"
+            name='password'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('password')}</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input type='password' placeholder='••••••••' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type='submit' className='w-full' disabled={isLoading}>
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 {t('loggingIn')}
               </>
             ) : (
@@ -129,14 +130,14 @@ export function LoginForm() {
         </form>
       </Form>
 
-      <div className="text-center text-sm">
-        <p className="text-muted-foreground">
+      <div className='text-center text-sm'>
+        <p className='text-muted-foreground'>
           Don&apos;t have an account?{' '}
-          <Link href="/auth/register" className="text-primary hover:underline">
+          <Link href='/auth/register' className='text-primary hover:underline'>
             Register
           </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }

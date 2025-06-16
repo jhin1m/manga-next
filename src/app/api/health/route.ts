@@ -49,12 +49,12 @@ async function checkDatabase() {
 
     return {
       status: 'connected' as const,
-      responseTime
+      responseTime,
     };
   } catch (error) {
     return {
       status: 'error' as const,
-      error: error instanceof Error ? error.message : 'Unknown database error'
+      error: error instanceof Error ? error.message : 'Unknown database error',
     };
   }
 }
@@ -67,7 +67,7 @@ function checkMemory() {
   return {
     used: Math.round(used.heapUsed / 1024 / 1024), // MB
     total: Math.round(used.heapTotal / 1024 / 1024), // MB
-    percentage
+    percentage,
   };
 }
 
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     const checks = {
       database: databaseCheck.status === 'connected',
       environment: environmentCheck,
-      memory: memoryCheck.percentage < 90
+      memory: memoryCheck.percentage < 90,
     };
 
     const allChecksPass = Object.values(checks).every(check => check);
@@ -116,10 +116,10 @@ export async function GET(request: NextRequest) {
         server: {
           status: 'running',
           memory: memoryCheck,
-          pid: process.pid
-        }
+          pid: process.pid,
+        },
       },
-      checks
+      checks,
     };
 
     const responseTime = Date.now() - startTime;
@@ -129,18 +129,20 @@ export async function GET(request: NextRequest) {
       status: httpStatus,
       headers: {
         'X-Response-Time': `${responseTime}ms`,
-        'Cache-Control': 'no-cache, no-store, must-revalidate'
-      }
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
     });
-
   } catch (error) {
     console.error('Health check endpoint error:', error);
 
-    return NextResponse.json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : 'Health check failed'
-    }, { status: 503 });
+    return NextResponse.json(
+      {
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : 'Health check failed',
+      },
+      { status: 503 }
+    );
   }
 }
 

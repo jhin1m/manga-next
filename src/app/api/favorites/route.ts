@@ -1,30 +1,30 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/db';
 
 // Validation schema for adding/removing favorites
 const favoriteToggleSchema = z.object({
   comicId: z.number().int().positive(),
-})
+});
 
 /**
  * GET /api/favorites
  * Get all favorites for the current user
  */
 export async function GET(request: Request) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const skip = (page - 1) * limit
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const skip = (page - 1) * limit;
 
     // Get user favorites with pagination
     const favorites = await prisma.favorites.findMany({
@@ -72,17 +72,17 @@ export async function GET(request: Request) {
       },
       skip,
       take: limit,
-    })
+    });
 
     // Get total count for pagination
     const totalFavorites = await prisma.favorites.count({
       where: {
         user_id: parseInt(session.user.id),
       },
-    })
+    });
 
     // Format the response
-    const formattedFavorites = favorites.map((favorite) => ({
+    const formattedFavorites = favorites.map(favorite => ({
       id: favorite.Comics.id,
       title: favorite.Comics.title,
       slug: favorite.Comics.slug,
@@ -90,7 +90,7 @@ export async function GET(request: Request) {
       status: favorite.Comics.status,
       views: favorite.Comics.total_views,
       favorites: favorite.Comics.total_favorites,
-      genres: favorite.Comics.Comic_Genres.map((genre) => ({
+      genres: favorite.Comics.Comic_Genres.map(genre => ({
         name: genre.Genres.name,
         slug: genre.Genres.slug,
       })),
@@ -104,7 +104,7 @@ export async function GET(request: Request) {
           }
         : null,
       addedAt: favorite.created_at,
-    }))
+    }));
 
     return NextResponse.json({
       favorites: formattedFavorites,
@@ -114,13 +114,10 @@ export async function GET(request: Request) {
         totalPages: Math.ceil(totalFavorites / limit),
         perPage: limit,
       },
-    })
+    });
   } catch (error) {
-    console.error('Error fetching favorites:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch favorites' },
-      { status: 500 }
-    )
+    console.error('Error fetching favorites:', error);
+    return NextResponse.json({ error: 'Failed to fetch favorites' }, { status: 500 });
   }
 }
 
@@ -129,26 +126,26 @@ export async function GET(request: Request) {
  * Toggle favorite status for a manga
  */
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const body = await request.json()
-    const validatedData = favoriteToggleSchema.parse(body)
-    const userId = parseInt(session.user.id)
-    const comicId = validatedData.comicId
+    const body = await request.json();
+    const validatedData = favoriteToggleSchema.parse(body);
+    const userId = parseInt(session.user.id);
+    const comicId = validatedData.comicId;
 
     // Check if the manga exists
     const manga = await prisma.comics.findUnique({
       where: { id: comicId },
       select: { id: true },
-    })
+    });
 
     if (!manga) {
-      return NextResponse.json({ error: 'Manga not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Manga not found' }, { status: 404 });
     }
 
     // Check if the favorite already exists
@@ -159,10 +156,10 @@ export async function POST(request: Request) {
           comic_id: comicId,
         },
       },
-    })
+    });
 
     // Transaction to ensure atomicity
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async tx => {
       if (existingFavorite) {
         // Remove from favorites
         await tx.favorites.delete({
@@ -172,7 +169,7 @@ export async function POST(request: Request) {
               comic_id: comicId,
             },
           },
-        })
+        });
 
         // Decrement total_favorites count
         await tx.comics.update({
@@ -182,9 +179,9 @@ export async function POST(request: Request) {
               decrement: 1,
             },
           },
-        })
+        });
 
-        return { action: 'removed', isFavorite: false }
+        return { action: 'removed', isFavorite: false };
       } else {
         // Add to favorites
         await tx.favorites.create({
@@ -192,7 +189,7 @@ export async function POST(request: Request) {
             user_id: userId,
             comic_id: comicId,
           },
-        })
+        });
 
         // Increment total_favorites count
         await tx.comics.update({
@@ -202,25 +199,22 @@ export async function POST(request: Request) {
               increment: 1,
             },
           },
-        })
+        });
 
-        return { action: 'added', isFavorite: true }
+        return { action: 'added', isFavorite: true };
       }
-    })
+    });
 
-    return NextResponse.json(result)
+    return NextResponse.json(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
         { status: 400 }
-      )
+      );
     }
 
-    console.error('Error toggling favorite:', error)
-    return NextResponse.json(
-      { error: 'Failed to update favorite status' },
-      { status: 500 }
-    )
+    console.error('Error toggling favorite:', error);
+    return NextResponse.json({ error: 'Failed to update favorite status' }, { status: 500 });
   }
 }

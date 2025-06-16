@@ -1,9 +1,11 @@
 # ISR + On-Demand Revalidation Implementation Guide
 
 ## Tổng quan
+
 Hướng dẫn này giúp implement Incremental Static Regeneration (ISR) và On-demand Revalidation cho manga website NextJS 15, giải quyết vấn đề dữ liệu không cập nhật tự động từ PostgreSQL.
 
 ## Vấn đề hiện tại
+
 - Dữ liệu từ PostgreSQL không reflect ngay lập tức trên UI
 - Cần rebuild toàn bộ app để thấy thay đổi
 - Thiếu caching strategy trong `src/app/manga/page.tsx`
@@ -13,6 +15,7 @@ Hướng dẫn này giúp implement Incremental Static Regeneration (ISR) và On
 ### 1. Tạo Centralized API Client
 
 #### A. File: `src/lib/api/client.ts` (Tạo mới)
+
 **Mục đích:** Centralize tất cả API calls và caching strategy
 
 ```typescript
@@ -26,6 +29,7 @@ Hướng dẫn này giúp implement Incremental Static Regeneration (ISR) và On
 ### 2. Cập nhật Fetch Patterns
 
 #### A. File: `src/app/manga/page.tsx`
+
 **Vị trí cần sửa:** Dòng 45-47 và import statements
 
 ```javascript
@@ -83,30 +87,36 @@ async function fetchManga(params: {
 #### B. Cập nhật các file khác (đã có ISR nhưng cần tags)
 
 **File: `src/app/page.tsx` - Dòng 18-20:**
+
 ```javascript
 // Thêm tags vào fetch hiện có
-const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=${sortParam}&limit=${limit}&page=${page}`, {
-  next: {
-    revalidate: 3600,
-    tags: ['manga-homepage', `manga-${sortParam}`]
+const res = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga?sort=${sortParam}&limit=${limit}&page=${page}`,
+  {
+    next: {
+      revalidate: 3600,
+      tags: ['manga-homepage', `manga-${sortParam}`],
+    },
   }
-});
+);
 ```
 
 **File: `src/app/manga/[slug]/page.tsx` - Dòng 21-23:**
+
 ```javascript
 // Thêm tags cho manga detail
 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/manga/${slug}`, {
   next: {
     revalidate: 3600,
-    tags: ['manga-detail', `manga-${slug}`]
-  }
+    tags: ['manga-detail', `manga-${slug}`],
+  },
 });
 ```
 
 ### 2. Tạo On-demand Revalidation API
 
 #### File: `src/app/api/revalidate/route.ts` (Tạo mới)
+
 ```typescript
 import { revalidateTag, revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
@@ -141,13 +151,15 @@ export async function POST(request: NextRequest) {
       revalidated: true,
       timestamp: new Date().toISOString(),
       tags: tags || [],
-      paths: paths || []
+      paths: paths || [],
     });
-
   } catch (error) {
     console.error('Revalidation error:', error);
     return NextResponse.json(
-      { message: 'Error revalidating', error: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        message: 'Error revalidating',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }
@@ -157,7 +169,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     message: 'Revalidation API is working',
-    usage: 'POST with { tags: [], paths: [], secret?: string }'
+    usage: 'POST with { tags: [], paths: [], secret?: string }',
   });
 }
 ```
@@ -165,6 +177,7 @@ export async function GET() {
 ### 3. Caching Strategy theo Content Type
 
 #### Thời gian revalidate được khuyến nghị:
+
 ```javascript
 // Manga list: 30 phút (cập nhật thường xuyên)
 { next: { revalidate: 1800, tags: ['manga-list'] } }
@@ -185,7 +198,9 @@ export async function GET() {
 ### 4. Database Integration
 
 #### A. Tạo Revalidation Helper
+
 **File: `src/lib/revalidation.ts` (Tạo mới)**
+
 ```typescript
 export async function triggerRevalidation(options: {
   tags?: string[];
@@ -215,8 +230,8 @@ export async function triggerRevalidation(options: {
       body: JSON.stringify({
         tags: allTags,
         paths: allPaths,
-        secret: process.env.REVALIDATION_SECRET
-      })
+        secret: process.env.REVALIDATION_SECRET,
+      }),
     });
 
     if (!response.ok) {
@@ -226,7 +241,6 @@ export async function triggerRevalidation(options: {
     const result = await response.json();
     console.log('Revalidation successful:', result);
     return result;
-
   } catch (error) {
     console.error('Revalidation error:', error);
     throw error;
@@ -235,7 +249,9 @@ export async function triggerRevalidation(options: {
 ```
 
 #### B. Integration với API Routes
+
 **Cập nhật `src/app/api/manga/route.ts`:**
+
 ```typescript
 // Thêm vào cuối POST/PUT handlers
 import { triggerRevalidation } from '@/lib/revalidation';
@@ -243,13 +259,14 @@ import { triggerRevalidation } from '@/lib/revalidation';
 // Sau khi create/update manga
 await triggerRevalidation({
   tags: ['manga-list', 'manga-latest'],
-  paths: ['/manga', '/']
+  paths: ['/manga', '/'],
 });
 ```
 
 ### 5. Environment Variables
 
 #### Thêm vào `.env.local`:
+
 ```env
 # Optional: Secret for revalidation API security
 REVALIDATION_SECRET=your-secret-key-here
@@ -261,6 +278,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 ### 6. Testing Revalidation
 
 #### A. Manual Testing
+
 ```bash
 # Test revalidation API
 curl -X POST http://localhost:3000/api/revalidate \
@@ -269,20 +287,22 @@ curl -X POST http://localhost:3000/api/revalidate \
 ```
 
 #### B. Database Update Testing
+
 ```javascript
 // Sau khi update database via TablePlus hoặc admin panel
 await fetch('/api/revalidate', {
   method: 'POST',
   body: JSON.stringify({
     tags: ['manga-list', 'manga-latest'],
-    paths: ['/manga']
-  })
+    paths: ['/manga'],
+  }),
 });
 ```
 
 ### 7. Monitoring & Debugging
 
 #### A. Logging
+
 ```javascript
 // Thêm vào fetch functions
 console.log(`Fetching with cache tags: ${JSON.stringify(tags)}`);
@@ -290,6 +310,7 @@ console.log(`Cache revalidate time: ${revalidateTime}s`);
 ```
 
 #### B. Cache Headers Check
+
 ```javascript
 // Kiểm tra cache status trong browser DevTools
 // Look for: x-nextjs-cache: HIT/MISS/STALE
@@ -311,6 +332,7 @@ console.log(`Cache revalidate time: ${revalidateTime}s`);
 The on-demand revalidation system has been successfully implemented with the following components:
 
 ### 📁 Files Created/Updated:
+
 - `src/app/api/revalidate/route.ts` - Main revalidation API endpoint
 - `src/lib/revalidation.ts` - Helper utilities for easy integration
 - `src/lib/api/client.ts` - Updated with revalidation API functions
@@ -319,6 +341,7 @@ The on-demand revalidation system has been successfully implemented with the fol
 - `.env.example` - Added REVALIDATION_SECRET configuration
 
 ### 🚀 Ready to Use:
+
 ```bash
 # Test the implementation
 pnpm test:revalidation
@@ -340,12 +363,14 @@ curl -X POST http://localhost:3000/api/revalidate \
 ## Troubleshooting
 
 ### Vấn đề thường gặp:
+
 1. **Tags không work:** Kiểm tra spelling và case-sensitive
 2. **Revalidation không trigger:** Verify API endpoint và secret key
 3. **Cache quá aggressive:** Giảm revalidate time
 4. **Performance issues:** Tăng revalidate time cho content ít thay đổi
 
 ### Debug commands:
+
 ```bash
 # Check Next.js cache
 ls -la .next/cache

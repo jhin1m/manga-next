@@ -1,9 +1,11 @@
 # Todo List: Manga Reader Website
 
 ## Overview
+
 This document outlines the tasks required to build a high-performance manga reader website similar to dokiraw.com using Next.js. The project will focus on fast page loading, maintainability, scalability, and SEO optimization.
 
 ## Phase 1: Project Setup and Environment Configuration
+
 - [x] Research core Next.js concepts (Pages, Routing, SSR, SSG, ISR, API Routes)
 - [x] Set up development environment (Node.js, npm/yarn/pnpm)
 - [x] Initialize Next.js project using `create-next-app`
@@ -20,7 +22,9 @@ This document outlines the tasks required to build a high-performance manga read
   - [x] `/public/` - For static assets
 
 ## Phase 2: Frontend Development
+
 ### Layout and Core Components
+
 - [x] Design and implement main layouts
   - [x] Header with navigation and search bar
   - [x] Footer with site information and links
@@ -33,6 +37,7 @@ This document outlines the tasks required to build a high-performance manga read
   - [x] Dark mode toggle
 
 ### Main Pages
+
 - [x] Develop Home Page
   - [x] Featured manga section
   - [x] Latest updates section
@@ -61,11 +66,13 @@ This document outlines the tasks required to build a high-performance manga read
   - [x] Sorting options
 
 ### Responsive Design
+
 - [x] Implement mobile-first approach
 - [x] Create responsive layouts for all pages
 - [x] Test on various device sizes and orientations
 
 ## Phase 3: Backend Development (API Routes)
+
 - [x] Design database schema
   - [x] Please check [db.md](db.md)
 - [x] Choose and set up database
@@ -79,10 +86,13 @@ This document outlines the tasks required to build a high-performance manga read
   - [ ] (Optional) User management, comments, bookmarks
 
 For detailed backend implementation tasks and guides, refer to:
+
 - [todo_backend.md](todo_backend.md) - Comprehensive backend task list
 
 ## Phase 4: Performance and SEO Optimization
+
 ### Performance
+
 - [ ] Optimize image loading with `next/image`
 - [ ] Implement lazy loading for components and images
 - [ ] Utilize code splitting with dynamic imports
@@ -91,6 +101,7 @@ For detailed backend implementation tasks and guides, refer to:
 - [ ] Implement prefetching for faster navigation
 
 ### SEO
+
 - [x] Configure metadata for all pages using `next/head` or Metadata API
 - [x] Create dynamic sitemap.xml
 - [x] Implement structured data (JSON-LD) for manga and chapters
@@ -98,6 +109,7 @@ For detailed backend implementation tasks and guides, refer to:
 - [x] Optimize for Core Web Vitals
 
 ## Phase 5: Maintenance and Scalability
+
 - [ ] Write clean, commented, and maintainable code
 - [ ] Break down components for better reusability
 - [ ] Implement TypeScript for better type safety
@@ -106,6 +118,7 @@ For detailed backend implementation tasks and guides, refer to:
 - [ ] Design for scalability (serverless functions, scalable database)
 
 ## Phase 6: Testing and Deployment
+
 - [ ] Test thoroughly across browsers and devices
 - [ ] Perform performance testing (Lighthouse, WebPageTest)
 - [ ] Choose hosting/deployment provider (Vercel recommended for Next.js)
@@ -114,11 +127,13 @@ For detailed backend implementation tasks and guides, refer to:
 - [ ] Implement monitoring and analytics (Sentry, Google Analytics)
 
 ## Phase 7: Documentation
+
 - [ ] Document codebase with comments and README files
 - [ ] Create user documentation if needed
 - [ ] Write deployment and maintenance instructions
 
 ## Additional Features (Optional)
+
 - [x] User authentication and profiles
 - [x] Bookmark/favorite functionality
 - [x] Reading history
@@ -136,6 +151,7 @@ For detailed backend implementation tasks and guides, refer to:
 - [ ] Progressive Web App (PWA) features
 
 ## Resources
+
 - Next.js Documentation: https://nextjs.org/docs
 - Tailwind CSS Documentation: https://tailwindcss.com/docs
 - Vercel Deployment: https://vercel.com/docs

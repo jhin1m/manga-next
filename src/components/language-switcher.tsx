@@ -32,18 +32,18 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" disabled={isPending}>
-          <span className="text-lg">{flagEmojis[locale as keyof typeof flagEmojis]}</span>
+        <Button variant='ghost' size='icon' disabled={isPending}>
+          <span className='text-lg'>{flagEmojis[locale as keyof typeof flagEmojis]}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {locales.map((loc) => (
+      <DropdownMenuContent align='end'>
+        {locales.map(loc => (
           <DropdownMenuItem
             key={loc}
             onClick={() => handleLocaleChange(loc)}
             className={locale === loc ? 'bg-accent' : ''}
           >
-            <span className="mr-2">{flagEmojis[loc]}</span>
+            <span className='mr-2'>{flagEmojis[loc]}</span>
             {localeNames[loc]}
           </DropdownMenuItem>
         ))}

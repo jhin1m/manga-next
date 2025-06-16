@@ -1,11 +1,11 @@
-import Link from "next/link";
-import { Metadata } from "next";
-import { Card, CardContent } from "@/components/ui/card";
-import { prisma } from "@/lib/db";
+import Link from 'next/link';
+import { Metadata } from 'next';
+import { Card, CardContent } from '@/components/ui/card';
+import { prisma } from '@/lib/db';
 
 export const metadata: Metadata = {
-  title: "Manga Genres | Manga Reader",
-  description: "Browse manga by genre - action, adventure, comedy, drama, fantasy, and more.",
+  title: 'Manga Genres | Manga Reader',
+  description: 'Browse manga by genre - action, adventure, comedy, drama, fantasy, and more.',
 };
 
 // Force dynamic rendering
@@ -17,15 +17,15 @@ async function fetchGenres() {
     // Get genres with manga count using Prisma aggregation (eliminates N+1 queries)
     const genresWithCount = await prisma.genres.findMany({
       orderBy: {
-        name: 'asc'
+        name: 'asc',
       },
       include: {
         _count: {
           select: {
-            Comic_Genres: true
-          }
-        }
-      }
+            Comic_Genres: true,
+          },
+        },
+      },
     });
 
     // Transform the result to match the expected format
@@ -36,7 +36,7 @@ async function fetchGenres() {
       description: genre.description,
       created_at: genre.created_at,
       updated_at: genre.updated_at,
-      mangaCount: genre._count.Comic_Genres
+      mangaCount: genre._count.Comic_Genres,
     }));
   } catch (error) {
     console.error('Error fetching genres:', error);
@@ -48,16 +48,16 @@ export default async function GenresPage() {
   const genres = await fetchGenres();
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Manga Genres</h1>
+    <div className='container mx-auto py-8'>
+      <h1 className='text-3xl font-bold mb-8'>Manga Genres</h1>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
         {genres.map((genre: any) => (
           <Link key={genre.id} href={`/genres/${genre.slug}`}>
-            <Card className="h-full hover:bg-accent transition-colors">
-              <CardContent className="p-4 flex flex-col items-center justify-center text-center h-full">
-                <h2 className="text-lg font-semibold mb-2">{genre.name}</h2>
-                <p className="text-sm text-muted-foreground">
+            <Card className='h-full hover:bg-accent transition-colors'>
+              <CardContent className='p-4 flex flex-col items-center justify-center text-center h-full'>
+                <h2 className='text-lg font-semibold mb-2'>{genre.name}</h2>
+                <p className='text-sm text-muted-foreground'>
                   {genre.mangaCount} {genre.mangaCount === 1 ? 'manga' : 'manga'}
                 </p>
               </CardContent>

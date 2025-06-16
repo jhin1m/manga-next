@@ -27,11 +27,11 @@ export default function RelatedManga({ relatedManga }: RelatedMangaProps) {
 
   return (
     <Card>
-      <CardHeader className="pb-2 pt-4">
-        <CardTitle className="text-xl">{t('youMayAlsoLike')}</CardTitle>
+      <CardHeader className='pb-2 pt-4'>
+        <CardTitle className='text-xl'>{t('youMayAlsoLike')}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-1 px-4">
-        {relatedManga.map((manga) => (
+      <CardContent className='space-y-1 px-4'>
+        {relatedManga.map(manga => (
           <RelatedMangaItem
             key={manga.id}
             id={manga.id}

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import MangaCard from '@/components/feature/MangaCard';
 // Removed loading overlay - using instant navigation
@@ -29,20 +29,20 @@ interface LatestUpdateMangaListClientProps {
 export default function LatestUpdateMangaListClient({
   manga,
   isLoading: _isLoading = false,
-  limit: _limit = 12
+  limit: _limit = 12,
 }: LatestUpdateMangaListClientProps) {
   const t = useTranslations('manga');
 
   // No loading state - instant display
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight">{t('latestUpdates')}</h2>
+    <div className='space-y-6'>
+      <div className='flex items-center justify-between'>
+        <h2 className='text-2xl font-bold tracking-tight'>{t('latestUpdates')}</h2>
       </div>
 
       {manga.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
           {manga.map((item: Manga) => (
             <MangaCard
               key={item.id}
@@ -61,10 +61,8 @@ export default function LatestUpdateMangaListClient({
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">
-            {t('noMangaFound')}
-          </p>
+        <div className='text-center py-12'>
+          <p className='text-muted-foreground'>{t('noMangaFound')}</p>
         </div>
       )}
     </div>

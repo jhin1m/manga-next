@@ -1,12 +1,12 @@
 'use client';
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import ReaderNavigation from "./ReaderNavigation";
-import CommentSection from "@/components/feature/comments/CommentSection";
-import { ChapterReportButton } from "@/components/feature/chapter-reports/ChapterReportButton";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { useReadingHistory } from "@/hooks/useReadingHistory";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import ReaderNavigation from './ReaderNavigation';
+import CommentSection from '@/components/feature/comments/CommentSection';
+import { ChapterReportButton } from '@/components/feature/chapter-reports/ChapterReportButton';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useReadingHistory } from '@/hooks/useReadingHistory';
 import { useTranslations } from 'next-intl';
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 
@@ -52,27 +52,20 @@ interface ImageLoadState {
 // SVG Loading Icon Component with fixed height placeholder
 const LoadingIcon = ({ height = 800 }: { height?: number }) => (
   <div
-    className="flex items-center justify-center w-full bg-gray-900/50"
+    className='flex items-center justify-center w-full bg-gray-900/50'
     style={{ height: `${height}px` }}
   >
     <svg
-      className="animate-spin h-8 w-8 text-white/70"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
+      className='animate-spin h-8 w-8 text-white/70'
+      xmlns='http://www.w3.org/2000/svg'
+      fill='none'
+      viewBox='0 0 24 24'
     >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
+      <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
       <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        className='opacity-75'
+        fill='currentColor'
+        d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
       />
     </svg>
   </div>
@@ -131,64 +124,67 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
         loaded: index < PRELOAD_COUNT, // Preload first 3 images
         loading: index < PRELOAD_COUNT,
         error: false,
-        inView: false
+        inView: false,
       };
     });
     setImageStates(initialStates);
   }, [chapterData.chapter.images, PRELOAD_COUNT]);
 
   // Load image function
-  const loadImage = useCallback((index: number, src: string) => {
-    if (loadedImagesRef.current.has(index) || loadingQueue.size >= MAX_SIMULTANEOUS_LOADS) {
-      return;
-    }
+  const loadImage = useCallback(
+    (index: number, src: string) => {
+      if (loadedImagesRef.current.has(index) || loadingQueue.size >= MAX_SIMULTANEOUS_LOADS) {
+        return;
+      }
 
-    setLoadingQueue(prev => new Set([...prev, index]));
-    setImageStates(prev => ({
-      ...prev,
-      [index]: { ...prev[index], loading: true, error: false }
-    }));
-
-    const img = new Image();
-    img.onload = () => {
-      loadedImagesRef.current.add(index);
+      setLoadingQueue(prev => new Set([...prev, index]));
       setImageStates(prev => ({
         ...prev,
-        [index]: { ...prev[index], loaded: true, loading: false }
+        [index]: { ...prev[index], loading: true, error: false },
       }));
-      setLoadingQueue(prev => {
-        const newQueue = new Set(prev);
-        newQueue.delete(index);
-        return newQueue;
-      });
-    };
 
-    img.onerror = () => {
-      setImageStates(prev => ({
-        ...prev,
-        [index]: { ...prev[index], loading: false, error: true }
-      }));
-      setLoadingQueue(prev => {
-        const newQueue = new Set(prev);
-        newQueue.delete(index);
-        return newQueue;
-      });
-    };
+      const img = new Image();
+      img.onload = () => {
+        loadedImagesRef.current.add(index);
+        setImageStates(prev => ({
+          ...prev,
+          [index]: { ...prev[index], loaded: true, loading: false },
+        }));
+        setLoadingQueue(prev => {
+          const newQueue = new Set(prev);
+          newQueue.delete(index);
+          return newQueue;
+        });
+      };
 
-    img.src = src;
-  }, [loadingQueue.size, MAX_SIMULTANEOUS_LOADS]);
+      img.onerror = () => {
+        setImageStates(prev => ({
+          ...prev,
+          [index]: { ...prev[index], loading: false, error: true },
+        }));
+        setLoadingQueue(prev => {
+          const newQueue = new Set(prev);
+          newQueue.delete(index);
+          return newQueue;
+        });
+      };
+
+      img.src = src;
+    },
+    [loadingQueue.size, MAX_SIMULTANEOUS_LOADS]
+  );
 
   // Setup intersection observer
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           const index = parseInt(entry.target.getAttribute('data-index') || '0');
           const isIntersecting = entry.isIntersecting;
 
           setImageStates(prev => ({
             ...prev,
-            [index]: { ...prev[index], inView: isIntersecting }
+            [index]: { ...prev[index], inView: isIntersecting },
           }));
 
           if (isIntersecting && !loadedImagesRef.current.has(index)) {
@@ -201,7 +197,7 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
       },
       {
         rootMargin: `${TRIGGER_DISTANCE}px`,
-        threshold: 0.1
+        threshold: 0.1,
       }
     );
 
@@ -255,13 +251,13 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
       id: chapterData.chapter.id,
       number: chapterData.chapter.number,
       title: chapterData.chapter.title,
-      slug: chapterData.chapter.slug
-    }
+      slug: chapterData.chapter.slug,
+    },
   ];
 
   return (
     <div
-      className="min-h-screen bg-black"
+      className='min-h-screen bg-black'
       style={{
         filter: `brightness(${brightness}%)`,
       }}
@@ -279,9 +275,9 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
       />
 
       {/* Reader Content */}
-      <main className="pt-2 pb-16">
+      <main className='pt-2 pb-16'>
         {/* Vertical scrolling mode */}
-        <div className="flex flex-col items-center w-full sm:max-w-5xl sm:mx-auto">
+        <div className='flex flex-col items-center w-full sm:max-w-5xl sm:mx-auto'>
           {chapterData.chapter.images.map((image, index) => {
             const imageState = imageStates[index];
             if (!imageState) return null;
@@ -289,29 +285,41 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
             return (
               <div
                 key={index}
-                className="w-full"
-                ref={(el) => { imageRefs.current[index] = el; }}
+                className='w-full'
+                ref={el => {
+                  imageRefs.current[index] = el;
+                }}
                 data-index={index}
               >
                 {imageState.loaded ? (
                   <img
                     src={image}
                     alt={t('pageAlt', { number: index + 1 })}
-                    className="w-full h-auto"
-                    loading="eager"
+                    className='w-full h-auto'
+                    loading='eager'
                   />
                 ) : imageState.error ? (
                   <div
-                    className="flex flex-col items-center justify-center w-full bg-gray-900/50 text-white/70"
+                    className='flex flex-col items-center justify-center w-full bg-gray-900/50 text-white/70'
                     style={{ height: `${placeholderHeight}px` }}
                   >
-                    <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className='h-8 w-8 mb-2'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                      />
                     </svg>
-                    <span className="text-sm">Failed to load</span>
+                    <span className='text-sm'>Failed to load</span>
                     <button
                       onClick={() => loadImage(index, image)}
-                      className="text-xs text-blue-400 hover:text-blue-300 mt-1"
+                      className='text-xs text-blue-400 hover:text-blue-300 mt-1'
                     >
                       Retry
                     </button>
@@ -324,39 +332,43 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
           })}
 
           {/* Phần cuối chương */}
-          <div className="w-full py-8 flex flex-col items-center gap-4">
-            <p className="text-center text-muted-foreground">
+          <div className='w-full py-8 flex flex-col items-center gap-4'>
+            <p className='text-center text-muted-foreground'>
               {t('endOfChapter', { number: chapterData.chapter.number })}
             </p>
 
-            <div className="flex gap-2">
+            <div className='flex gap-2'>
               {chapterData.navigation.prevChapter && (
-                <Button asChild variant="outline">
-                  <Link href={`/manga/${chapterData.manga.slug}/${chapterData.navigation.prevChapter}`}>
-                    <ChevronLeft className="h-4 w-4 mr-1" />
+                <Button asChild variant='outline'>
+                  <Link
+                    href={`/manga/${chapterData.manga.slug}/${chapterData.navigation.prevChapter}`}
+                  >
+                    <ChevronLeft className='h-4 w-4 mr-1' />
                     {t('previousChapter')}
                   </Link>
                 </Button>
               )}
 
               {chapterData.navigation.nextChapter && (
-                <Button asChild variant="outline">
-                  <Link href={`/manga/${chapterData.manga.slug}/${chapterData.navigation.nextChapter}`}>
+                <Button asChild variant='outline'>
+                  <Link
+                    href={`/manga/${chapterData.manga.slug}/${chapterData.navigation.nextChapter}`}
+                  >
                     {t('nextChapter')}
-                    <ChevronRight className="h-4 w-4 ml-1" />
+                    <ChevronRight className='h-4 w-4 ml-1' />
                   </Link>
                 </Button>
               )}
             </div>
 
             {/* Report Chapter Button */}
-            <div className="mt-4">
+            <div className='mt-4'>
               <ChapterReportButton
                 chapterId={parseInt(chapterData.chapter.id)}
                 chapterTitle={chapterData.chapter.title}
                 mangaTitle={chapterData.manga.title}
-                variant="outline"
-                size="sm"
+                variant='outline'
+                size='sm'
               />
             </div>
           </div>
@@ -364,8 +376,8 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
       </main>
 
       {/* Comment Section */}
-      <div className="bg-background">
-        <div className="w-full sm:max-w-5xl sm:mx-auto px-4 py-8">
+      <div className='bg-background'>
+        <div className='w-full sm:max-w-5xl sm:mx-auto px-4 py-8'>
           <CommentSection
             mangaId={parseInt(chapterData.manga.id)}
             chapterId={parseInt(chapterData.chapter.id)}
@@ -374,9 +386,8 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
           />
         </div>
       </div>
-
     </div>
   );
-})
+});
 
-export default MangaReader
+export default MangaReader;

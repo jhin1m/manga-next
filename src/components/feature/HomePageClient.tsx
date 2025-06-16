@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import HotMangaSliderClient from './HotMangaSliderClient';
@@ -30,12 +30,16 @@ interface HomePageClientProps {
 export default function HomePageClient({
   initialData,
   useShellMode = false,
-  currentPage = 1
+  currentPage = 1,
 }: HomePageClientProps) {
   const [isShellVisible, setIsShellVisible] = useState(useShellMode);
 
   // Only use the hook when in shell mode
-  const { data: asyncData, isLoading, error } = useHomePageData(
+  const {
+    data: asyncData,
+    isLoading,
+    error,
+  } = useHomePageData(
     useShellMode ? currentPage : 0 // Pass 0 to disable hook when not in shell mode
   );
 
@@ -62,14 +66,14 @@ export default function HomePageClient({
   // Show error state if data failed to load
   if (useShellMode && error && !data) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">
+      <div className='container mx-auto py-8'>
+        <div className='text-center py-12'>
+          <p className='text-muted-foreground mb-4'>
             Failed to load homepage data. Please try refreshing the page.
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            className='px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors'
           >
             Refresh Page
           </button>
@@ -85,23 +89,23 @@ export default function HomePageClient({
 
   // Render actual content
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className='container mx-auto py-8 space-y-8'>
       {/* Hot Manga Slider */}
       <HotMangaSliderClient hotManga={data.hotManga} />
 
       {/* Main Content + Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mt-8">
+      <div className='grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mt-8'>
         {/* Main Content */}
-        <section className="space-y-6">
+        <section className='space-y-6'>
           {/* Latest Update Manga List */}
           <LatestUpdateMangaListClient manga={data.latestManga} />
 
           {/* View More Button */}
-          <ViewMoreButton href="/manga?page=2" />
+          <ViewMoreButton href='/manga?page=2' />
         </section>
 
         {/* Sidebar */}
-        <aside className="space-y-6 lg:block">
+        <aside className='space-y-6 lg:block'>
           <SidebarClient sidebarData={data.sidebarData} />
         </aside>
       </div>

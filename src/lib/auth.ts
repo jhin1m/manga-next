@@ -1,9 +1,9 @@
-import NextAuth from 'next-auth'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import bcrypt from 'bcrypt'
-import { prisma } from '@/lib/db'
-import type { AuthOptions } from 'next-auth'
+import NextAuth from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcrypt';
+import { prisma } from '@/lib/db';
+import type { AuthOptions } from 'next-auth';
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
@@ -25,29 +25,26 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.emailOrUsername || !credentials?.password) {
-          return null
+          return null;
         }
 
         // Check if input is email or username
-        const isEmail = credentials.emailOrUsername.includes('@')
+        const isEmail = credentials.emailOrUsername.includes('@');
 
         const user = await prisma.users.findFirst({
           where: isEmail
             ? { email: credentials.emailOrUsername }
-            : { username: credentials.emailOrUsername }
-        })
+            : { username: credentials.emailOrUsername },
+        });
 
         if (!user || !user.password_hash) {
-          return null
+          return null;
         }
 
-        const passwordMatch = await bcrypt.compare(
-          credentials.password,
-          user.password_hash
-        )
+        const passwordMatch = await bcrypt.compare(credentials.password, user.password_hash);
 
         if (!passwordMatch) {
-          return null
+          return null;
         }
 
         return {
@@ -56,7 +53,7 @@ export const authOptions: AuthOptions = {
           name: user.username,
           image: user.avatar_url,
           role: user.role,
-        }
+        };
       },
     }),
     // Add OAuth providers here if needed
@@ -69,31 +66,31 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user, trigger, session }) {
       // Add custom properties to the token
       if (user) {
-        token.id = user.id
-        token.role = user.role
-        token.picture = user.image
+        token.id = user.id;
+        token.role = user.role;
+        token.picture = user.image;
       }
 
       // Handle session updates (when update() is called)
       if (trigger === 'update' && session?.user) {
-        token.picture = session.user.image
-        token.name = session.user.name
+        token.picture = session.user.image;
+        token.name = session.user.name;
       }
 
-      return token
+      return token;
     },
     async session({ session, token }) {
       // Add custom properties to the session
       if (session.user) {
-        session.user.id = token.id as string
-        session.user.role = token.role as string
-        session.user.image = token.picture as string
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.image = token.picture as string;
       }
-      return session
+      return session;
     },
   },
-}
+};
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);
 
-export const { auth, signIn, signOut } = NextAuth(authOptions)
+export const { auth, signIn, signOut } = NextAuth(authOptions);

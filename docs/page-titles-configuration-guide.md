@@ -7,11 +7,13 @@ Hệ thống Page Titles cho phép cấu hình linh hoạt các tiêu đề tran
 ## 🌍 **Hỗ trợ đa ngôn ngữ**
 
 ### **Ngôn ngữ được hỗ trợ:**
+
 - **English (en, en-US)**: Default language
 - **Vietnamese (vi, vi-VN)**: Tiếng Việt
 - **Japanese (ja, ja-JP)**: 日本語
 
 ### **Cấu hình ngôn ngữ:**
+
 ```bash
 # Trong .env
 NEXT_PUBLIC_SITE_LOCALE="vi_VN"  # Vietnamese
@@ -76,13 +78,13 @@ export async function generateMetadata({ searchParams }) {
   const sort = params.sort;
   const status = params.status;
   const genre = params.genre;
-  
+
   // Get current locale
   const currentLocale = seoConfig.site.locale.split('_')[0] || 'en';
-  
+
   // Get localized page title
   const pageTitle = getServerPageTitle('manga', { sort, status, genre }, currentLocale);
-  
+
   return constructMangaListMetadata({
     pageTitle,
     // ... other metadata
@@ -98,12 +100,12 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function MangaComponent() {
   const { getMangaPageTitle } = usePageTitle();
-  
-  const pageTitle = getMangaPageTitle({ 
-    sort: 'popular', 
-    status: 'completed' 
+
+  const pageTitle = getMangaPageTitle({
+    sort: 'popular',
+    status: 'completed'
   });
-  
+
   return <h1>{pageTitle}</h1>;
 }
 ```
@@ -113,6 +115,7 @@ export default function MangaComponent() {
 ### **URL và Page Titles tương ứng:**
 
 **English (en):**
+
 - `/manga` → "Latest Manga"
 - `/manga?sort=popular` → "Popular Manga"
 - `/manga?sort=rating` → "Top Rated Manga"
@@ -121,6 +124,7 @@ export default function MangaComponent() {
 - `/manga?sort=popular&status=completed` → "Popular Completed Manga"
 
 **Vietnamese (vi):**
+
 - `/manga` → "Truyện Tranh Mới Nhất"
 - `/manga?sort=popular` → "Truyện Tranh Phổ Biến"
 - `/manga?sort=rating` → "Truyện Tranh Đánh Giá Cao"
@@ -129,6 +133,7 @@ export default function MangaComponent() {
 - `/manga?sort=popular&status=completed` → "Truyện Tranh Hoàn Thành Phổ Biến"
 
 **Japanese (ja):**
+
 - `/manga` → "最新マンガ"
 - `/manga?sort=popular` → "人気マンガ"
 - `/manga?sort=rating` → "高評価マンガ"
@@ -218,17 +223,20 @@ const genreTranslations = {
 ## ✅ **Best Practices**
 
 ### **1. Naming Convention**
+
 - Sử dụng format: `NEXT_PUBLIC_PAGE_TITLE_{SECTION}_{TYPE}_{FILTER}`
 - SECTION: `MANGA`, `GENRE`, etc.
 - TYPE: `SORT`, `STATUS`, `COMBINED`, `DEFAULT`
 - FILTER: `POPULAR`, `COMPLETED`, etc.
 
 ### **2. Fallback Strategy**
+
 - Luôn có English fallback
 - Kiểm tra locale validity
 - Graceful degradation khi thiếu translation
 
 ### **3. SEO Optimization**
+
 - Titles phải descriptive và keyword-rich
 - Tránh duplicate titles
 - Consistent với URL structure

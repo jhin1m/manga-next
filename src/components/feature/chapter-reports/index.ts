@@ -1,2 +1,2 @@
-export { ChapterReportButton } from './ChapterReportButton'
-export { ChapterReportDialog } from './ChapterReportDialog'
+export { ChapterReportButton } from './ChapterReportButton';
+export { ChapterReportDialog } from './ChapterReportDialog';

@@ -6,9 +6,10 @@
 // API Configuration
 const API_CONFIG = {
   // Use internal URL for server-side requests, public URL for client-side
-  baseUrl: typeof window === 'undefined'
-    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000')
-    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'),
+  baseUrl:
+    typeof window === 'undefined'
+      ? process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
   defaultHeaders: {
     'Content-Type': 'application/json',
   },
@@ -26,7 +27,7 @@ const API_CONFIG = {
       weekly: { revalidate: 3600, tags: ['rankings', 'rankings-weekly'] as string[] }, // 1 hour
       monthly: { revalidate: 7200, tags: ['rankings', 'rankings-monthly'] as string[] }, // 2 hours
     },
-  }
+  },
 } as const;
 
 // API Endpoints - Type-safe and centralized
@@ -199,14 +200,7 @@ export async function apiClient<T = any>(
     params?: Record<string, string | number | boolean>;
   } = {}
 ): Promise<T> {
-  const {
-    method = 'GET',
-    body,
-    headers = {},
-    cache,
-    next,
-    params,
-  } = options;
+  const { method = 'GET', body, headers = {}, cache, next, params } = options;
 
   // Build URL with query parameters
   let url = `${API_CONFIG.baseUrl}${endpoint}`;
@@ -273,17 +267,20 @@ export async function apiClient<T = any>(
 // Specialized API functions with proper typing and caching
 export const mangaApi = {
   // Get manga list with filters - OPTIMIZED caching
-  getList: async (params: {
-    sort?: string;
-    status?: string;
-    genre?: string;
-    page?: number;
-    limit?: number;
-  } = {}) => {
+  getList: async (
+    params: {
+      sort?: string;
+      status?: string;
+      genre?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ) => {
     // Use special cache for hot manga (popular sort)
-    const cacheOptions = params.sort === 'popular'
-      ? API_CONFIG.defaultCacheOptions.hotManga
-      : API_CONFIG.defaultCacheOptions.manga;
+    const cacheOptions =
+      params.sort === 'popular'
+        ? API_CONFIG.defaultCacheOptions.hotManga
+        : API_CONFIG.defaultCacheOptions.manga;
 
     // Create more specific cache tags to avoid conflicts between different limits
     const baseTags = params.sort === 'popular' ? ['hot-manga'] : ['manga-list'];
@@ -363,11 +360,14 @@ export const genreApi = {
   },
 
   // Get manga by genre
-  getMangaByGenre: async (slug: string, params: {
-    page?: number;
-    limit?: number;
-    sort?: string;
-  } = {}) => {
+  getMangaByGenre: async (
+    slug: string,
+    params: {
+      page?: number;
+      limit?: number;
+      sort?: string;
+    } = {}
+  ) => {
     return apiClient(API_ENDPOINTS.manga.list, {
       params: {
         genre: slug,
@@ -382,7 +382,6 @@ export const genreApi = {
 };
 
 // Revalidation API functions
-
 
 export const revalidationApi = {
   // Basic revalidation trigger
@@ -461,7 +460,15 @@ export const revalidationApi = {
   // Revalidate everything (use sparingly)
   all: async (options?: { secret?: string }) => {
     return revalidationApi.trigger({
-      tags: ['manga-list', 'manga-detail', 'chapter-content', 'genres', 'search', 'hot-manga', 'ratings'],
+      tags: [
+        'manga-list',
+        'manga-detail',
+        'chapter-content',
+        'genres',
+        'search',
+        'hot-manga',
+        'ratings',
+      ],
       paths: ['/manga', '/', '/genres'],
       ...options,
     });
@@ -526,12 +533,14 @@ export const adminApi = {
 
   // Analytics
   analytics: {
-    getData: async (params: {
-      period?: 'day' | 'week' | 'month' | 'year';
-      startDate?: string;
-      endDate?: string;
-      type?: 'views' | 'users' | 'manga' | 'chapters';
-    } = {}) => {
+    getData: async (
+      params: {
+        period?: 'day' | 'week' | 'month' | 'year';
+        startDate?: string;
+        endDate?: string;
+        type?: 'views' | 'users' | 'manga' | 'chapters';
+      } = {}
+    ) => {
       return apiClient(API_ENDPOINTS.admin.analytics, {
         params,
         cache: 'no-store',
@@ -541,14 +550,16 @@ export const adminApi = {
 
   // Manga Management
   manga: {
-    getList: async (params: {
-      page?: number;
-      limit?: number;
-      sort?: string;
-      order?: 'asc' | 'desc';
-      search?: string;
-      status?: string;
-    } = {}) => {
+    getList: async (
+      params: {
+        page?: number;
+        limit?: number;
+        sort?: string;
+        order?: 'asc' | 'desc';
+        search?: string;
+        status?: string;
+      } = {}
+    ) => {
       return apiClient(API_ENDPOINTS.admin.manga.list, {
         params,
         cache: 'no-store',
@@ -608,15 +619,17 @@ export const adminApi = {
 
   // User Management
   users: {
-    getList: async (params: {
-      page?: number;
-      limit?: number;
-      sort?: string;
-      order?: 'asc' | 'desc';
-      search?: string;
-      role?: string;
-      status?: string;
-    } = {}) => {
+    getList: async (
+      params: {
+        page?: number;
+        limit?: number;
+        sort?: string;
+        order?: 'asc' | 'desc';
+        search?: string;
+        role?: string;
+        status?: string;
+      } = {}
+    ) => {
       return apiClient(API_ENDPOINTS.admin.users.list, {
         params,
         cache: 'no-store',
@@ -684,11 +697,7 @@ export const adminApi = {
 // Search API functions
 export const searchApi = {
   // Search manga with query
-  searchManga: async (params: {
-    q: string;
-    limit?: number;
-    sort?: string;
-  }) => {
+  searchManga: async (params: { q: string; limit?: number; sort?: string }) => {
     return apiClient(API_ENDPOINTS.search.manga, {
       params,
       next: {
@@ -713,16 +722,18 @@ export const commentApi = {
   },
 
   // Get comments list
-  getList: async (params: {
-    comic_id?: number;
-    chapter_id?: number;
-    page?: number;
-    limit?: number;
-    sort?: 'newest' | 'oldest' | 'most_liked';
-    view_mode?: 'chapter' | 'all';
-    pagination_type?: 'offset' | 'cursor';
-    cursor?: string;
-  } = {}) => {
+  getList: async (
+    params: {
+      comic_id?: number;
+      chapter_id?: number;
+      page?: number;
+      limit?: number;
+      sort?: 'newest' | 'oldest' | 'most_liked';
+      view_mode?: 'chapter' | 'all';
+      pagination_type?: 'offset' | 'cursor';
+      cursor?: string;
+    } = {}
+  ) => {
     return apiClient(API_ENDPOINTS.comments.list, {
       params,
       next: {
@@ -838,7 +849,11 @@ async function retryApiCall<T>(
       lastError = error;
 
       // Don't retry on certain error types
-      if (error.message?.includes('401') || error.message?.includes('403') || error.message?.includes('404')) {
+      if (
+        error.message?.includes('401') ||
+        error.message?.includes('403') ||
+        error.message?.includes('404')
+      ) {
         throw error;
       }
 
@@ -869,23 +884,26 @@ export const readingProgressApi = {
 
   // Create/update reading progress with retry logic
   create: async (data: { comicId: number; chapterId?: number }) => {
-    return retryApiCall(() =>
-      apiClient(API_ENDPOINTS.readingProgress.create, {
-        method: 'POST',
-        body: data,
-        cache: 'no-store',
-      }),
+    return retryApiCall(
+      () =>
+        apiClient(API_ENDPOINTS.readingProgress.create, {
+          method: 'POST',
+          body: data,
+          cache: 'no-store',
+        }),
       3, // maxRetries
       500 // baseDelay in ms
     );
   },
 
   // Sync reading progress
-  sync: async (progressItems: Array<{
-    comic_id: number;
-    last_read_chapter_id?: number;
-    updated_at: string;
-  }>) => {
+  sync: async (
+    progressItems: Array<{
+      comic_id: number;
+      last_read_chapter_id?: number;
+      updated_at: string;
+    }>
+  ) => {
     return retryApiCall(() =>
       apiClient(API_ENDPOINTS.readingProgress.sync, {
         method: 'POST',
@@ -915,11 +933,7 @@ export const readingProgressApi = {
 // Auth API functions
 export const authApi = {
   // Register user
-  register: async (data: {
-    username: string;
-    email: string;
-    password: string;
-  }) => {
+  register: async (data: { username: string; email: string; password: string }) => {
     return apiClient(API_ENDPOINTS.auth.register, {
       method: 'POST',
       body: data,
@@ -945,10 +959,7 @@ export const userApi = {
   },
 
   // Change password
-  changePassword: async (data: {
-    currentPassword: string;
-    newPassword: string;
-  }) => {
+  changePassword: async (data: { currentPassword: string; newPassword: string }) => {
     return apiClient(API_ENDPOINTS.users.password, {
       method: 'POST',
       body: data,
@@ -960,11 +971,13 @@ export const userApi = {
 // Notification API functions
 export const notificationApi = {
   // Get notifications list
-  getList: async (params: {
-    page?: number;
-    limit?: number;
-    unread_only?: boolean;
-  } = {}) => {
+  getList: async (
+    params: {
+      page?: number;
+      limit?: number;
+      unread_only?: boolean;
+    } = {}
+  ) => {
     return apiClient(API_ENDPOINTS.notifications.list, {
       params,
       cache: 'no-store',
@@ -979,10 +992,7 @@ export const notificationApi = {
   },
 
   // Mark notifications as read
-  markRead: async (data: {
-    notification_ids?: number[];
-    mark_all?: boolean;
-  }) => {
+  markRead: async (data: { notification_ids?: number[]; mark_all?: boolean }) => {
     return apiClient(API_ENDPOINTS.notifications.markRead, {
       method: 'POST',
       body: data,
@@ -1051,10 +1061,7 @@ export const notificationApi = {
 // Rating API functions
 export const ratingApi = {
   // Submit or update rating
-  submit: async (data: {
-    mangaId: number;
-    rating: number;
-  }) => {
+  submit: async (data: { mangaId: number; rating: number }) => {
     const response = await apiClient(API_ENDPOINTS.ratings.submit, {
       method: 'POST',
       body: data,
@@ -1092,23 +1099,22 @@ export const ratingApi = {
 // Rankings API functions
 export const rankingsApi = {
   // Get manga rankings by category and period
-  getRankings: async (params: {
-    category?: 'most_viewed' | 'highest_rated' | 'most_bookmarked' | 'trending';
-    period?: 'daily' | 'weekly' | 'monthly' | 'all_time';
-    page?: number;
-    limit?: number;
-  } = {}) => {
-    const {
-      category = 'most_viewed',
-      period = 'weekly',
-      page = 1,
-      limit = 10
-    } = params;
+  getRankings: async (
+    params: {
+      category?: 'most_viewed' | 'highest_rated' | 'most_bookmarked' | 'trending';
+      period?: 'daily' | 'weekly' | 'monthly' | 'all_time';
+      page?: number;
+      limit?: number;
+    } = {}
+  ) => {
+    const { category = 'most_viewed', period = 'weekly', page = 1, limit = 10 } = params;
 
     // Get appropriate cache options based on period
-    const cacheOptions = period === 'all_time'
-      ? API_CONFIG.defaultCacheOptions.rankings.monthly // Use monthly cache for all_time
-      : API_CONFIG.defaultCacheOptions.rankings[period] || API_CONFIG.defaultCacheOptions.rankings.weekly;
+    const cacheOptions =
+      period === 'all_time'
+        ? API_CONFIG.defaultCacheOptions.rankings.monthly // Use monthly cache for all_time
+        : API_CONFIG.defaultCacheOptions.rankings[period] ||
+          API_CONFIG.defaultCacheOptions.rankings.weekly;
 
     return apiClient(API_ENDPOINTS.manga.rankings, {
       params: { category, period, page, limit },
@@ -1119,23 +1125,25 @@ export const rankingsApi = {
           `rankings-${category}`,
           `rankings-${period}`,
           `rankings-${category}-${period}`,
-          'manga-rankings'
+          'manga-rankings',
         ],
       },
     });
   },
 
   // Get rankings for sidebar (simplified)
-  getSidebarRankings: async (params: {
-    period?: 'daily' | 'weekly' | 'monthly';
-    limit?: number;
-  } = {}) => {
+  getSidebarRankings: async (
+    params: {
+      period?: 'daily' | 'weekly' | 'monthly';
+      limit?: number;
+    } = {}
+  ) => {
     const { period = 'weekly', limit = 10 } = params;
 
     return rankingsApi.getRankings({
       category: 'most_viewed',
       period,
-      limit
+      limit,
     });
   },
 

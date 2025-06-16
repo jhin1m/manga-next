@@ -3,7 +3,7 @@
 ## 📋 Yêu Cầu Hệ Thống
 
 - **Node.js**: >= 18.0.0
-- **pnpm**: >= 8.0.0  
+- **pnpm**: >= 8.0.0
 - **PostgreSQL**: >= 13
 
 ---
@@ -11,22 +11,26 @@
 ## 🚀 Cài Đặt Dự Án
 
 ### 1. Clone Repository
+
 ```bash
 git clone YOUR_REPO_URL
 cd manga-website
 ```
 
 ### 2. Cài Đặt Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 3. Tạo Environment File
+
 ```bash
 cp .env.example .env.local
 ```
 
 Chỉnh sửa `.env.local`:
+
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/manga-next"
 NEXTAUTH_SECRET="your-super-secret-key-for-nextauth-jwt-encryption"
@@ -39,6 +43,7 @@ NEXT_PUBLIC_API_URL="http://localhost:3000"
 ## 🗄️ Chạy Database
 
 ### 1. Tạo Database PostgreSQL
+
 ```bash
 # Tạo database
 createdb manga-next
@@ -50,11 +55,13 @@ CREATE DATABASE manga_next;
 ```
 
 ### 2. Generate Prisma Client
+
 ```bash
 npx prisma generate
 ```
 
 ### 3. Chạy Migrations
+
 ```bash
 # Development
 npx prisma db push
@@ -64,6 +71,7 @@ npx prisma migrate deploy
 ```
 
 ### 4. Seed Data (Tùy chọn)
+
 ```bash
 pnpm seed
 ```
@@ -73,16 +81,19 @@ pnpm seed
 ## 🏗️ Build Dự Án
 
 ### Development Build
+
 ```bash
 pnpm dev
 ```
 
 ### Production Build
+
 ```bash
 pnpm build
 ```
 
 ### Start Production Server
+
 ```bash
 pnpm start
 ```
@@ -92,6 +103,7 @@ pnpm start
 ## 🔧 Commands Hữu Ích
 
 ### Database Commands
+
 ```bash
 # Xem database trong browser
 npx prisma studio
@@ -107,6 +119,7 @@ npx prisma migrate dev --name your_migration_name
 ```
 
 ### Development Commands
+
 ```bash
 # Chạy dev server với turbopack
 pnpm dev
@@ -124,6 +137,7 @@ pnpm test:rankings
 ```
 
 ### Build Commands
+
 ```bash
 # Build cho production
 pnpm build
@@ -140,6 +154,7 @@ pnpm build && npx @next/bundle-analyzer
 ## 🌐 Deploy Production
 
 ### 1. Chuẩn Bị VPS
+
 ```bash
 # Cài đặt Node.js 18+
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
@@ -159,6 +174,7 @@ sudo apt install -y nginx
 ```
 
 ### 2. Setup Database Production
+
 ```bash
 sudo -u postgres psql
 CREATE DATABASE manga_production;
@@ -168,6 +184,7 @@ GRANT ALL PRIVILEGES ON DATABASE manga_production TO manga_user;
 ```
 
 ### 3. Deploy Application
+
 ```bash
 # Clone code
 git clone YOUR_REPO_URL
@@ -199,12 +216,14 @@ pnpm deploy:script
 ```
 
 ### 4. Setup Nginx
+
 Tạo file `/etc/nginx/sites-available/manga-website`:
+
 ```nginx
 server {
     listen 80;
     server_name your-domain.com;
-    
+
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
@@ -227,6 +246,7 @@ sudo systemctl reload nginx
 ```
 
 ### 5. Setup SSL
+
 ```bash
 # Install Certbot
 sudo apt install -y certbot python3-certbot-nginx
@@ -267,6 +287,7 @@ pm2 restart manga-website
 ## 🛠️ Troubleshooting
 
 ### Database Issues
+
 ```bash
 # Check database connection
 npx prisma db execute --stdin <<< "SELECT 1;"
@@ -276,7 +297,7 @@ npx prisma db execute --stdin <<< "SELECT COUNT(*) FROM \"Comics\" WHERE search_
 
 # Rebuild search vectors nếu cần
 npx prisma db execute --stdin <<< "
-UPDATE \"Comics\" SET search_vector = 
+UPDATE \"Comics\" SET search_vector =
     setweight(to_tsvector('simple'::regconfig, coalesce(title, '')), 'A') ||
     setweight(to_tsvector('simple'::regconfig, coalesce(description, '')), 'B') ||
     setweight(to_tsvector('simple'::regconfig, coalesce(cast(alternative_titles as text), '')), 'C')
@@ -285,6 +306,7 @@ WHERE search_vector IS NULL;
 ```
 
 ### Application Issues
+
 ```bash
 # Check if app is running
 curl http://localhost:3000
@@ -302,6 +324,7 @@ df -h
 ```
 
 ### Migration Issues
+
 ```bash
 # Nếu migration fail với P3005 error
 sudo -u postgres psql
@@ -320,6 +343,7 @@ npx prisma db push --accept-data-loss
 ## 📝 Environment Variables
 
 ### Development (.env.local)
+
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/manga-next"
 NEXTAUTH_SECRET="your-super-secret-key-for-nextauth-jwt-encryption"
@@ -328,6 +352,7 @@ NEXT_PUBLIC_API_URL="http://localhost:3000"
 ```
 
 ### Production (.env.production)
+
 ```env
 DATABASE_URL="postgresql://manga_user:your_secure_password@localhost:5432/manga_production"
 NEXTAUTH_SECRET="your-super-secure-secret-key-minimum-32-characters-long"
@@ -343,6 +368,7 @@ NEXT_TELEMETRY_DISABLED=1
 ## 🎯 Quick Start Summary
 
 ### Development
+
 ```bash
 pnpm install
 npx prisma generate
@@ -351,6 +377,7 @@ pnpm dev
 ```
 
 ### Production (PM2)
+
 ```bash
 # Quick deployment
 pnpm deploy:script

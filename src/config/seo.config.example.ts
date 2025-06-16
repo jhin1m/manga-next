@@ -1,7 +1,7 @@
 /**
  * SEO Configuration Template
  * Copy this file to seo.config.ts and customize for your environment
- * 
+ *
  * Environment Variables (optional):
  * - NEXT_PUBLIC_SITE_URL: Your site's base URL
  * - NEXT_PUBLIC_SITE_NAME: Your site's name
@@ -18,14 +18,14 @@ const defaultSeoConfig = {
     language: 'en', // or 'ja' for Japanese
     locale: 'en_US', // or 'ja_JP' for Japanese
   },
-  
+
   urls: {
     base: 'https://your-domain.com', // Change this to your production URL
     logo: '/logo.png',
     favicon: '/favicon.ico',
     ogImage: '/images/og-image.jpg',
   },
-  
+
   social: {
     twitter: {
       card: 'summary_large_image' as const,
@@ -38,7 +38,7 @@ const defaultSeoConfig = {
       locale: 'en_US',
     },
   },
-  
+
   seo: {
     titleTemplate: '%s | Your Manga Site',
     defaultTitle: 'Your Manga Site - Free Manga Reading',
@@ -55,7 +55,7 @@ const defaultSeoConfig = {
       },
     },
   },
-  
+
   schema: {
     organization: {
       name: 'Your Manga Site',
@@ -91,13 +91,15 @@ const defaultSeoConfig = {
 
 // Environment-based overrides
 const getEnvironmentConfig = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                  process.env.NEXT_PUBLIC_API_URL || 
-                  defaultSeoConfig.urls.base;
-  
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    defaultSeoConfig.urls.base;
+
   const siteName = process.env.NEXT_PUBLIC_SITE_NAME || defaultSeoConfig.site.name;
-  const siteDescription = process.env.NEXT_PUBLIC_SITE_DESCRIPTION || defaultSeoConfig.site.description;
-  
+  const siteDescription =
+    process.env.NEXT_PUBLIC_SITE_DESCRIPTION || defaultSeoConfig.site.description;
+
   return {
     urls: {
       ...defaultSeoConfig.urls,
@@ -135,12 +137,8 @@ export type SchemaConfig = typeof seoConfig.schema;
 
 // Validation function
 export const validateSeoConfig = (): boolean => {
-  const required = [
-    seoConfig.site.name,
-    seoConfig.site.description,
-    seoConfig.urls.base,
-  ];
-  
+  const required = [seoConfig.site.name, seoConfig.site.description, seoConfig.urls.base];
+
   return required.every(field => field && field.length > 0);
 };
 

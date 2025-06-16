@@ -21,9 +21,9 @@ interface CommentSectionLazyProps {
 // Loading component for CommentSection
 function CommentSectionLoading() {
   return (
-    <div className="flex items-center justify-center p-8">
-      <div className="flex items-center gap-2">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+    <div className='flex items-center justify-center p-8'>
+      <div className='flex items-center gap-2'>
+        <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-primary'></div>
         <span>Loading comments...</span>
       </div>
     </div>

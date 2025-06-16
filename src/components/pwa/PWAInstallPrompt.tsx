@@ -34,7 +34,7 @@ export default function PWAInstallPrompt() {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      
+
       // Don't show prompt if already dismissed or installed
       const dismissed = localStorage.getItem('pwa-install-dismissed');
       if (!dismissed && !standalone) {
@@ -61,11 +61,11 @@ export default function PWAInstallPrompt() {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
+
     if (outcome === 'accepted') {
       setShowInstallPrompt(false);
     }
-    
+
     setDeferredPrompt(null);
   };
 
@@ -80,49 +80,36 @@ export default function PWAInstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm">
-      <div className="bg-card border border-border rounded-lg shadow-lg p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex-shrink-0">
-            <Smartphone className="h-6 w-6 text-primary" />
+    <div className='fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm'>
+      <div className='bg-card border border-border rounded-lg shadow-lg p-4'>
+        <div className='flex items-start gap-3'>
+          <div className='flex-shrink-0'>
+            <Smartphone className='h-6 w-6 text-primary' />
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-foreground">
-              {t('install.title')}
-            </h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              {isIOS 
-                ? t('install.ios-instruction')
-                : t('install.description')
-              }
+          <div className='flex-1 min-w-0'>
+            <h3 className='text-sm font-semibold text-foreground'>{t('install.title')}</h3>
+            <p className='text-xs text-muted-foreground mt-1'>
+              {isIOS ? t('install.ios-instruction') : t('install.description')}
             </p>
-            <div className="flex gap-2 mt-3">
+            <div className='flex gap-2 mt-3'>
               {!isIOS && deferredPrompt && (
-                <Button
-                  size="sm"
-                  onClick={handleInstallClick}
-                  className="flex items-center gap-1"
-                >
-                  <Download className="h-3 w-3" />
+                <Button size='sm' onClick={handleInstallClick} className='flex items-center gap-1'>
+                  <Download className='h-3 w-3' />
                   {t('install.button')}
                 </Button>
               )}
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleDismiss}
-              >
+              <Button size='sm' variant='outline' onClick={handleDismiss}>
                 {t('install.dismiss')}
               </Button>
             </div>
           </div>
           <Button
-            size="sm"
-            variant="ghost"
+            size='sm'
+            variant='ghost'
             onClick={handleDismiss}
-            className="flex-shrink-0 h-6 w-6 p-0"
+            className='flex-shrink-0 h-6 w-6 p-0'
           >
-            <X className="h-4 w-4" />
+            <X className='h-4 w-4' />
           </Button>
         </div>
       </div>

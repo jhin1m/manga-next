@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { requireAdminAuth, logAdminAction, AdminPermissions } from '@/lib/admin/middleware'
-import { AdminRole, userUpdateSchema } from '@/types/admin'
-import { prisma } from '@/lib/db'
+import { requireAdminAuth, logAdminAction, AdminPermissions } from '@/lib/admin/middleware';
+import { AdminRole, userUpdateSchema } from '@/types/admin';
+import { prisma } from '@/lib/db';
 
 /**
  * GET /api/admin/users/[id]
@@ -12,21 +12,21 @@ import { prisma } from '@/lib/db'
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(_request, AdminRole.ADMIN)
+    const authResult = await requireAdminAuth(_request, AdminRole.ADMIN);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { id } = await params
-    const userId = parseInt(id)
+    const { id } = await params;
+    const userId = parseInt(id);
 
     if (isNaN(userId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid user ID' 
+          error: 'Invalid user ID',
         },
         { status: 400 }
-      )
+      );
     }
 
     const targetUser = await prisma.users.findUnique({
@@ -48,18 +48,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
             Comics: {
               select: {
                 title: true,
-                slug: true
-              }
+                slug: true,
+              },
             },
             Chapters: {
               select: {
                 title: true,
-                slug: true
-              }
-            }
+                slug: true,
+              },
+            },
           },
           orderBy: { created_at: 'desc' },
-          take: 10
+          take: 10,
         },
         Favorites: {
           select: {
@@ -68,12 +68,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               select: {
                 title: true,
                 slug: true,
-                cover_image_url: true
-              }
-            }
+                cover_image_url: true,
+              },
+            },
           },
           orderBy: { created_at: 'desc' },
-          take: 10
+          take: 10,
         },
         Ratings: {
           select: {
@@ -83,12 +83,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
             Comics: {
               select: {
                 title: true,
-                slug: true
-              }
-            }
+                slug: true,
+              },
+            },
           },
           orderBy: { created_at: 'desc' },
-          take: 10
+          take: 10,
         },
         ChapterReports: {
           select: {
@@ -102,14 +102,14 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
                 Comics: {
                   select: {
                     title: true,
-                    slug: true
-                  }
-                }
-              }
-            }
+                    slug: true,
+                  },
+                },
+              },
+            },
           },
           orderBy: { created_at: 'desc' },
-          take: 10
+          take: 10,
         },
         _count: {
           select: {
@@ -118,54 +118,50 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
             Ratings: true,
             ChapterReports: true,
             Chapter_Views: true,
-            Comic_Views: true
-          }
-        }
-      }
-    })
+            Comic_Views: true,
+          },
+        },
+      },
+    });
 
     if (!targetUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User not found' 
+          error: 'User not found',
         },
         { status: 404 }
-      )
+      );
     }
 
     // Get additional statistics
-    const [
-      totalReadingTime,
-      favoriteGenres,
-      recentActivity
-    ] = await Promise.all([
+    const [totalReadingTime, favoriteGenres, recentActivity] = await Promise.all([
       // Calculate total reading time (approximate)
       prisma.chapter_Views.count({
-        where: { user_id: userId }
+        where: { user_id: userId },
       }),
-      
+
       // Get favorite genres based on favorites
       prisma.comic_Genres.groupBy({
         by: ['genre_id'],
         where: {
           Comics: {
             Favorites: {
-              some: { user_id: userId }
-            }
-          }
+              some: { user_id: userId },
+            },
+          },
         },
         _count: {
-          genre_id: true
+          genre_id: true,
         },
         orderBy: {
           _count: {
-            genre_id: 'desc'
-          }
+            genre_id: 'desc',
+          },
         },
-        take: 5
+        take: 5,
       }),
-      
+
       // Get recent activity
       prisma.chapter_Views.findMany({
         where: { user_id: userId },
@@ -176,31 +172,31 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               Comics: {
                 select: {
                   title: true,
-                  slug: true
-                }
-              }
-            }
-          }
+                  slug: true,
+                },
+              },
+            },
+          },
         },
         orderBy: { viewed_at: 'desc' },
-        take: 10
-      })
-    ])
+        take: 10,
+      }),
+    ]);
 
     // Get genre names for favorite genres
-    const genreIds = favoriteGenres.map(fg => fg.genre_id)
+    const genreIds = favoriteGenres.map(fg => fg.genre_id);
     const genres = await prisma.genres.findMany({
       where: { id: { in: genreIds } },
-      select: { id: true, name: true, slug: true }
-    })
+      select: { id: true, name: true, slug: true },
+    });
 
     const favoriteGenresWithNames = favoriteGenres.map(fg => {
-      const genre = genres.find(g => g.id === fg.genre_id)
+      const genre = genres.find(g => g.id === fg.genre_id);
       return {
         ...genre,
-        count: fg._count.genre_id
-      }
-    })
+        count: fg._count.genre_id,
+      };
+    });
 
     const transformedUser = {
       ...targetUser,
@@ -212,24 +208,23 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         chaptersRead: totalReadingTime,
         totalReadingTime: totalReadingTime * 5, // Approximate 5 minutes per chapter
         favoriteGenres: favoriteGenresWithNames,
-        recentActivity
-      }
-    }
+        recentActivity,
+      },
+    };
 
     return NextResponse.json({
       success: true,
-      data: transformedUser
-    })
-
+      data: transformedUser,
+    });
   } catch (error) {
-    console.error('[ADMIN_USER_DETAIL_ERROR]', error)
+    console.error('[ADMIN_USER_DETAIL_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to fetch user details' 
+        error: 'Failed to fetch user details',
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -240,54 +235,54 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.ADMIN)
+    const authResult = await requireAdminAuth(request, AdminRole.ADMIN);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { user } = authResult
-    const { id } = await params
-    const userId = parseInt(id)
+    const { user } = authResult;
+    const { id } = await params;
+    const userId = parseInt(id);
 
     if (isNaN(userId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid user ID' 
+          error: 'Invalid user ID',
         },
         { status: 400 }
-      )
+      );
     }
 
-    const body = await request.json()
-    const validatedData = userUpdateSchema.parse(body)
+    const body = await request.json();
+    const validatedData = userUpdateSchema.parse(body);
 
     // Check if target user exists
     const existingUser = await prisma.users.findUnique({
       where: { id: userId },
-      select: { id: true, username: true, email: true, role: true }
-    })
+      select: { id: true, username: true, email: true, role: true },
+    });
 
     if (!existingUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User not found' 
+          error: 'User not found',
         },
         { status: 404 }
-      )
+      );
     }
 
     // Check permissions for role changes
     if (validatedData.role && validatedData.role !== existingUser.role) {
-      const permissions = new AdminPermissions(user.role)
+      const permissions = new AdminPermissions(user.role);
       if (!permissions.canChangeUserRoles()) {
         return NextResponse.json(
-          { 
+          {
             success: false,
-            error: 'Insufficient permissions to change user roles' 
+            error: 'Insufficient permissions to change user roles',
           },
           { status: 403 }
-        )
+        );
       }
     }
 
@@ -300,21 +295,21 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             {
               OR: [
                 validatedData.email ? { email: validatedData.email } : {},
-                validatedData.username ? { username: validatedData.username } : {}
-              ].filter(condition => Object.keys(condition).length > 0)
-            }
-          ]
-        }
-      })
+                validatedData.username ? { username: validatedData.username } : {},
+              ].filter(condition => Object.keys(condition).length > 0),
+            },
+          ],
+        },
+      });
 
       if (conflicts) {
         return NextResponse.json(
-          { 
+          {
             success: false,
-            error: 'User with this email or username already exists' 
+            error: 'User with this email or username already exists',
           },
           { status: 409 }
-        )
+        );
       }
     }
 
@@ -323,7 +318,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       where: { id: userId },
       data: {
         ...validatedData,
-        updated_at: new Date()
+        updated_at: new Date(),
       },
       select: {
         id: true,
@@ -332,9 +327,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         role: true,
         avatar_url: true,
         created_at: true,
-        updated_at: true
-      }
-    })
+        updated_at: true,
+      },
+    });
 
     // Log admin action
     await logAdminAction(
@@ -342,41 +337,40 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       'UPDATE_USER',
       'user',
       userId,
-      { 
-        username: updatedUser.username, 
+      {
+        username: updatedUser.username,
         email: updatedUser.email,
         role: updatedUser.role,
-        changes: validatedData 
+        changes: validatedData,
       },
       request
-    )
+    );
 
     return NextResponse.json({
       success: true,
       message: 'User updated successfully',
-      data: updatedUser
-    })
-
+      data: updatedUser,
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Invalid request data',
-          details: error.errors 
+          details: error.errors,
         },
         { status: 400 }
-      )
+      );
     }
 
-    console.error('[ADMIN_USER_UPDATE_ERROR]', error)
+    console.error('[ADMIN_USER_UPDATE_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to update user' 
+        error: 'Failed to update user',
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -387,67 +381,67 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.SUPER_ADMIN)
+    const authResult = await requireAdminAuth(request, AdminRole.SUPER_ADMIN);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { user } = authResult
-    const { id } = await params
-    const userId = parseInt(id)
+    const { user } = authResult;
+    const { id } = await params;
+    const userId = parseInt(id);
 
     if (isNaN(userId)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Invalid user ID' 
+          error: 'Invalid user ID',
         },
         { status: 400 }
-      )
+      );
     }
 
     // Check permissions
-    const permissions = new AdminPermissions(user.role)
+    const permissions = new AdminPermissions(user.role);
     if (!permissions.canDeleteUsers()) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Insufficient permissions to delete users' 
+          error: 'Insufficient permissions to delete users',
         },
         { status: 403 }
-      )
+      );
     }
 
     // Prevent self-deletion
     if (userId === parseInt(user.id)) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'Cannot delete your own account' 
+          error: 'Cannot delete your own account',
         },
         { status: 400 }
-      )
+      );
     }
 
     // Check if user exists
     const targetUser = await prisma.users.findUnique({
       where: { id: userId },
-      select: { id: true, username: true, email: true, role: true }
-    })
+      select: { id: true, username: true, email: true, role: true },
+    });
 
     if (!targetUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User not found' 
+          error: 'User not found',
         },
         { status: 404 }
-      )
+      );
     }
 
     // Delete user (cascade will handle related records)
     await prisma.users.delete({
-      where: { id: userId }
-    })
+      where: { id: userId },
+    });
 
     // Log admin action
     await logAdminAction(
@@ -455,27 +449,26 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       'DELETE_USER',
       'user',
       userId,
-      { 
-        username: targetUser.username, 
+      {
+        username: targetUser.username,
         email: targetUser.email,
-        role: targetUser.role 
+        role: targetUser.role,
       },
       request
-    )
+    );
 
     return NextResponse.json({
       success: true,
-      message: 'User deleted successfully'
-    })
-
+      message: 'User deleted successfully',
+    });
   } catch (error) {
-    console.error('[ADMIN_USER_DELETE_ERROR]', error)
+    console.error('[ADMIN_USER_DELETE_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to delete user' 
+        error: 'Failed to delete user',
       },
       { status: 500 }
-    )
+    );
   }
 }

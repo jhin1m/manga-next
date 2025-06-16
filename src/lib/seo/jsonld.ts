@@ -9,7 +9,7 @@ import type {
   WebsiteJsonLd,
   OrganizationJsonLd,
   MangaMetadataProps,
-  ChapterMetadataProps
+  ChapterMetadataProps,
 } from './types';
 
 // Enhanced manga JSON-LD with proper typing
@@ -19,7 +19,8 @@ export function generateMangaJsonLd(data: MangaMetadataProps): string {
     '@type': 'Book',
     name: data.title,
     headline: data.title,
-    description: data.description || `Read ${data.title} manga online for free on ${seoConfig.site.name}.`,
+    description:
+      data.description || `Read ${data.title} manga online for free on ${seoConfig.site.name}.`,
     image: data.coverImage || getSiteUrl(seoConfig.urls.ogImage),
     author: {
       '@type': 'Person',
@@ -150,8 +151,12 @@ export function generateSearchJsonLd(query?: string): string {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SearchResultsPage',
-    name: query ? `Search results for "${query}" - ${seoConfig.site.name}` : `Search - ${seoConfig.site.name}`,
-    description: query ? `Find manga with keyword "${query}".` : `Search for manga on ${seoConfig.site.name}.`,
+    name: query
+      ? `Search results for "${query}" - ${seoConfig.site.name}`
+      : `Search - ${seoConfig.site.name}`,
+    description: query
+      ? `Find manga with keyword "${query}".`
+      : `Search for manga on ${seoConfig.site.name}.`,
     url: getSiteUrl(query ? `/search?q=${encodeURIComponent(query)}` : '/search'),
     isPartOf: {
       '@type': 'WebSite',

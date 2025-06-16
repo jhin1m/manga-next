@@ -1,9 +1,14 @@
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
-import bcrypt from 'bcrypt'
-import { requireAdminAuth, extractPaginationParams, buildPaginationResponse, logAdminAction } from '@/lib/admin/middleware'
-import { AdminRole, userCreateSchema } from '@/types/admin'
-import { prisma } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import bcrypt from 'bcrypt';
+import {
+  requireAdminAuth,
+  extractPaginationParams,
+  buildPaginationResponse,
+  logAdminAction,
+} from '@/lib/admin/middleware';
+import { AdminRole, userCreateSchema } from '@/types/admin';
+import { prisma } from '@/lib/db';
 
 /**
  * GET /api/admin/users
@@ -12,36 +17,44 @@ import { prisma } from '@/lib/db'
 export async function GET(request: Request) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.ADMIN)
+    const authResult = await requireAdminAuth(request, AdminRole.ADMIN);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { page, limit, sort, order, search, role, status: _status } = extractPaginationParams(request.url)
+    const {
+      page,
+      limit,
+      sort,
+      order,
+      search,
+      role,
+      status: _status,
+    } = extractPaginationParams(request.url);
 
     // Build where clause
-    const where: any = {}
-    
+    const where: any = {};
+
     if (search) {
       where.OR = [
         { username: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } }
-      ]
+        { email: { contains: search, mode: 'insensitive' } },
+      ];
     }
-    
+
     if (role) {
-      where.role = role
+      where.role = role;
     }
 
     // Build order by clause
-    const orderBy: any = {}
+    const orderBy: any = {};
     if (sort === 'username') {
-      orderBy.username = order
+      orderBy.username = order;
     } else if (sort === 'email') {
-      orderBy.email = order
+      orderBy.email = order;
     } else if (sort === 'role') {
-      orderBy.role = order
+      orderBy.role = order;
     } else {
-      orderBy.created_at = order
+      orderBy.created_at = order;
     }
 
     // Get users with pagination
@@ -62,16 +75,16 @@ export async function GET(request: Request) {
               Favorites: true,
               Ratings: true,
               ChapterReports: true,
-              Chapter_Views: true
-            }
-          }
+              Chapter_Views: true,
+            },
+          },
         },
         orderBy,
         skip: (page - 1) * limit,
-        take: limit
+        take: limit,
       }),
-      prisma.users.count({ where })
-    ])
+      prisma.users.count({ where }),
+    ]);
 
     // Transform data to include statistics
     const transformedUsers = users.map(user => ({
@@ -87,24 +100,23 @@ export async function GET(request: Request) {
         favoritesCount: user._count.Favorites,
         ratingsCount: user._count.Ratings,
         reportsCount: user._count.ChapterReports,
-        chaptersRead: user._count.Chapter_Views
-      }
-    }))
+        chaptersRead: user._count.Chapter_Views,
+      },
+    }));
 
     return NextResponse.json({
       success: true,
-      ...buildPaginationResponse(transformedUsers, totalCount, page, limit)
-    })
-
+      ...buildPaginationResponse(transformedUsers, totalCount, page, limit),
+    });
   } catch (error) {
-    console.error('[ADMIN_USERS_LIST_ERROR]', error)
+    console.error('[ADMIN_USERS_LIST_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to fetch users list' 
+        error: 'Failed to fetch users list',
       },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -115,36 +127,33 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     // Check admin authentication
-    const authResult = await requireAdminAuth(request, AdminRole.ADMIN)
+    const authResult = await requireAdminAuth(request, AdminRole.ADMIN);
     if (authResult instanceof NextResponse) {
-      return authResult
+      return authResult;
     }
-    const { user } = authResult
-    const body = await request.json()
-    const validatedData = userCreateSchema.parse(body)
+    const { user } = authResult;
+    const body = await request.json();
+    const validatedData = userCreateSchema.parse(body);
 
     // Check if user already exists
     const existingUser = await prisma.users.findFirst({
       where: {
-        OR: [
-          { email: validatedData.email },
-          { username: validatedData.username }
-        ]
-      }
-    })
+        OR: [{ email: validatedData.email }, { username: validatedData.username }],
+      },
+    });
 
     if (existingUser) {
       return NextResponse.json(
-        { 
+        {
           success: false,
-          error: 'User with this email or username already exists' 
+          error: 'User with this email or username already exists',
         },
         { status: 409 }
-      )
+      );
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 12)
+    const hashedPassword = await bcrypt.hash(validatedData.password, 12);
 
     // Create user
     const newUser = await prisma.users.create({
@@ -155,7 +164,7 @@ export async function POST(request: Request) {
         role: validatedData.role,
         avatar_url: validatedData.avatar_url,
         created_at: new Date(),
-        updated_at: new Date()
+        updated_at: new Date(),
       },
       select: {
         id: true,
@@ -164,9 +173,9 @@ export async function POST(request: Request) {
         role: true,
         avatar_url: true,
         created_at: true,
-        updated_at: true
-      }
-    })
+        updated_at: true,
+      },
+    });
 
     // Log admin action
     await logAdminAction(
@@ -174,39 +183,41 @@ export async function POST(request: Request) {
       'CREATE_USER',
       'user',
       newUser.id,
-      { 
-        username: newUser.username, 
+      {
+        username: newUser.username,
         email: newUser.email,
-        role: newUser.role 
+        role: newUser.role,
       },
       request
-    )
+    );
 
-    return NextResponse.json({
-      success: true,
-      message: 'User created successfully',
-      data: newUser
-    }, { status: 201 })
-
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'User created successfully',
+        data: newUser,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Invalid request data',
-          details: error.errors 
+          details: error.errors,
         },
         { status: 400 }
-      )
+      );
     }
 
-    console.error('[ADMIN_USER_CREATE_ERROR]', error)
+    console.error('[ADMIN_USER_CREATE_ERROR]', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
-        error: 'Failed to create user' 
+        error: 'Failed to create user',
       },
       { status: 500 }
-    )
+    );
   }
 }

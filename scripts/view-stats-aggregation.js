@@ -1,30 +1,36 @@
 #!/usr/bin/env node
 /**
  * View Statistics Aggregation Script
- * 
+ *
  * This script can be run manually or scheduled via cron to update view statistics
- * 
+ *
  * Usage:
  * node scripts/view-stats-aggregation.js [action] [options]
- * 
+ *
  * Actions:
  * - full: Run complete aggregation (default)
  * - comics: Update only comics view statistics
  * - chapters: Update only chapters view statistics
  * - snapshots: Store daily snapshots only
  * - cleanup: Clean up old view statistics data
- * 
+ *
  * Options:
  * --days-to-keep=<number>: Days to keep for cleanup (default: 90)
  * --help: Show this help message
- * 
+ *
  * Examples:
  * node scripts/view-stats-aggregation.js
  * node scripts/view-stats-aggregation.js comics
  * node scripts/view-stats-aggregation.js cleanup --days-to-keep=60
  */
 
-const { runViewStatsAggregation, updateAllComicsViewStats, updateAllChaptersViewStats, storeDailySnapshots, cleanupOldViewStats } = require('../.next/server/chunks/ssr/src_lib_jobs_viewStatsAggregator_ts.js');
+const {
+  runViewStatsAggregation,
+  updateAllComicsViewStats,
+  updateAllChaptersViewStats,
+  storeDailySnapshots,
+  cleanupOldViewStats,
+} = require('../.next/server/chunks/ssr/src_lib_jobs_viewStatsAggregator_ts.js');
 const dotenv = require('dotenv');
 
 // Load environment variables
@@ -125,7 +131,9 @@ async function main() {
     console.log('===========');
     console.log(`Status: ${result.success ? '✅ Success' : '❌ Failed'}`);
     console.log(`Message: ${result.message}`);
-    console.log(`Processed: ${result.processed.comics} comics, ${result.processed.chapters} chapters`);
+    console.log(
+      `Processed: ${result.processed.comics} comics, ${result.processed.chapters} chapters`
+    );
 
     if (result.errors && result.errors.length > 0) {
       console.log('');
@@ -140,7 +148,6 @@ async function main() {
 
     // Exit with appropriate code
     process.exit(result.success ? 0 : 1);
-
   } catch (error) {
     console.error('');
     console.error('💥 Script failed with error:');
@@ -151,7 +158,7 @@ async function main() {
 }
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   console.error('💥 Uncaught Exception:', error);
   process.exit(1);
 });

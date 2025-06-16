@@ -33,7 +33,7 @@ module.exports = {
         NODE_ENV: 'development',
         PORT: 3000,
         HOSTNAME: '0.0.0.0',
-        NEXT_TELEMETRY_DISABLED: 1
+        NEXT_TELEMETRY_DISABLED: 1,
       },
       env_production: {
         NODE_ENV: 'production',
@@ -42,7 +42,7 @@ module.exports = {
         NEXT_TELEMETRY_DISABLED: 1,
         // Performance optimizations
         UV_THREADPOOL_SIZE: 128,
-        NODE_OPTIONS: '--max-old-space-size=2048'
+        NODE_OPTIONS: '--max-old-space-size=2048',
       },
 
       // Cluster Configuration for Production
@@ -85,8 +85,8 @@ module.exports = {
       source_map_support: true,
 
       // Process Title
-      name: 'manga-website-prod'
-    }
+      name: 'manga-website-prod',
+    },
   ],
 
   // Deployment Configuration for VPS
@@ -101,17 +101,15 @@ module.exports = {
       ssh_options: 'StrictHostKeyChecking=no',
 
       // Pre-deployment (local machine)
-      'pre-deploy-local': [
-        'echo "🚀 Starting deployment..."',
-        'git add -A',
-        'git status'
-      ].join(' && '),
+      'pre-deploy-local': ['echo "🚀 Starting deployment..."', 'git add -A', 'git status'].join(
+        ' && '
+      ),
 
       // Pre-setup (first time only)
       'pre-setup': [
         'mkdir -p /var/www/manga-website',
         'mkdir -p /var/www/manga-website/logs/pm2',
-        'curl -fsSL https://get.pnpm.io/install.sh | sh -'
+        'curl -fsSL https://get.pnpm.io/install.sh | sh -',
       ].join(' && '),
 
       // Post-deployment (on server)
@@ -122,13 +120,13 @@ module.exports = {
         'npx prisma migrate deploy',
         'pnpm build',
         'pm2 reload ecosystem.config.js --env production',
-        'pm2 save'
+        'pm2 save',
       ].join(' && '),
 
       // Environment
       env: {
-        NODE_ENV: 'production'
-      }
+        NODE_ENV: 'production',
+      },
     },
 
     // Staging environment (optional)
@@ -143,11 +141,11 @@ module.exports = {
         'npx prisma generate',
         'npx prisma db push',
         'pnpm build',
-        'pm2 reload ecosystem.config.js --env staging'
+        'pm2 reload ecosystem.config.js --env staging',
       ].join(' && '),
       env: {
-        NODE_ENV: 'staging'
-      }
-    }
-  }
+        NODE_ENV: 'staging',
+      },
+    },
+  },
 };

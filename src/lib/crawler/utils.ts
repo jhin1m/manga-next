@@ -34,9 +34,9 @@ export function parseStatus(statusCode: number): string {
     1: 'ongoing',
     2: 'completed',
     3: 'cancelled',
-    4: 'hiatus'
+    4: 'hiatus',
   };
-  
+
   return statusMap[statusCode] || 'ongoing';
 }
 
@@ -58,7 +58,7 @@ export function generateFilename(url: string, prefix: string = ''): string {
   // Lấy phần cuối của URL
   const urlParts = new URL(url).pathname.split('/');
   const filename = urlParts[urlParts.length - 1];
-  
+
   // Thêm prefix nếu có
   return prefix ? `${prefix}-${filename}` : filename;
 }

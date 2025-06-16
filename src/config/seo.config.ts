@@ -9,18 +9,27 @@ const defaultSeoConfig = {
     name: 'TruyentranhNuru',
     tagline: 'Thế Giới Truyện Tranh Hentai và Manga 18+ Chất Lượng Cao',
     description: 'Đọc Truyện Tranh Hentai và Manga 18+ Online Miễn Phí - Nội Dung Người Lớn',
-    keywords: ['hentai', 'truyện hentai', 'truyện tranh 18+', 'truyện tranh người lớn', 'manga 18+', 'adult manga', 'doujinshi', 'TruyentranhNuru'],
+    keywords: [
+      'hentai',
+      'truyện hentai',
+      'truyện tranh 18+',
+      'truyện tranh người lớn',
+      'manga 18+',
+      'adult manga',
+      'doujinshi',
+      'TruyentranhNuru',
+    ],
     language: 'vi',
     locale: 'vi_VN',
   },
-  
+
   urls: {
     base: 'http://localhost:3000', // Fallback for development
     logo: '/logo.png',
     favicon: '/favicon.ico',
     ogImage: '/images/og-image.jpg',
   },
-  
+
   social: {
     twitter: {
       card: 'summary_large_image' as const,
@@ -33,7 +42,7 @@ const defaultSeoConfig = {
       locale: 'vi_VN',
     },
   },
-  
+
   seo: {
     titleTemplate: '%s',
     defaultTitle: 'TruyentranhNuru - Đọc Truyện Tranh Hentai và Manga 18+ Online Miễn Phí',
@@ -50,7 +59,7 @@ const defaultSeoConfig = {
       },
     },
   },
-  
+
   schema: {
     organization: {
       name: 'TruyentranhNuru',
@@ -181,13 +190,15 @@ const defaultSeoConfig = {
 // Environment-based overrides
 const getEnvironmentConfig = () => {
   // Base URL configuration
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ||
-                  process.env.NEXT_PUBLIC_API_URL ||
-                  defaultSeoConfig.urls.base;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    defaultSeoConfig.urls.base;
 
   // Site basic information
   const siteName = process.env.NEXT_PUBLIC_SITE_NAME || defaultSeoConfig.site.name;
-  const siteDescription = process.env.NEXT_PUBLIC_SITE_DESCRIPTION || defaultSeoConfig.site.description;
+  const siteDescription =
+    process.env.NEXT_PUBLIC_SITE_DESCRIPTION || defaultSeoConfig.site.description;
   const siteTagline = process.env.NEXT_PUBLIC_SITE_TAGLINE || defaultSeoConfig.site.tagline;
   const siteLanguage = process.env.NEXT_PUBLIC_SITE_LANGUAGE || defaultSeoConfig.site.language;
   const siteLocale = process.env.NEXT_PUBLIC_SITE_LOCALE || defaultSeoConfig.site.locale;
@@ -203,15 +214,19 @@ const getEnvironmentConfig = () => {
   const ogImageUrl = process.env.NEXT_PUBLIC_OG_IMAGE || defaultSeoConfig.urls.ogImage;
 
   // Social media configuration
-  const twitterHandle = process.env.NEXT_PUBLIC_TWITTER_HANDLE || defaultSeoConfig.social.twitter.site;
-  const twitterCreator = process.env.NEXT_PUBLIC_TWITTER_CREATOR || defaultSeoConfig.social.twitter.creator;
+  const twitterHandle =
+    process.env.NEXT_PUBLIC_TWITTER_HANDLE || defaultSeoConfig.social.twitter.site;
+  const twitterCreator =
+    process.env.NEXT_PUBLIC_TWITTER_CREATOR || defaultSeoConfig.social.twitter.creator;
   const twitterCard = process.env.NEXT_PUBLIC_TWITTER_CARD || defaultSeoConfig.social.twitter.card;
   const ogType = process.env.NEXT_PUBLIC_OG_TYPE || defaultSeoConfig.social.openGraph.type;
 
   // SEO templates configuration
-  const titleTemplate = process.env.NEXT_PUBLIC_TITLE_TEMPLATE || defaultSeoConfig.seo.titleTemplate;
+  const titleTemplate =
+    process.env.NEXT_PUBLIC_TITLE_TEMPLATE || defaultSeoConfig.seo.titleTemplate;
   const defaultTitle = process.env.NEXT_PUBLIC_DEFAULT_TITLE || defaultSeoConfig.seo.defaultTitle;
-  const titleSeparator = process.env.NEXT_PUBLIC_TITLE_SEPARATOR || defaultSeoConfig.seo.titleSeparator;
+  const titleSeparator =
+    process.env.NEXT_PUBLIC_TITLE_SEPARATOR || defaultSeoConfig.seo.titleSeparator;
 
   // Robots configuration
   const robotsIndex = process.env.NEXT_PUBLIC_ROBOTS_INDEX !== 'false';
@@ -219,9 +234,13 @@ const getEnvironmentConfig = () => {
 
   // Organization schema configuration
   const orgName = process.env.NEXT_PUBLIC_ORG_NAME || defaultSeoConfig.schema.organization.name;
-  const orgLegalName = process.env.NEXT_PUBLIC_ORG_LEGAL_NAME || defaultSeoConfig.schema.organization.legalName;
-  const orgFoundingDate = process.env.NEXT_PUBLIC_ORG_FOUNDING_DATE || defaultSeoConfig.schema.organization.foundingDate;
-  const orgCountry = process.env.NEXT_PUBLIC_ORG_COUNTRY || defaultSeoConfig.schema.organization.address.addressCountry;
+  const orgLegalName =
+    process.env.NEXT_PUBLIC_ORG_LEGAL_NAME || defaultSeoConfig.schema.organization.legalName;
+  const orgFoundingDate =
+    process.env.NEXT_PUBLIC_ORG_FOUNDING_DATE || defaultSeoConfig.schema.organization.foundingDate;
+  const orgCountry =
+    process.env.NEXT_PUBLIC_ORG_COUNTRY ||
+    defaultSeoConfig.schema.organization.address.addressCountry;
 
   // Analytics configuration
   const googleAnalyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || '';
@@ -241,31 +260,49 @@ const getEnvironmentConfig = () => {
     series: process.env.NEXT_PUBLIC_SEO_TEXT_SERIES || defaultSeoConfig.seoText.series,
 
     // Template phrases
-    latestChapters: process.env.NEXT_PUBLIC_SEO_TEXT_LATEST_CHAPTERS || defaultSeoConfig.seoText.latestChapters,
-    highQualityPages: process.env.NEXT_PUBLIC_SEO_TEXT_HIGH_QUALITY_PAGES || defaultSeoConfig.seoText.highQualityPages,
-    discoverBest: process.env.NEXT_PUBLIC_SEO_TEXT_DISCOVER_BEST || defaultSeoConfig.seoText.discoverBest,
+    latestChapters:
+      process.env.NEXT_PUBLIC_SEO_TEXT_LATEST_CHAPTERS || defaultSeoConfig.seoText.latestChapters,
+    highQualityPages:
+      process.env.NEXT_PUBLIC_SEO_TEXT_HIGH_QUALITY_PAGES ||
+      defaultSeoConfig.seoText.highQualityPages,
+    discoverBest:
+      process.env.NEXT_PUBLIC_SEO_TEXT_DISCOVER_BEST || defaultSeoConfig.seoText.discoverBest,
     browse: process.env.NEXT_PUBLIC_SEO_TEXT_BROWSE || defaultSeoConfig.seoText.browse,
-    findWithKeyword: process.env.NEXT_PUBLIC_SEO_TEXT_FIND_WITH_KEYWORD || defaultSeoConfig.seoText.findWithKeyword,
-    browseSearchResults: process.env.NEXT_PUBLIC_SEO_TEXT_BROWSE_SEARCH_RESULTS || defaultSeoConfig.seoText.browseSearchResults,
-    updatedDaily: process.env.NEXT_PUBLIC_SEO_TEXT_UPDATED_DAILY || defaultSeoConfig.seoText.updatedDaily,
-    viewProfile: process.env.NEXT_PUBLIC_SEO_TEXT_VIEW_PROFILE || defaultSeoConfig.seoText.viewProfile,
+    findWithKeyword:
+      process.env.NEXT_PUBLIC_SEO_TEXT_FIND_WITH_KEYWORD ||
+      defaultSeoConfig.seoText.findWithKeyword,
+    browseSearchResults:
+      process.env.NEXT_PUBLIC_SEO_TEXT_BROWSE_SEARCH_RESULTS ||
+      defaultSeoConfig.seoText.browseSearchResults,
+    updatedDaily:
+      process.env.NEXT_PUBLIC_SEO_TEXT_UPDATED_DAILY || defaultSeoConfig.seoText.updatedDaily,
+    viewProfile:
+      process.env.NEXT_PUBLIC_SEO_TEXT_VIEW_PROFILE || defaultSeoConfig.seoText.viewProfile,
     profile: process.env.NEXT_PUBLIC_SEO_TEXT_PROFILE || defaultSeoConfig.seoText.profile,
     bookmarks: process.env.NEXT_PUBLIC_SEO_TEXT_BOOKMARKS || defaultSeoConfig.seoText.bookmarks,
-    readingHistory: process.env.NEXT_PUBLIC_SEO_TEXT_READING_HISTORY || defaultSeoConfig.seoText.readingHistory,
+    readingHistory:
+      process.env.NEXT_PUBLIC_SEO_TEXT_READING_HISTORY || defaultSeoConfig.seoText.readingHistory,
 
     // Search related text
     search: process.env.NEXT_PUBLIC_SEO_TEXT_SEARCH || defaultSeoConfig.seoText.search,
-    searchResults: process.env.NEXT_PUBLIC_SEO_TEXT_SEARCH_RESULTS || defaultSeoConfig.seoText.searchResults,
+    searchResults:
+      process.env.NEXT_PUBLIC_SEO_TEXT_SEARCH_RESULTS || defaultSeoConfig.seoText.searchResults,
     findManga: process.env.NEXT_PUBLIC_SEO_TEXT_FIND_MANGA || defaultSeoConfig.seoText.findManga,
-    mangaSearch: process.env.NEXT_PUBLIC_SEO_TEXT_MANGA_SEARCH || defaultSeoConfig.seoText.mangaSearch,
-    userProfile: process.env.NEXT_PUBLIC_SEO_TEXT_USER_PROFILE || defaultSeoConfig.seoText.userProfile,
+    mangaSearch:
+      process.env.NEXT_PUBLIC_SEO_TEXT_MANGA_SEARCH || defaultSeoConfig.seoText.mangaSearch,
+    userProfile:
+      process.env.NEXT_PUBLIC_SEO_TEXT_USER_PROFILE || defaultSeoConfig.seoText.userProfile,
     searchFor: process.env.NEXT_PUBLIC_SEO_TEXT_SEARCH_FOR || defaultSeoConfig.seoText.searchFor,
-    findFavorite: process.env.NEXT_PUBLIC_SEO_TEXT_FIND_FAVORITE || defaultSeoConfig.seoText.findFavorite,
+    findFavorite:
+      process.env.NEXT_PUBLIC_SEO_TEXT_FIND_FAVORITE || defaultSeoConfig.seoText.findFavorite,
 
     // List and genre text
     mangaList: process.env.NEXT_PUBLIC_SEO_TEXT_MANGA_LIST || defaultSeoConfig.seoText.mangaList,
-    browseManga: process.env.NEXT_PUBLIC_SEO_TEXT_BROWSE_MANGA || defaultSeoConfig.seoText.browseManga,
-    readMangaOnline: process.env.NEXT_PUBLIC_SEO_TEXT_READ_MANGA_ONLINE || defaultSeoConfig.seoText.readMangaOnline,
+    browseManga:
+      process.env.NEXT_PUBLIC_SEO_TEXT_BROWSE_MANGA || defaultSeoConfig.seoText.browseManga,
+    readMangaOnline:
+      process.env.NEXT_PUBLIC_SEO_TEXT_READ_MANGA_ONLINE ||
+      defaultSeoConfig.seoText.readMangaOnline,
     freeManga: process.env.NEXT_PUBLIC_SEO_TEXT_FREE_MANGA || defaultSeoConfig.seoText.freeManga,
     mangaGenre: process.env.NEXT_PUBLIC_SEO_TEXT_MANGA_GENRE || defaultSeoConfig.seoText.mangaGenre,
     readOnline: process.env.NEXT_PUBLIC_SEO_TEXT_READ_ONLINE || defaultSeoConfig.seoText.readOnline,
@@ -372,12 +409,8 @@ export type SeoTextConfig = typeof seoConfig.seoText;
 
 // Validation function
 export const validateSeoConfig = (): boolean => {
-  const required = [
-    seoConfig.site.name,
-    seoConfig.site.description,
-    seoConfig.urls.base,
-  ];
-  
+  const required = [seoConfig.site.name, seoConfig.site.description, seoConfig.urls.base];
+
   return required.every(field => field && field.length > 0);
 };
 
@@ -407,9 +440,7 @@ export const getGoogleTagManagerId = (): string | null => {
 };
 
 export const getFacebookPixelId = (): string | null => {
-  return seoConfig.analytics.facebookPixel.enabled
-    ? seoConfig.analytics.facebookPixel.id
-    : null;
+  return seoConfig.analytics.facebookPixel.enabled ? seoConfig.analytics.facebookPixel.id : null;
 };
 
 export const getGoogleSiteVerification = (): string | null => {

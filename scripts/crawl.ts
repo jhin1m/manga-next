@@ -38,7 +38,7 @@ function parseArgs() {
   } = {
     source: 'mangaraw',
     startPage: 1,
-    help: false
+    help: false,
   };
 
   // Hiển thị help nếu không có tham số hoặc có flag --help
@@ -129,11 +129,11 @@ async function syncAllManga(options: any) {
         id: true,
         title: true,
         slug: true,
-        updated_at: true
+        updated_at: true,
       },
       orderBy: {
-        updated_at: 'asc' // Sync manga cũ nhất trước
-      }
+        updated_at: 'asc', // Sync manga cũ nhất trước
+      },
     });
 
     if (allManga.length === 0) {
@@ -158,7 +158,7 @@ async function syncAllManga(options: any) {
         // Tạo options cho manga này
         const mangaOptions = {
           ...options,
-          mangaId: manga.slug // Sử dụng slug làm ID
+          mangaId: manga.slug, // Sử dụng slug làm ID
         };
 
         // Gọi hàm sync cho manga này
@@ -176,9 +176,11 @@ async function syncAllManga(options: any) {
           console.log('⏳ Chờ 2 giây...');
           await new Promise(resolve => setTimeout(resolve, 2000));
         }
-
       } catch (error) {
-        console.error(`❌ Lỗi sync manga ${manga.title}:`, error instanceof Error ? error.message : error);
+        console.error(
+          `❌ Lỗi sync manga ${manga.title}:`,
+          error instanceof Error ? error.message : error
+        );
         errorCount++;
 
         // Tiếp tục với manga tiếp theo
@@ -193,7 +195,6 @@ async function syncAllManga(options: any) {
     console.log(`   - Chapters mới: ${totalNew}`);
     console.log(`   - Chapters cập nhật: ${totalUpdated}`);
     console.log(`   - Chapters xóa: ${totalDeleted}`);
-
   } catch (error) {
     console.error('❌ Lỗi trong quá trình sync toàn bộ:', error);
     throw error;
@@ -208,16 +209,16 @@ async function syncSingleMangaInternal(options: any, source: any) {
       where: {
         OR: [
           { slug: options.mangaId },
-          { id: isNaN(parseInt(options.mangaId)) ? undefined : parseInt(options.mangaId) }
-        ]
+          { id: isNaN(parseInt(options.mangaId)) ? undefined : parseInt(options.mangaId) },
+        ],
       },
       include: {
         Chapters: {
           include: {
-            Pages: true
-          }
-        }
-      }
+            Pages: true,
+          },
+        },
+      },
     });
 
     if (!existingManga) {
@@ -236,7 +237,9 @@ async function syncSingleMangaInternal(options: any, source: any) {
     // So sánh và cập nhật chapters
     for (const sourceChapter of chaptersResult.chapters) {
       const chapterNumber = parseFloat(sourceChapter.number);
-      const existingChapter = existingManga.Chapters.find((ch: any) => ch.chapter_number === chapterNumber);
+      const existingChapter = existingManga.Chapters.find(
+        (ch: any) => ch.chapter_number === chapterNumber
+      );
 
       if (existingChapter) {
         // Kiểm tra xem có thay đổi không
@@ -253,14 +256,14 @@ async function syncSingleMangaInternal(options: any, source: any) {
             data: {
               title: sourceChapter.title,
               slug: sourceChapter.slug,
-              updated_at: new Date()
-            }
+              updated_at: new Date(),
+            },
           });
 
           // Cập nhật pages nếu khác
           if (existingChapter.Pages.length !== sourceChapter.pages.length) {
             await prisma.pages.deleteMany({
-              where: { chapter_id: existingChapter.id }
+              where: { chapter_id: existingChapter.id },
             });
 
             for (let i = 0; i < sourceChapter.pages.length; i++) {
@@ -268,9 +271,11 @@ async function syncSingleMangaInternal(options: any, source: any) {
                 data: {
                   chapter_id: existingChapter.id,
                   page_number: i + 1,
-                  image_url: options.useOriginalImages ? sourceChapter.pages[i] : sourceChapter.pages[i],
-                  created_at: new Date()
-                }
+                  image_url: options.useOriginalImages
+                    ? sourceChapter.pages[i]
+                    : sourceChapter.pages[i],
+                  created_at: new Date(),
+                },
               });
             }
           }
@@ -290,8 +295,8 @@ async function syncSingleMangaInternal(options: any, source: any) {
             release_date: sourceChapter.releasedAt,
             view_count: sourceChapter.views || 0,
             created_at: sourceChapter.releasedAt,
-            updated_at: new Date()
-          }
+            updated_at: new Date(),
+          },
         });
 
         for (let i = 0; i < sourceChapter.pages.length; i++) {
@@ -299,9 +304,11 @@ async function syncSingleMangaInternal(options: any, source: any) {
             data: {
               chapter_id: newChapter.id,
               page_number: i + 1,
-              image_url: options.useOriginalImages ? sourceChapter.pages[i] : sourceChapter.pages[i],
-              created_at: new Date()
-            }
+              image_url: options.useOriginalImages
+                ? sourceChapter.pages[i]
+                : sourceChapter.pages[i],
+              created_at: new Date(),
+            },
           });
         }
 
@@ -311,12 +318,14 @@ async function syncSingleMangaInternal(options: any, source: any) {
 
     // Kiểm tra chapters bị xóa
     const sourceChapterNumbers = chaptersResult.chapters.map((ch: any) => parseFloat(ch.number));
-    const chaptersToDelete = existingManga.Chapters.filter((ch: any) => !sourceChapterNumbers.includes(ch.chapter_number));
+    const chaptersToDelete = existingManga.Chapters.filter(
+      (ch: any) => !sourceChapterNumbers.includes(ch.chapter_number)
+    );
 
     for (const chapterToDelete of chaptersToDelete) {
       console.log(`🗑️ Xóa chapter ${chapterToDelete.chapter_number}: ${chapterToDelete.title}`);
       await prisma.chapters.delete({
-        where: { id: chapterToDelete.id }
+        where: { id: chapterToDelete.id },
       });
       deletedCount++;
     }
@@ -326,14 +335,15 @@ async function syncSingleMangaInternal(options: any, source: any) {
       where: { id: existingManga.id },
       data: {
         updated_at: new Date(),
-        last_chapter_uploaded_at: new Date()
-      }
+        last_chapter_uploaded_at: new Date(),
+      },
     });
 
-    console.log(`✅ Sync hoàn thành: ${newCount} mới, ${updatedCount} cập nhật, ${deletedCount} xóa`);
+    console.log(
+      `✅ Sync hoàn thành: ${newCount} mới, ${updatedCount} cập nhật, ${deletedCount} xóa`
+    );
 
     return { newCount, updatedCount, deletedCount };
-
   } catch (error) {
     console.error('❌ Lỗi sync manga:', error);
     throw error;
@@ -371,7 +381,6 @@ async function runSyncMode(options: any) {
       await crawler.runCrawler(options);
       return;
     }
-
   } catch (error) {
     console.error('❌ Lỗi trong quá trình sync:', error);
     throw error;
@@ -401,7 +410,9 @@ async function main() {
 
   console.log(`Sử dụng ảnh gốc: ${options.useOriginalImages ? 'Có' : 'Không'}`);
   console.log(`Concurrency: ${options.concurrency || 3}`);
-  console.log(`Auth token: ${options.authToken ? 'Được cung cấp' : (process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có')}`);
+  console.log(
+    `Auth token: ${options.authToken ? 'Được cung cấp' : process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có'}`
+  );
   console.log(`Chế độ sync: ${options.sync ? 'Có' : 'Không'}`);
   console.log('=================');
 

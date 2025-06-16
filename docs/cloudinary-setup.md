@@ -5,6 +5,7 @@ This guide will help you set up storage for avatar upload functionality in the m
 ## Storage Provider Options
 
 ### Option 1: Cloudinary (Recommended for beginners)
+
 - ✅ Easy setup and configuration
 - ✅ Built-in image transformations
 - ✅ Free tier: 25GB storage, 25GB bandwidth
@@ -13,6 +14,7 @@ This guide will help you set up storage for avatar upload functionality in the m
 - ❌ Vendor lock-in
 
 ### Option 2: AWS S3 (Recommended for production)
+
 - ✅ More control and flexibility
 - ✅ Lower costs at scale
 - ✅ Integration with other AWS services
@@ -46,6 +48,7 @@ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your-cloud-name"
 ```
 
 Replace the placeholder values with your actual Cloudinary credentials:
+
 - `your-cloud-name`: Found in your Cloudinary dashboard
 - `your-api-key`: Found in your Cloudinary dashboard
 - `your-api-secret`: Found in your Cloudinary dashboard (keep this secret!)
@@ -53,6 +56,7 @@ Replace the placeholder values with your actual Cloudinary credentials:
 ## 3. Cloudinary Dashboard Settings
 
 ### Upload Presets (Optional)
+
 You can create upload presets in your Cloudinary dashboard for more control:
 
 1. Go to Settings → Upload
@@ -61,7 +65,9 @@ You can create upload presets in your Cloudinary dashboard for more control:
 4. Note the preset name for use in your code
 
 ### Folder Structure
+
 The application automatically creates avatars in the folder structure:
+
 ```
 manga-website/
   avatars/
@@ -100,7 +106,9 @@ When deploying to production:
 3. **Images not displaying**: Check the public URL format in Cloudinary
 
 ### Debug Mode:
+
 Enable Cloudinary debug mode by adding to your environment:
+
 ```bash
 CLOUDINARY_DEBUG=true
 ```
@@ -108,6 +116,7 @@ CLOUDINARY_DEBUG=true
 ## Free Tier Limits
 
 Cloudinary free tier includes:
+
 - 25 GB storage
 - 25 GB monthly bandwidth
 - 25,000 transformations per month
@@ -125,6 +134,7 @@ For detailed AWS S3 setup instructions, see [AWS S3 Setup Guide](./aws-s3-setup.
 1. **Create AWS Account and S3 Bucket**
 2. **Create IAM User with S3 permissions**
 3. **Configure Environment Variables:**
+
    ```bash
    # Choose S3 as storage provider
    STORAGE_PROVIDER="s3"
@@ -158,6 +168,7 @@ The application will automatically detect and use the appropriate provider based
 ## Health Check
 
 You can check your storage configuration at any time:
+
 ```bash
 curl http://localhost:3000/api/storage/health
 ```

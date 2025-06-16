@@ -9,12 +9,14 @@ The Admin API System provides comprehensive administrative functionality for the
 ### Core Components
 
 1. **Admin Middleware** (`src/lib/admin/middleware.ts`)
+
    - Authentication and authorization
    - Role-based permissions
    - Rate limiting and audit logging
    - Utility functions for pagination and error handling
 
 2. **Admin Types** (`src/types/admin.ts`)
+
    - TypeScript interfaces and enums
    - Zod validation schemas
    - Request/response type definitions
@@ -34,28 +36,30 @@ super_admin > admin > moderator > editor > user
 
 ### Role Permissions
 
-| Permission | Editor | Moderator | Admin | Super Admin |
-|------------|--------|-----------|-------|-------------|
-| Manage Manga | ✅ | ✅ | ✅ | ✅ |
-| Delete Manga | ❌ | ❌ | ✅ | ✅ |
-| Manage Chapters | ✅ | ✅ | ✅ | ✅ |
-| Delete Chapters | ❌ | ❌ | ✅ | ✅ |
-| Moderate Comments | ❌ | ✅ | ✅ | ✅ |
-| Ban Users | ❌ | ✅ | ✅ | ✅ |
-| Manage Users | ❌ | ❌ | ✅ | ✅ |
-| Delete Users | ❌ | ❌ | ❌ | ✅ |
-| Change User Roles | ❌ | ❌ | ❌ | ✅ |
-| System Management | ❌ | ❌ | ❌ | ✅ |
-| Access Analytics | ❌ | ❌ | ✅ | ✅ |
+| Permission        | Editor | Moderator | Admin | Super Admin |
+| ----------------- | ------ | --------- | ----- | ----------- |
+| Manage Manga      | ✅     | ✅        | ✅    | ✅          |
+| Delete Manga      | ❌     | ❌        | ✅    | ✅          |
+| Manage Chapters   | ✅     | ✅        | ✅    | ✅          |
+| Delete Chapters   | ❌     | ❌        | ✅    | ✅          |
+| Moderate Comments | ❌     | ✅        | ✅    | ✅          |
+| Ban Users         | ❌     | ✅        | ✅    | ✅          |
+| Manage Users      | ❌     | ❌        | ✅    | ✅          |
+| Delete Users      | ❌     | ❌        | ❌    | ✅          |
+| Change User Roles | ❌     | ❌        | ❌    | ✅          |
+| System Management | ❌     | ❌        | ❌    | ✅          |
+| Access Analytics  | ❌     | ❌        | ✅    | ✅          |
 
 ## API Endpoints
 
 ### Authentication
 
 #### POST `/api/admin/auth/login`
+
 Admin login with enhanced security features.
 
 **Request:**
+
 ```json
 {
   "email": "admin@example.com",
@@ -65,6 +69,7 @@ Admin login with enhanced security features.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -80,12 +85,15 @@ Admin login with enhanced security features.
 ```
 
 #### POST `/api/admin/auth/logout`
+
 Admin logout with audit logging.
 
 #### GET `/api/admin/auth/session`
+
 Get current admin session with permissions.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -104,9 +112,11 @@ Get current admin session with permissions.
 ### Dashboard
 
 #### GET `/api/admin/dashboard`
+
 Get dashboard statistics and overview data.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -136,9 +146,11 @@ Get dashboard statistics and overview data.
 ### Manga Management
 
 #### GET `/api/admin/manga`
+
 Get manga list with admin details and filters.
 
 **Query Parameters:**
+
 - `page` (number): Page number (default: 1)
 - `limit` (number): Items per page (default: 20, max: 100)
 - `sort` (string): Sort field (title, status, views, created_at)
@@ -147,9 +159,11 @@ Get manga list with admin details and filters.
 - `status` (string): Filter by status
 
 #### POST `/api/admin/manga`
+
 Create new manga.
 
 **Request:**
+
 ```json
 {
   "title": "New Manga Title",
@@ -163,18 +177,23 @@ Create new manga.
 ```
 
 #### GET `/api/admin/manga/[id]`
+
 Get detailed manga information.
 
 #### PUT `/api/admin/manga/[id]`
+
 Update manga information.
 
 #### DELETE `/api/admin/manga/[id]`
+
 Delete manga (admin+ only).
 
 #### POST `/api/admin/manga/bulk`
+
 Perform bulk operations on manga.
 
 **Request:**
+
 ```json
 {
   "action": "approve",
@@ -185,6 +204,7 @@ Perform bulk operations on manga.
 ```
 
 **Available Actions:**
+
 - `approve`: Approve and publish manga
 - `reject`: Reject manga submissions
 - `publish`: Publish draft/pending manga
@@ -194,24 +214,31 @@ Perform bulk operations on manga.
 ### User Management
 
 #### GET `/api/admin/users`
+
 Get users list with admin details and filters.
 
 #### POST `/api/admin/users`
+
 Create new user.
 
 #### GET `/api/admin/users/[id]`
+
 Get detailed user information.
 
 #### PUT `/api/admin/users/[id]`
+
 Update user information.
 
 #### DELETE `/api/admin/users/[id]`
+
 Delete user (super admin only).
 
 #### POST `/api/admin/users/[id]/ban`
+
 Ban a user.
 
 **Request:**
+
 ```json
 {
   "reason": "Violation of community guidelines",
@@ -221,20 +248,24 @@ Ban a user.
 ```
 
 #### DELETE `/api/admin/users/[id]/ban`
+
 Unban a user.
 
 ### Analytics
 
 #### GET `/api/admin/analytics`
+
 Get analytics data for admin dashboard.
 
 **Query Parameters:**
+
 - `period` (string): Time period (day, week, month, year)
 - `startDate` (string): Start date (ISO format)
 - `endDate` (string): End date (ISO format)
 - `type` (string): Analytics type (views, users, manga, chapters)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -264,11 +295,14 @@ Get analytics data for admin dashboard.
 ## Security Features
 
 ### Rate Limiting
+
 - Login attempts: 5 attempts per 15 minutes per IP
 - Admin actions: 10 attempts per 15 minutes per user
 
 ### Audit Logging
+
 All admin actions are logged with:
+
 - Admin user ID
 - Action performed
 - Resource type and ID
@@ -277,6 +311,7 @@ All admin actions are logged with:
 - Timestamp
 
 ### Permission Checks
+
 - Route-level authentication middleware
 - Action-specific permission validation
 - Role hierarchy enforcement
@@ -287,36 +322,36 @@ All admin actions are logged with:
 ### Using the Admin API Client
 
 ```typescript
-import { adminApi } from '@/lib/api/client'
+import { adminApi } from '@/lib/api/client';
 
 // Login
 const loginResult = await adminApi.auth.login({
   email: 'admin@example.com',
-  password: 'password123'
-})
+  password: 'password123',
+});
 
 // Get dashboard stats
-const dashboardData = await adminApi.dashboard.getStats()
+const dashboardData = await adminApi.dashboard.getStats();
 
 // Get manga list
 const mangaList = await adminApi.manga.getList({
   page: 1,
   limit: 20,
-  status: 'pending'
-})
+  status: 'pending',
+});
 
 // Ban a user
 const banResult = await adminApi.users.ban(userId, {
   reason: 'Spam posting',
   duration: 7,
-  notify: true
-})
+  notify: true,
+});
 
 // Get analytics
 const analytics = await adminApi.analytics.getData({
   period: 'week',
-  type: 'views'
-})
+  type: 'views',
+});
 ```
 
 ### Error Handling
@@ -332,6 +367,7 @@ All API endpoints return consistent error responses:
 ```
 
 Common HTTP status codes:
+
 - `400`: Bad Request (validation errors)
 - `401`: Unauthorized (not authenticated)
 - `403`: Forbidden (insufficient permissions)

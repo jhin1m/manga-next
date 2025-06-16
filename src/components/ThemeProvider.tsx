@@ -17,17 +17,14 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({
-  children,
-  defaultTheme = 'system',
-}: ThemeProviderProps) {
+export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProviderProps) {
   const [theme, setTheme] = useLocalStorage<Theme>('theme', defaultTheme);
   const [mounted, setMounted] = useState(false);
 
   // Apply theme class to document
   useEffect(() => {
     setMounted(true);
-    
+
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
 
@@ -45,13 +42,13 @@ export function ThemeProvider({
   useEffect(() => {
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      
+
       const handleChange = () => {
         const root = window.document.documentElement;
         root.classList.remove('light', 'dark');
         root.classList.add(mediaQuery.matches ? 'dark' : 'light');
       };
-      
+
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
@@ -62,11 +59,7 @@ export function ThemeProvider({
     return null;
   }
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

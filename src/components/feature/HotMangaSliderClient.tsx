@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import MangaCard from './MangaCard';
@@ -43,38 +43,38 @@ export default function HotMangaSliderClient({ hotManga }: HotMangaSliderClientP
   };
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">{t('hotManga')}</h2>
+    <div className='relative w-full overflow-hidden rounded-lg'>
+      <div className='flex items-center justify-between mb-4'>
+        <h2 className='text-2xl font-bold'>{t('hotManga')}</h2>
         {/* Navigation buttons aligned with title */}
-        <div className="flex gap-2">
+        <div className='flex gap-2'>
           <button
             onClick={handlePrev}
-            className="bg-primary/10 hover:bg-primary/20 text-primary p-2 rounded-md transition-colors"
-            aria-label="Previous slide"
+            className='bg-primary/10 hover:bg-primary/20 text-primary p-2 rounded-md transition-colors'
+            aria-label='Previous slide'
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className='w-5 h-5' />
           </button>
           <button
             onClick={handleNext}
-            className="bg-primary/10 hover:bg-primary/20 text-primary p-2 rounded-md transition-colors"
-            aria-label="Next slide"
+            className='bg-primary/10 hover:bg-primary/20 text-primary p-2 rounded-md transition-colors'
+            aria-label='Next slide'
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className='w-5 h-5' />
           </button>
         </div>
       </div>
 
       {/* Slider container */}
       <div
-        id="hot-manga-slider"
-        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x scroll-smooth"
+        id='hot-manga-slider'
+        className='flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x scroll-smooth'
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {hotManga.map((item, index) => (
           <div
             key={item.id}
-            className="snap-start flex-shrink-0 w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] lg:w-[calc(20%-16px)] 2xl:w-[calc(16.666%-16px)]"
+            className='snap-start flex-shrink-0 w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] lg:w-[calc(20%-16px)] 2xl:w-[calc(16.666%-16px)]'
           >
             <MangaCard
               title={item.title}
@@ -89,7 +89,7 @@ export default function HotMangaSliderClient({ hotManga }: HotMangaSliderClientP
               updatedAt={item.updatedAt}
               priority={index < 3}
               fetchPriority={index < 2 ? 'high' : 'auto'}
-              imageSizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 20vw, 16vw"
+              imageSizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 20vw, 16vw'
               loading={index < 3 ? 'eager' : 'lazy'}
             />
           </div>

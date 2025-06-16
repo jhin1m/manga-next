@@ -1,9 +1,9 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import MangaReader from "@/components/manga/MangaReader";
-import { constructChapterMetadata } from "@/lib/seo/metadata";
-import JsonLdScript from "@/components/seo/JsonLdScript";
-import { generateChapterJsonLd } from "@/lib/seo/jsonld";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import MangaReader from '@/components/manga/MangaReader';
+import { constructChapterMetadata } from '@/lib/seo/metadata';
+import JsonLdScript from '@/components/seo/JsonLdScript';
+import { generateChapterJsonLd } from '@/lib/seo/jsonld';
 import { mangaApi, chapterApi } from '@/lib/api/client';
 
 // Function to get chapter data from API using centralized API client
@@ -69,8 +69,8 @@ export async function generateMetadata({
 
   if (!chapterData) {
     return {
-      title: "Chapter Not Found",
-      robots: { index: false, follow: false }
+      title: 'Chapter Not Found',
+      robots: { index: false, follow: false },
     };
   }
 
@@ -126,7 +126,7 @@ export default async function ChapterPage({
 
   return (
     <>
-      <JsonLdScript id="chapter-jsonld" jsonLd={jsonLd} />
+      <JsonLdScript id='chapter-jsonld' jsonLd={jsonLd} />
       <MangaReader chapterData={chapterData} />
     </>
   );

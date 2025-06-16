@@ -7,6 +7,7 @@ The comment system provides comprehensive commenting functionality for the manga
 ## Features
 
 ### Core Functionality
+
 - ✅ User comments on manga and chapters
 - ✅ Threaded replies (nested comments)
 - ✅ Like/dislike system
@@ -17,6 +18,7 @@ The comment system provides comprehensive commenting functionality for the manga
 - ✅ Admin moderation interface
 
 ### Content Management
+
 - ✅ Rich text content support
 - ✅ Character limits (2000 characters)
 - ✅ Spam detection and filtering
@@ -25,6 +27,7 @@ The comment system provides comprehensive commenting functionality for the manga
 - ✅ Comment status management (PENDING, APPROVED, REJECTED, FLAGGED)
 
 ### User Experience
+
 - ✅ Responsive design for mobile and desktop
 - ✅ Loading states and error handling
 - ✅ Optimistic UI updates
@@ -35,6 +38,7 @@ The comment system provides comprehensive commenting functionality for the manga
 ## Database Schema
 
 ### Comments Table
+
 ```sql
 CREATE TABLE "Comments" (
   "id" SERIAL PRIMARY KEY,
@@ -52,6 +56,7 @@ CREATE TABLE "Comments" (
 ```
 
 ### CommentLike Table
+
 ```sql
 CREATE TABLE "CommentLike" (
   "id" SERIAL PRIMARY KEY,
@@ -64,6 +69,7 @@ CREATE TABLE "CommentLike" (
 ```
 
 ### CommentReport Table
+
 ```sql
 CREATE TABLE "CommentReport" (
   "id" SERIAL PRIMARY KEY,
@@ -81,9 +87,11 @@ CREATE TABLE "CommentReport" (
 ### Public Endpoints
 
 #### GET /api/comments
+
 Get paginated comments for a manga or chapter.
 
 **Query Parameters:**
+
 - `comic_id` (optional): Manga ID
 - `chapter_id` (optional): Chapter ID
 - `page` (default: 1): Page number
@@ -91,17 +99,21 @@ Get paginated comments for a manga or chapter.
 - `sort` (default: newest): Sort order (newest, oldest, most_liked)
 
 #### GET /api/comments/recent
+
 Get recent approved comments across all manga.
 
 **Query Parameters:**
+
 - `limit` (default: 10, max: 50): Number of comments to return
 
 ### Authenticated Endpoints
 
 #### POST /api/comments
+
 Create a new comment (requires authentication).
 
 **Request Body:**
+
 ```json
 {
   "content": "Comment content",
@@ -112,15 +124,19 @@ Create a new comment (requires authentication).
 ```
 
 #### PUT /api/comments/[commentId]
+
 Update a comment (only by author, within 24 hours).
 
 #### DELETE /api/comments/[commentId]
+
 Delete a comment (by author or admin).
 
 #### POST /api/comments/[commentId]/like
+
 Toggle like/dislike on a comment.
 
 **Request Body:**
+
 ```json
 {
   "is_like": true
@@ -128,9 +144,11 @@ Toggle like/dislike on a comment.
 ```
 
 #### POST /api/comments/[commentId]/report
+
 Report a comment for moderation.
 
 **Request Body:**
+
 ```json
 {
   "reason": "spam",
@@ -141,36 +159,44 @@ Report a comment for moderation.
 ### Admin Endpoints
 
 #### GET /api/admin/comments
+
 Get comments for moderation with filtering options.
 
 #### POST /api/admin/comments
+
 Bulk moderation actions (approve, reject, flag, delete).
 
 #### PUT /api/admin/comments/[commentId]
+
 Update comment status.
 
 ## Components
 
 ### CommentSection
+
 Main container component that handles:
+
 - Comment fetching and pagination
 - Sort options
 - Comment form integration
 - Loading and error states
 
 **Props:**
+
 ```typescript
 interface CommentSectionProps {
-  mangaId?: number
-  chapterId?: number
-  mangaSlug?: string
-  chapterSlug?: string
-  initialCommentsCount?: number
+  mangaId?: number;
+  chapterId?: number;
+  mangaSlug?: string;
+  chapterSlug?: string;
+  initialCommentsCount?: number;
 }
 ```
 
 ### CommentItem
+
 Individual comment display component with:
+
 - User information and avatars
 - Like/dislike buttons
 - Reply functionality
@@ -178,16 +204,20 @@ Individual comment display component with:
 - Nested replies
 
 ### CommentForm
+
 Comment creation and editing form with:
+
 - Rich text input
 - Character count
 - Validation
 - Community guidelines
 
 ### CommentPagination
+
 Pagination controls for comment navigation.
 
 ### CommentReportDialog
+
 Modal for reporting inappropriate comments.
 
 ## Rate Limiting
@@ -200,17 +230,20 @@ Modal for reporting inappropriate comments.
 ## Moderation Features
 
 ### Automatic Moderation
+
 - Spam keyword detection
 - Rate limiting enforcement
 - Auto-flagging based on reports
 
 ### Manual Moderation
+
 - Admin dashboard for comment review
 - Bulk actions (approve, reject, flag, delete)
 - User comment history
 - Report management
 
 ### Comment Status Flow
+
 1. **PENDING** - New comments with spam indicators
 2. **APPROVED** - Visible to all users
 3. **REJECTED** - Hidden from public view
@@ -221,33 +254,33 @@ Modal for reporting inappropriate comments.
 ### Adding Comments to a Page
 
 ```tsx
-import CommentSection from '@/components/feature/comments/CommentSection'
+import CommentSection from '@/components/feature/comments/CommentSection';
 
 export default function MangaPage({ manga }) {
   return (
     <div>
       {/* Manga content */}
-      
+
       <CommentSection
         mangaId={manga.id}
         mangaSlug={manga.slug}
         initialCommentsCount={manga.commentsCount}
       />
     </div>
-  )
+  );
 }
 ```
 
 ### Adding Comments to Chapter Pages
 
 ```tsx
-import CommentSection from '@/components/feature/comments/CommentSection'
+import CommentSection from '@/components/feature/comments/CommentSection';
 
 export default function ChapterPage({ chapter }) {
   return (
     <div>
       {/* Chapter content */}
-      
+
       <CommentSection
         mangaId={chapter.comic_id}
         chapterId={chapter.id}
@@ -255,7 +288,7 @@ export default function ChapterPage({ chapter }) {
         chapterSlug={chapter.slug}
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -279,18 +312,21 @@ export default function ChapterPage({ chapter }) {
 ## Testing
 
 ### Unit Tests
+
 - API endpoint validation
 - Comment CRUD operations
 - Rate limiting functionality
 - Spam detection algorithms
 
 ### Integration Tests
+
 - Complete comment workflows
 - Authentication integration
 - Database operations
 - Error handling scenarios
 
 ### E2E Tests
+
 - User comment posting flow
 - Moderation workflows
 - Mobile responsiveness
