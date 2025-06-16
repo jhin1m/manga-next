@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import { useTopLoadingBar } from './TopLoadingBar';
 
 // SVG Icon với animation
 const ViewMoreIcon = () => (
@@ -28,8 +29,14 @@ interface ViewMoreButtonProps {
 export default function ViewMoreButton({ href, className = '' }: ViewMoreButtonProps) {
   const t = useTranslations('manga');
   const router = useRouter();
+  const { startLoading } = useTopLoadingBar();
 
   const handleClick = () => {
+    // Trigger loading for manga-related navigation
+    if (href.includes('/manga')) {
+      startLoading();
+    }
+    
     router.push(href, { scroll: false });
 
     // Scroll to top with smooth animation - similar to PaginationWrapper

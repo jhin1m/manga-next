@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { searchApi, mangaApi } from '@/lib/api/client';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { useTopLoadingBar } from '@/components/ui/TopLoadingBar';
 
 // Types for search results
 interface MangaSearchResult {
@@ -127,6 +128,7 @@ interface SearchBarProps {
 
 const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBarProps) {
   const router = useRouter();
+  const { startLoading } = useTopLoadingBar();
   const [searchQuery, setSearchQuery] = useState('');
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [liveResults, setLiveResults] = useState<MangaSearchResult[]>([]);
@@ -260,6 +262,7 @@ const SearchBar = memo(function SearchBar({ open, setOpen, className }: SearchBa
   // Handle search navigation
   const handleSelect = (slug: string) => {
     setOpen(false);
+    startLoading(); // Trigger loading animation
     router.push(`/manga/${slug}`);
     setSearchQuery('');
     setLiveResults([]);

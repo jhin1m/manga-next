@@ -1,5 +1,5 @@
 'use client';
-import Link from 'next/link';
+import LoadingLink from '@/components/ui/LoadingLink';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ReaderNavigation from './ReaderNavigation';
@@ -340,23 +340,23 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
             <div className='flex gap-2'>
               {chapterData.navigation.prevChapter && (
                 <Button asChild variant='outline'>
-                  <Link
+                  <LoadingLink
                     href={`/manga/${chapterData.manga.slug}/${chapterData.navigation.prevChapter}`}
                   >
                     <ChevronLeft className='h-4 w-4 mr-1' />
                     {t('previousChapter')}
-                  </Link>
+                  </LoadingLink>
                 </Button>
               )}
 
               {chapterData.navigation.nextChapter && (
                 <Button asChild variant='outline'>
-                  <Link
+                  <LoadingLink
                     href={`/manga/${chapterData.manga.slug}/${chapterData.navigation.nextChapter}`}
                   >
                     {t('nextChapter')}
                     <ChevronRight className='h-4 w-4 ml-1' />
-                  </Link>
+                  </LoadingLink>
                 </Button>
               )}
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import LoadingLink from '@/components/ui/LoadingLink';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -108,7 +108,7 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
           <div className='grid grid-cols-2 gap-3 pb-5 pr-2'>
             {sortedChapters.length > 0 ? (
               sortedChapters.map(chapter => (
-                <Link
+                <LoadingLink
                   key={chapter.id}
                   href={`/manga/${mangaSlug}/${chapter.slug}`}
                   className={cn(
@@ -144,7 +144,7 @@ export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterLi
                       </div>
                     </div>
                   </div>
-                </Link>
+                </LoadingLink>
               ))
             ) : (
               <div className='col-span-2 md:col-span-4 text-center py-4 text-muted-foreground'>

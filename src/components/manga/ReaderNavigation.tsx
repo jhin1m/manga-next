@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import LoadingLink from '@/components/ui/LoadingLink';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Home, List } from 'lucide-react';
 import { ChapterReportButton } from '@/components/feature/chapter-reports/ChapterReportButton';
 import { FavoriteButton } from '@/components/manga/FavoriteButton';
+import { useTopLoadingBar } from '@/components/ui/TopLoadingBar';
 
 interface ReaderNavigationProps {
   mangaTitle: string;
@@ -35,6 +37,7 @@ export default function ReaderNavigation({
   comicId,
 }: ReaderNavigationProps) {
   const router = useRouter();
+  const { startLoading } = useTopLoadingBar();
   const [isSticky, setIsSticky] = useState(false);
 
   // Theo dõi scroll để thêm hiệu ứng khi sticky
@@ -49,6 +52,7 @@ export default function ReaderNavigation({
 
   // Xử lý khi thay đổi chương từ dropdown
   const handleChapterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    startLoading(); // Trigger loading animation
     router.push(`/manga/${mangaSlug}/${e.target.value}`);
   };
 
@@ -73,10 +77,10 @@ export default function ReaderNavigation({
 
         {/* Nút Danh sách - luôn hiển thị */}
         <Button asChild variant='ghost' size='icon' className='h-9 w-9 flex-shrink-0'>
-          <Link href={`/manga/${mangaSlug}`}>
+          <LoadingLink href={`/manga/${mangaSlug}`}>
             <List className='h-5 w-5' />
             <span className='sr-only'>Danh sách chương</span>
-          </Link>
+          </LoadingLink>
         </Button>
 
         {/* Nút Chương trước - luôn hiển thị */}
@@ -88,10 +92,10 @@ export default function ReaderNavigation({
           disabled={!prevChapter}
         >
           {prevChapter ? (
-            <Link href={`/manga/${mangaSlug}/${prevChapter}`}>
+            <LoadingLink href={`/manga/${mangaSlug}/${prevChapter}`}>
               <ChevronLeft className='h-5 w-5' />
               <span className='sr-only'>Chương trước</span>
-            </Link>
+            </LoadingLink>
           ) : (
             <span>
               <ChevronLeft className='h-5 w-5' />
@@ -121,10 +125,10 @@ export default function ReaderNavigation({
           disabled={!nextChapter}
         >
           {nextChapter ? (
-            <Link href={`/manga/${mangaSlug}/${nextChapter}`}>
+            <LoadingLink href={`/manga/${mangaSlug}/${nextChapter}`}>
               <ChevronRight className='h-5 w-5' />
               <span className='sr-only'>Chương sau</span>
-            </Link>
+            </LoadingLink>
           ) : (
             <span>
               <ChevronRight className='h-5 w-5' />

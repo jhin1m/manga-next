@@ -18,6 +18,7 @@ import PWAInstallPrompt from '@/components/pwa/PWAInstallPrompt';
 import OfflineIndicator from '@/components/pwa/OfflineIndicator';
 import { defaultViewport } from '@/lib/seo/viewport';
 import { NotificationProvider } from '@/contexts/NotificationContext';
+import TopLoadingBar from '@/components/ui/TopLoadingBar';
 
 const nunito = Nunito({
   variable: '--font-nunito',
@@ -79,6 +80,7 @@ export default async function RootLayout({
           >
             <AuthProvider>
               <NotificationProvider autoRefresh={true} refreshInterval={30000}>
+                <TopLoadingBar height={3} speed={200} />
                 <Header />
                 <MainContent>{children}</MainContent>
                 <Footer />

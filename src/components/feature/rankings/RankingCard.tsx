@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import Link from 'next/link';
+import LoadingLink from '@/components/ui/LoadingLink';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
@@ -157,7 +157,7 @@ export default function RankingCard({ manga, category, period, rankIcon }: Ranki
 
           {/* Manga Cover */}
           <div className='flex-shrink-0'>
-            <Link href={`/manga/${manga.slug}`} className='block group'>
+            <LoadingLink href={`/manga/${manga.slug}`} className='block group'>
               <div className='relative w-16 h-20 rounded-md overflow-hidden bg-muted'>
                 {manga.cover_image_url ? (
                   <Image
@@ -173,17 +173,17 @@ export default function RankingCard({ manga, category, period, rankIcon }: Ranki
                   </div>
                 )}
               </div>
-            </Link>
+            </LoadingLink>
           </div>
 
           {/* Manga Info */}
           <div className='flex-1 min-w-0 space-y-2'>
             <div>
-              <Link href={`/manga/${manga.slug}`} className='block group'>
+              <LoadingLink href={`/manga/${manga.slug}`} className='block group'>
                 <h3 className='font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors'>
                   {manga.title}
                 </h3>
-              </Link>
+              </LoadingLink>
 
               {/* Trend Indicator */}
               {trendIndicator && <div className='mt-1'>{trendIndicator}</div>}
@@ -233,11 +233,11 @@ export default function RankingCard({ manga, category, period, rankIcon }: Ranki
 
           {/* Action Button */}
           <div className='flex-shrink-0'>
-            <Link href={`/manga/${manga.slug}`}>
+            <LoadingLink href={`/manga/${manga.slug}`}>
               <Button variant='outline' size='sm'>
                 {t('actions.viewDetails')}
               </Button>
-            </Link>
+            </LoadingLink>
           </div>
         </div>
 
@@ -259,7 +259,7 @@ export default function RankingCard({ manga, category, period, rankIcon }: Ranki
 
             {/* Manga Cover */}
             <div className='flex-shrink-0'>
-              <Link href={`/manga/${manga.slug}`} className='block group'>
+              <LoadingLink href={`/manga/${manga.slug}`} className='block group'>
                 <div className='relative w-12 h-16 rounded-md overflow-hidden bg-muted'>
                   {manga.cover_image_url ? (
                     <Image
@@ -275,16 +275,16 @@ export default function RankingCard({ manga, category, period, rankIcon }: Ranki
                     </div>
                   )}
                 </div>
-              </Link>
+              </LoadingLink>
             </div>
 
             {/* Title and Basic Info */}
             <div className='flex-1 min-w-0'>
-              <Link href={`/manga/${manga.slug}`} className='block group'>
+              <LoadingLink href={`/manga/${manga.slug}`} className='block group'>
                 <h3 className='font-semibold text-base leading-tight line-clamp-2 group-hover:text-primary transition-colors'>
                   {manga.title}
                 </h3>
-              </Link>
+              </LoadingLink>
 
               {/* Primary Stat - Mobile */}
               <div className='flex items-center gap-1 mt-1 text-sm text-muted-foreground'>
@@ -299,11 +299,11 @@ export default function RankingCard({ manga, category, period, rankIcon }: Ranki
 
             {/* Mobile Action Button */}
             <div className='flex-shrink-0'>
-              <Link href={`/manga/${manga.slug}`}>
+              <LoadingLink href={`/manga/${manga.slug}`}>
                 <Button variant='outline' size='sm' className='h-8 px-2'>
                   <ExternalLink className='w-3 h-3' />
                 </Button>
-              </Link>
+              </LoadingLink>
             </div>
           </div>
 

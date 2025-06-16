@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import LoadingLink from '@/components/ui/LoadingLink';
 import Image from 'next/image';
 import { Eye } from 'lucide-react';
 import { formatViews } from '@/lib/utils/format';
@@ -22,7 +22,7 @@ export default function RelatedMangaItem({
   views = 0,
 }: RelatedMangaItemProps) {
   return (
-    <Link href={`/manga/${slug}`} className='block group'>
+    <LoadingLink href={`/manga/${slug}`} className='block group'>
       <div className='flex items-center gap-3 p-2 rounded-md hover:bg-accent/50 transition-colors'>
         {/* Small thumbnail */}
         <div className='relative h-16 w-12 flex-shrink-0 overflow-hidden rounded'>
@@ -43,6 +43,6 @@ export default function RelatedMangaItem({
           )}
         </div>
       </div>
-    </Link>
+    </LoadingLink>
   );
 }
