@@ -46,13 +46,13 @@ module.exports = {
       },
 
       // Cluster Configuration for Production
-      instances: process.env.NODE_ENV === 'production' ? 'max' : 1,
-      exec_mode: process.env.NODE_ENV === 'production' ? 'cluster' : 'fork',
+      instances: 'max',
+      exec_mode: 'cluster',
 
       // Auto-restart Configuration with Exponential Backoff
       autorestart: true,
       watch: false,
-      max_memory_restart: '1G',
+      max_memory_restart: '20G',
       restart_delay: 4000,
 
       // Logging Configuration with Rotation
