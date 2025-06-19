@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import HotMangaSliderClient from './HotMangaSliderClient';
 import LatestUpdateMangaListClient from './LatestUpdateMangaListClient';
 import SidebarClient from './SidebarClient';
+import SidebarServer from './SidebarServer';
 import ViewMoreButton from '@/components/ui/ViewMoreButton';
 import HomePageShell from './HomePageShell';
 import { useHomePageData, HomePageData } from '@/hooks/useHomeData';
@@ -12,6 +13,7 @@ interface HomePageClientProps {
   initialData?: HomePageData;
   useShellMode?: boolean;
   currentPage?: number;
+  useSidebarServer?: boolean; // New prop to control sidebar type
 }
 
 /**
@@ -31,6 +33,7 @@ export default function HomePageClient({
   initialData,
   useShellMode = false,
   currentPage = 1,
+  useSidebarServer = false,
 }: HomePageClientProps) {
   const [isShellVisible, setIsShellVisible] = useState(useShellMode);
 
@@ -106,7 +109,11 @@ export default function HomePageClient({
 
         {/* Sidebar */}
         <aside className='space-y-6 lg:block'>
-          <SidebarClient sidebarData={data.sidebarData} />
+          {useSidebarServer ? (
+            <SidebarServer sidebarData={data.sidebarData} />
+          ) : (
+            <SidebarClient sidebarData={data.sidebarData} />
+          )}
         </aside>
       </div>
     </div>
