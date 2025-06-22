@@ -43,6 +43,7 @@ export async function runCrawler(options: CrawlerOptions): Promise<void> {
     const processorOptions: ProcessorOptions = {
       useOriginalImages: options.useOriginalImages ?? DEFAULT_CONFIG.useOriginalImages,
       skipExisting: DEFAULT_CONFIG.skipExisting,
+      forceUpdateChapters: options.forceUpdateChapters || false,
     };
 
     // Giới hạn concurrency - giảm xuống để tránh quá tải database

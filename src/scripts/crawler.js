@@ -39,6 +39,7 @@ function parseArguments() {
     concurrency: 1, // Giảm concurrency mặc định để tránh "too many clients"
     authToken: process.env.MANGARAW_API_TOKEN,
     mangaId: undefined,
+    forceUpdateChapters: false,
   };
 
   // Parse options
@@ -49,6 +50,8 @@ function parseArguments() {
       options.mangaId = arg.split('=')[1];
     } else if (arg === '--use-original-images') {
       options.useOriginalImages = true;
+    } else if (arg === '--force-update-chapters') {
+      options.forceUpdateChapters = true;
     } else if (arg.startsWith('--concurrency=')) {
       const concurrency = parseInt(arg.split('=')[1]) || 1;
       // Giới hạn concurrency tối đa là 2 để tránh quá tải database
@@ -82,6 +85,7 @@ Tham số:
 Options:
   --manga-id=<id>            Crawl một manga cụ thể theo ID
   --use-original-images      Sử dụng URL ảnh gốc (luôn bật, không download ảnh về server)
+  --force-update-chapters    Force update tất cả chapters ngay cả khi content không đổi
   --concurrency=<number>     Số lượng request đồng thời (mặc định: 1, tối đa: 2)
   --auth-token=<token>       Token xác thực (nếu không có sẽ dùng từ biến môi trường)
   -h, --help                 Hiển thị hướng dẫn này
@@ -89,12 +93,14 @@ Options:
 Ví dụ:
   node src/scripts/crawler.js mangaraw 1 5
   node src/scripts/crawler.js mangaraw --manga-id=20463a51-7faf-4a3f-9e67-5c624f80d487
-  node src/scripts/crawler.js mangaraw 1 3 --concurrency=1
+  node src/scripts/crawler.js mangaraw 1 3 --force-update-chapters
 
 Tính năng mới:
   - ✅ Auto kiểm tra cập nhật ảnh bìa manga
   - 🌐 Sử dụng URL gốc thay vì download ảnh về server
   - 🔄 So sánh URL để phát hiện ảnh bìa mới
+  - 📄 Smart chapter update: chỉ cập nhật khi content thay đổi
+  - 🔄 Force update option cho chapters khi cần
   - 💾 Tiết kiệm dung lượng server
 
 Lưu ý về Database:
@@ -134,6 +140,7 @@ async function main() {
 
   console.log(`Sử dụng ảnh gốc: ${options.useOriginalImages ? 'Có' : 'Không'} (luôn bật)`);
   console.log(`Concurrency: ${options.concurrency || 1} (tối ưu cho database)`);
+  console.log(`Force update chapters: ${options.forceUpdateChapters ? 'Có' : 'Không'}`);
   console.log(
     `Auth token: ${options.authToken ? 'Được cung cấp' : process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có'}`
   );
@@ -143,6 +150,7 @@ async function main() {
   console.log('⚡ Batch Processing: Optimized');
   console.log('🖼️  Cover Image Update Check: Auto Enabled');
   console.log('🌐 Image Storage: Original URLs (No Download)');
+  console.log('📄 Smart Chapter Update: Content Comparison Enabled');
   console.log('=================');
 
   try {

@@ -67,6 +67,22 @@ export class ChapterProcessor {
         // Chuyển đổi chapter.number từ string sang float
         const chapterNumber = parseFloat(chapter.number);
 
+        // Kiểm tra chapter đã tồn tại chưa
+        const existingChapter = await prisma.chapters.findUnique({
+          where: {
+            comic_id_chapter_number: {
+              comic_id: comicId,
+              chapter_number: chapterNumber,
+            },
+          },
+          include: {
+            Pages: {
+              select: { page_number: true, image_url: true },
+              orderBy: { page_number: 'asc' }
+            }
+          }
+        });
+
         // Chuẩn bị dữ liệu chapter
         const chapterData = {
           comic_id: comicId,
@@ -93,10 +109,19 @@ export class ChapterProcessor {
           },
         });
 
-        // Xử lý pages
-        await this.processPages(savedChapter.id, chapter.pages, options);
+        // Kiểm tra và xử lý pages chỉ khi có thay đổi
+        const shouldUpdatePages = await this.shouldUpdatePages(
+          existingChapter?.Pages || [], 
+          chapter.pages,
+          options.forceUpdateChapters || false
+        );
 
-        console.log(`Processed chapter: ${chapter.number} (ID: ${savedChapter.id})`);
+        if (shouldUpdatePages) {
+          await this.processPages(savedChapter.id, chapter.pages, options);
+          console.log(`📄 Updated pages for chapter: ${chapter.number} (ID: ${savedChapter.id})`);
+        } else {
+          console.log(`✅ Pages unchanged for chapter: ${chapter.number} (ID: ${savedChapter.id})`);
+        }
 
         return savedChapter.id;
       } catch (error) {
@@ -104,6 +129,58 @@ export class ChapterProcessor {
         throw error;
       }
     });
+  }
+
+  /**
+   * Kiểm tra xem có cần cập nhật pages không
+   * @param existingPages Pages hiện tại trong database
+   * @param newPageUrls URLs pages mới từ crawler
+   * @param forceUpdate true nếu cần force update
+   * @returns true nếu cần cập nhật
+   */
+  private async shouldUpdatePages(
+    existingPages: Array<{ page_number: number; image_url: string }>,
+    newPageUrls: string[],
+    forceUpdate: boolean = false
+  ): Promise<boolean> {
+    try {
+      // Nếu force update được bật
+      if (forceUpdate) {
+        console.log(`🔄 Force updating pages (forceUpdateChapters enabled)`);
+        return true;
+      }
+
+      // Nếu số lượng pages khác nhau
+      if (existingPages.length !== newPageUrls.length) {
+        console.log(`📊 Page count changed: ${existingPages.length} -> ${newPageUrls.length}`);
+        return true;
+      }
+
+      // Nếu chưa có pages nào
+      if (existingPages.length === 0) {
+        return true;
+      }
+
+      // So sánh từng page URL
+      for (let i = 0; i < newPageUrls.length; i++) {
+        const newUrl = newPageUrls[i].trim();
+        const existingPage = existingPages.find(p => p.page_number === i + 1);
+        
+        if (!existingPage || existingPage.image_url !== newUrl) {
+          console.log(`🔄 Page ${i + 1} URL changed:`);
+          console.log(`   Old: ${existingPage?.image_url || 'N/A'}`);
+          console.log(`   New: ${newUrl}`);
+          return true;
+        }
+      }
+
+      // Không có thay đổi nào
+      return false;
+    } catch (error) {
+      console.error('Error checking page updates:', error);
+      // Nếu có lỗi, coi như cần cập nhật để đảm bảo data integrity
+      return true;
+    }
   }
 
   /**

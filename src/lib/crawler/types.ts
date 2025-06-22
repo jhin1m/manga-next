@@ -20,6 +20,7 @@ export interface CrawlerOptions {
   concurrency?: number;
   authToken?: string;
   checkCoverUpdate?: boolean;
+  forceUpdateChapters?: boolean;
 }
 
 // Tùy chọn cho processor
@@ -28,6 +29,7 @@ export interface ProcessorOptions {
   skipExisting?: boolean;
   downloadImages?: boolean;
   checkCoverUpdate?: boolean;
+  forceUpdateChapters?: boolean;
 }
 
 // Định nghĩa manga chuẩn hóa
