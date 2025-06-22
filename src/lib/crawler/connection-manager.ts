@@ -3,7 +3,7 @@
  * Quản lý database connections và tránh "too many clients" error
  */
 
-import { prisma } from '@/lib/db';
+import { prisma } from '../db';
 
 class ConnectionManager {
   private static instance: ConnectionManager;

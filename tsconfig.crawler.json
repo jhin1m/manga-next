@@ -11,7 +11,10 @@
     "resolveJsonModule": true,
     "declaration": false,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", ".next"],
@@ -19,7 +22,10 @@
     "compilerOptions": {
       "module": "commonjs",
       "target": "ES2020",
-      "moduleResolution": "node"
+      "moduleResolution": "node",
+      "paths": {
+        "@/*": ["./src/*"]
+      }
     }
   }
 }

@@ -4,7 +4,7 @@
 
 import { PrismaClient, Prisma } from '@prisma/client';
 import { StandardManga, ProcessorOptions } from '../types';
-import { prisma } from '@/lib/db';
+import { prisma } from '../../db';
 import { withConnection } from '../connection-manager';
 
 /**

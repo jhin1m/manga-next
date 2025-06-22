@@ -3,7 +3,7 @@
  */
 
 import { StandardChapter, ProcessorOptions } from '../types';
-import { prisma } from '@/lib/db';
+import { prisma } from '../../db';
 import { withConnection } from '../connection-manager';
 
 /**
