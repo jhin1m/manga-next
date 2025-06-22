@@ -35,8 +35,8 @@ function parseArguments() {
     source: args[0] || 'mangaraw',
     startPage: args[1] ? parseInt(args[1]) : undefined,
     endPage: args[2] ? parseInt(args[2]) : undefined,
-    useOriginalImages: false,
-    concurrency: 3,
+    useOriginalImages: true,
+    concurrency: 1, // Giảm concurrency mặc định để tránh "too many clients"
     authToken: process.env.MANGARAW_API_TOKEN,
     mangaId: undefined,
   };
@@ -50,7 +50,12 @@ function parseArguments() {
     } else if (arg === '--use-original-images') {
       options.useOriginalImages = true;
     } else if (arg.startsWith('--concurrency=')) {
-      options.concurrency = parseInt(arg.split('=')[1]) || 3;
+      const concurrency = parseInt(arg.split('=')[1]) || 1;
+      // Giới hạn concurrency tối đa là 2 để tránh quá tải database
+      options.concurrency = Math.min(concurrency, 2);
+      if (concurrency > 2) {
+        console.log('⚠️  Concurrency được giới hạn tối đa là 2 để tránh quá tải database');
+      }
     } else if (arg.startsWith('--auth-token=')) {
       options.authToken = arg.split('=')[1];
     }
@@ -76,17 +81,34 @@ Tham số:
 
 Options:
   --manga-id=<id>            Crawl một manga cụ thể theo ID
-  --use-original-images      Sử dụng URL ảnh gốc thay vì tải về
-  --concurrency=<number>     Số lượng request đồng thời (mặc định: 3)
+  --use-original-images      Sử dụng URL ảnh gốc (luôn bật, không download ảnh về server)
+  --concurrency=<number>     Số lượng request đồng thời (mặc định: 1, tối đa: 2)
   --auth-token=<token>       Token xác thực (nếu không có sẽ dùng từ biến môi trường)
   -h, --help                 Hiển thị hướng dẫn này
 
 Ví dụ:
-  node src/scripts/crawler.js mangaraw 1 5 --use-original-images
+  node src/scripts/crawler.js mangaraw 1 5
   node src/scripts/crawler.js mangaraw --manga-id=20463a51-7faf-4a3f-9e67-5c624f80d487
+  node src/scripts/crawler.js mangaraw 1 3 --concurrency=1
+
+Tính năng mới:
+  - ✅ Auto kiểm tra cập nhật ảnh bìa manga
+  - 🌐 Sử dụng URL gốc thay vì download ảnh về server
+  - 🔄 So sánh URL để phát hiện ảnh bìa mới
+  - 💾 Tiết kiệm dung lượng server
+
+Lưu ý về Database:
+  - Crawler đã được tối ưu để tránh lỗi "too many database connections"
+  - Concurrency mặc định được giảm xuống 1 để đảm bảo ổn định
+  - Sử dụng connection pooling và batch processing
+  - Khuyến nghị chạy với concurrency=1 cho môi trường production
 
 Nguồn hỗ trợ:
   ${getSupportedSources().join(', ')}
+
+Kiểm tra Database:
+  python3 scripts/check-db-connections.py check    # Kiểm tra connections
+  python3 scripts/check-db-connections.py clean    # Dọn dẹp idle connections
   `);
 }
 
@@ -110,18 +132,34 @@ async function main() {
     }
   }
 
-  console.log(`Sử dụng ảnh gốc: ${options.useOriginalImages ? 'Có' : 'Không'}`);
-  console.log(`Concurrency: ${options.concurrency || 3}`);
+  console.log(`Sử dụng ảnh gốc: ${options.useOriginalImages ? 'Có' : 'Không'} (luôn bật)`);
+  console.log(`Concurrency: ${options.concurrency || 1} (tối ưu cho database)`);
   console.log(
     `Auth token: ${options.authToken ? 'Được cung cấp' : process.env.MANGARAW_API_TOKEN ? 'Từ biến môi trường' : 'Không có'}`
   );
   console.log('=================');
+  console.log('🔧 Database Connection Management: Enabled');
+  console.log('📊 Connection Pooling: Active');
+  console.log('⚡ Batch Processing: Optimized');
+  console.log('🖼️  Cover Image Update Check: Auto Enabled');
+  console.log('🌐 Image Storage: Original URLs (No Download)');
+  console.log('=================');
 
   try {
     await runCrawler(options);
-    console.log('Crawler hoàn thành thành công!');
+    console.log('✅ Crawler hoàn thành thành công!');
   } catch (error) {
-    console.error('Crawler thất bại:', error);
+    console.error('❌ Crawler thất bại:', error);
+    
+    // Kiểm tra nếu là lỗi database connection
+    if (error.message && error.message.includes('too many clients')) {
+      console.error('\n🚨 LỖI DATABASE CONNECTION:');
+      console.error('   - Quá nhiều kết nối database đang mở');
+      console.error('   - Khuyến nghị: Chạy script dọn dẹp connections');
+      console.error('   - Command: python3 scripts/check-db-connections.py clean');
+      console.error('   - Hoặc giảm concurrency: --concurrency=1');
+    }
+    
     process.exit(1);
   }
 }

@@ -8,13 +8,14 @@ import { MangaProcessor } from './processors/manga';
 import { ChapterProcessor } from './processors/chapter';
 import { CrawlerOptions, ProcessorOptions } from './types';
 import { sleep } from './utils';
+import { connectionManager } from './connection-manager';
 
-// Cấu hình mặc định
+// Cấu hình mặc định - giảm concurrency để tránh quá tải database
 const DEFAULT_CONFIG = {
-  concurrency: 3,
-  delayBetweenRequests: 1000,
-  useOriginalImages: false,
-  skipExisting: true,
+  concurrency: 1, // Giảm xuống 1 để tránh hoàn toàn quá tải database
+  delayBetweenRequests: 3000, // Tăng delay lên 3s
+  useOriginalImages: true, // Luôn sử dụng URL gốc, không download ảnh
+  skipExisting: false, // Không skip để luôn kiểm tra cập nhật
 };
 
 /**
@@ -44,24 +45,29 @@ export async function runCrawler(options: CrawlerOptions): Promise<void> {
       skipExisting: DEFAULT_CONFIG.skipExisting,
     };
 
-    // Giới hạn concurrency
-    const concurrencyLimit = pLimit(options.concurrency || DEFAULT_CONFIG.concurrency);
+    // Giới hạn concurrency - giảm xuống để tránh quá tải database
+    const concurrencyLimit = pLimit(1); // Force sequential processing
 
     // Nếu có manga ID cụ thể
     if (options.mangaId) {
       console.log(`Crawling specific manga ID: ${options.mangaId}`);
 
-      // Lấy chi tiết manga
-      const manga = await source.fetchMangaDetail(options.mangaId);
+      try {
+        // Lấy chi tiết manga
+        const manga = await source.fetchMangaDetail(options.mangaId);
 
-      // Xử lý manga
-      const comicId = await mangaProcessor.process(manga, processorOptions);
+        // Xử lý manga
+        const comicId = await mangaProcessor.process(manga, processorOptions);
 
-      // Lấy và xử lý chapters
-      const chaptersResult = await source.fetchChapters(options.mangaId);
-      await chapterProcessor.processMany(chaptersResult.chapters, comicId, processorOptions);
+        // Lấy và xử lý chapters
+        const chaptersResult = await source.fetchChapters(options.mangaId);
+        await chapterProcessor.processMany(chaptersResult.chapters, comicId, processorOptions);
 
-      console.log(`Completed crawling manga: ${manga.title}`);
+        console.log(`Completed crawling manga: ${manga.title}`);
+      } catch (error) {
+        console.error(`Error processing manga ${options.mangaId}:`, error);
+        throw error;
+      }
       return;
     }
 
@@ -72,19 +78,20 @@ export async function runCrawler(options: CrawlerOptions): Promise<void> {
 
     while (hasNextPage) {
       console.log(`Crawling page ${currentPage}...`);
+      console.log(`Connection status:`, connectionManager.getStatus());
 
-      // Lấy danh sách manga
-      const mangaListResult = await source.fetchMangaList(currentPage);
+      try {
+        // Lấy danh sách manga
+        const mangaListResult = await source.fetchMangaList(currentPage);
 
-      if (!mangaListResult.mangas || mangaListResult.mangas.length === 0) {
-        console.log('No manga found on this page.');
-        hasNextPage = false;
-        break;
-      }
+        if (!mangaListResult.mangas || mangaListResult.mangas.length === 0) {
+          console.log('No manga found on this page.');
+          hasNextPage = false;
+          break;
+        }
 
-      // Xử lý các manga trong trang hiện tại
-      const promises = mangaListResult.mangas.map(manga =>
-        concurrencyLimit(async () => {
+        // Xử lý các manga trong trang hiện tại - tuần tự để tránh quá tải
+        for (const manga of mangaListResult.mangas) {
           try {
             console.log(`Processing manga: ${manga.title}`);
 
@@ -95,23 +102,31 @@ export async function runCrawler(options: CrawlerOptions): Promise<void> {
             const chaptersResult = await source.fetchChapters(manga.sourceId);
             await chapterProcessor.processMany(chaptersResult.chapters, comicId, processorOptions);
 
+            console.log(`✅ Completed processing manga: ${manga.title}`);
+
             // Tránh rate limiting
             await sleep(DEFAULT_CONFIG.delayBetweenRequests);
           } catch (error) {
-            console.error(`Error processing manga ${manga.title}:`, error);
+            console.error(`❌ Error processing manga ${manga.title}:`, error);
+            // Thêm delay khi có lỗi để tránh spam
+            await sleep(DEFAULT_CONFIG.delayBetweenRequests);
           }
-        })
-      );
+        }
 
-      await Promise.all(promises);
+        // Kiểm tra nếu đã đến trang cuối hoặc đạt đến trang kết thúc
+        currentPage++;
+        hasNextPage = mangaListResult.hasNextPage && (!endPage || currentPage <= endPage);
 
-      // Kiểm tra nếu đã đến trang cuối hoặc đạt đến trang kết thúc
-      currentPage++;
-      hasNextPage = mangaListResult.hasNextPage && (!endPage || currentPage <= endPage);
-
-      // Tránh rate limiting giữa các trang
-      if (hasNextPage) {
-        await sleep(DEFAULT_CONFIG.delayBetweenRequests * 2);
+        // Tránh rate limiting giữa các trang
+        if (hasNextPage) {
+          await sleep(DEFAULT_CONFIG.delayBetweenRequests * 2);
+        }
+      } catch (error) {
+        console.error(`Error processing page ${currentPage}:`, error);
+        // Tiếp tục với trang tiếp theo
+        currentPage++;
+        hasNextPage = (!endPage || currentPage <= endPage);
+        await sleep(DEFAULT_CONFIG.delayBetweenRequests);
       }
     }
 
@@ -119,6 +134,14 @@ export async function runCrawler(options: CrawlerOptions): Promise<void> {
   } catch (error) {
     console.error('Crawler failed:', error);
     throw error;
+  } finally {
+    // Đảm bảo cleanup connection manager
+    try {
+      await connectionManager.cleanup();
+      console.log('Database connections cleaned up successfully.');
+    } catch (disconnectError) {
+      console.error('Error cleaning up database connections:', disconnectError);
+    }
   }
 }
 

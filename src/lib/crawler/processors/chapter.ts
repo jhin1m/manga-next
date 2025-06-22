@@ -2,18 +2,9 @@
  * Processor xử lý dữ liệu chapter
  */
 
-import { PrismaClient } from '@prisma/client';
-import axios from 'axios';
-import fs from 'fs-extra';
-import path from 'path';
 import { StandardChapter, ProcessorOptions } from '../types';
-
-const prisma = new PrismaClient();
-const PUBLIC_DIR = path.join(process.cwd(), 'public');
-const PAGES_DIR = path.join(PUBLIC_DIR, 'images/pages');
-
-// Đảm bảo thư mục tồn tại
-fs.ensureDirSync(PAGES_DIR);
+import { prisma } from '@/lib/db';
+import { withConnection } from '../connection-manager';
 
 /**
  * Processor xử lý và lưu trữ dữ liệu chapter
@@ -30,17 +21,31 @@ export class ChapterProcessor {
     comicId: number,
     options: ProcessorOptions = {}
   ): Promise<void> {
-    for (const chapter of chapters) {
-      await this.process(chapter, comicId, options);
+    // Xử lý chapters theo batch để tránh quá tải database
+    const batchSize = 3; // Giảm batch size từ 5 xuống 3
+    for (let i = 0; i < chapters.length; i += batchSize) {
+      const batch = chapters.slice(i, i + batchSize);
+      
+      // Xử lý batch tuần tự để tránh quá tải database
+      for (const chapter of batch) {
+        await this.process(chapter, comicId, options);
+      }
+      
+      // Thêm delay nhỏ giữa các batch
+      if (i + batchSize < chapters.length) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
     }
 
     // Cập nhật thời gian upload chapter mới nhất
     if (chapters.length > 0) {
-      await prisma.comics.update({
-        where: { id: comicId },
-        data: {
-          last_chapter_uploaded_at: new Date(),
-        },
+      await withConnection(async () => {
+        return prisma.comics.update({
+          where: { id: comicId },
+          data: {
+            last_chapter_uploaded_at: new Date(),
+          },
+        });
       });
     }
   }
@@ -57,46 +62,48 @@ export class ChapterProcessor {
     comicId: number,
     options: ProcessorOptions = {}
   ): Promise<number> {
-    try {
-      // Chuyển đổi chapter.number từ string sang float
-      const chapterNumber = parseFloat(chapter.number);
+    return withConnection(async () => {
+      try {
+        // Chuyển đổi chapter.number từ string sang float
+        const chapterNumber = parseFloat(chapter.number);
 
-      // Chuẩn bị dữ liệu chapter
-      const chapterData = {
-        comic_id: comicId,
-        chapter_number: chapterNumber,
-        title: chapter.title,
-        slug: chapter.slug,
-        release_date: chapter.releasedAt,
-        view_count: chapter.views,
-        updated_at: new Date(),
-      };
+        // Chuẩn bị dữ liệu chapter
+        const chapterData = {
+          comic_id: comicId,
+          chapter_number: chapterNumber,
+          title: chapter.title,
+          slug: chapter.slug,
+          release_date: chapter.releasedAt,
+          view_count: chapter.views,
+          updated_at: new Date(),
+        };
 
-      // Upsert chapter để tránh lỗi duplicate
-      const savedChapter = await prisma.chapters.upsert({
-        where: {
-          comic_id_chapter_number: {
-            comic_id: comicId,
-            chapter_number: chapterNumber,
+        // Upsert chapter để tránh lỗi duplicate
+        const savedChapter = await prisma.chapters.upsert({
+          where: {
+            comic_id_chapter_number: {
+              comic_id: comicId,
+              chapter_number: chapterNumber,
+            },
           },
-        },
-        update: chapterData,
-        create: {
-          ...chapterData,
-          created_at: chapter.releasedAt,
-        },
-      });
+          update: chapterData,
+          create: {
+            ...chapterData,
+            created_at: chapter.releasedAt,
+          },
+        });
 
-      // Xử lý pages
-      await this.processPages(savedChapter.id, chapter.pages, options);
+        // Xử lý pages
+        await this.processPages(savedChapter.id, chapter.pages, options);
 
-      console.log(`Processed chapter: ${chapter.number} (ID: ${savedChapter.id})`);
+        console.log(`Processed chapter: ${chapter.number} (ID: ${savedChapter.id})`);
 
-      return savedChapter.id;
-    } catch (error) {
-      console.error(`Error processing chapter ${chapter.number}:`, error);
-      throw error;
-    }
+        return savedChapter.id;
+      } catch (error) {
+        console.error(`Error processing chapter ${chapter.number}:`, error);
+        throw error;
+      }
+    });
   }
 
   /**
@@ -115,72 +122,31 @@ export class ChapterProcessor {
       where: { chapter_id: chapterId },
     });
 
-    // Thêm pages mới
-    for (let i = 0; i < pageUrls.length; i++) {
-      const pageUrl = pageUrls[i].trim();
-      const pageNumber = i + 1;
+    // Thêm pages mới theo batch - không download ảnh, chỉ lưu URL gốc
+    const batchSize = 10;
+    for (let i = 0; i < pageUrls.length; i += batchSize) {
+      const batch = pageUrls.slice(i, i + batchSize);
+      const pagesData = [];
 
-      // Xử lý image URL
-      const imageUrl = await this.processPageImage(pageUrl, chapterId, pageNumber, options);
+      for (let j = 0; j < batch.length; j++) {
+        const pageUrl = batch[j].trim();
+        const pageNumber = i + j + 1;
 
-      // Lưu page vào database
-      await prisma.pages.create({
-        data: {
+        // Sử dụng URL gốc thay vì download
+        pagesData.push({
           chapter_id: chapterId,
           page_number: pageNumber,
-          image_url: imageUrl,
+          image_url: pageUrl, // Sử dụng URL gốc
           created_at: new Date(),
-        },
-      });
-    }
-  }
-
-  /**
-   * Xử lý và lưu page image
-   * @param url URL của page image
-   * @param chapterId ID của chapter
-   * @param pageNumber Số thứ tự của page
-   * @param options Tùy chọn xử lý
-   * @returns URL của page image đã xử lý
-   */
-  private async processPageImage(
-    url: string,
-    chapterId: number,
-    pageNumber: number,
-    options: ProcessorOptions
-  ): Promise<string> {
-    // Nếu không download ảnh, trả về URL gốc
-    if (options.useOriginalImages) {
-      return url;
-    }
-
-    try {
-      const extension = path.extname(new URL(url).pathname) || '.jpg';
-      const chapterDir = path.join(PAGES_DIR, `${chapterId}`);
-      fs.ensureDirSync(chapterDir);
-
-      const filename = `${pageNumber}${extension}`;
-      const filePath = path.join(chapterDir, filename);
-
-      // Kiểm tra nếu file đã tồn tại và không cần tải lại
-      if ((await fs.pathExists(filePath)) && options.skipExisting) {
-        return `/images/pages/${chapterId}/${filename}`;
+        });
       }
 
-      // Tải ảnh
-      const response = await axios.get(url, { responseType: 'arraybuffer' });
-      const buffer = Buffer.from(response.data);
-
-      // Lưu hình ảnh gốc để giữ chất lượng
-      await fs.writeFile(filePath, buffer);
-
-      return `/images/pages/${chapterId}/${filename}`;
-    } catch (error) {
-      console.error(
-        `Error processing page image for chapter ${chapterId}, page ${pageNumber}:`,
-        error
-      );
-      return url; // Nếu có lỗi, trả về URL gốc
+      // Lưu batch pages vào database
+      await prisma.pages.createMany({
+        data: pagesData,
+      });
     }
+
+    console.log(`📄 Processed ${pageUrls.length} pages for chapter ${chapterId} (using original URLs)`);
   }
 }

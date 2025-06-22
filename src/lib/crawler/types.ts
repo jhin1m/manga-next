@@ -19,6 +19,7 @@ export interface CrawlerOptions {
   useOriginalImages?: boolean;
   concurrency?: number;
   authToken?: string;
+  checkCoverUpdate?: boolean;
 }
 
 // Tùy chọn cho processor
@@ -26,6 +27,7 @@ export interface ProcessorOptions {
   useOriginalImages?: boolean;
   skipExisting?: boolean;
   downloadImages?: boolean;
+  checkCoverUpdate?: boolean;
 }
 
 // Định nghĩa manga chuẩn hóa

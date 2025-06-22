@@ -16,6 +16,11 @@ export const prisma =
             'warn',
           ] as any)
         : ['error'],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
   });
 
 // Slow query monitoring in development
@@ -39,5 +44,20 @@ if (process.env.NODE_ENV === 'development') {
     }
   });
 }
+
+// Cleanup connection on process exit
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
+});
+
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
