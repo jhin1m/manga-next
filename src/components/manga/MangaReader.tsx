@@ -145,9 +145,8 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
 
       const img = new Image();
       
-      // Set referrer policy and crossOrigin for better compatibility
+      // Set referrer policy for better compatibility
       img.referrerPolicy = 'origin';
-      img.crossOrigin = 'anonymous';
       
       img.onload = () => {
         loadedImagesRef.current.add(index);
@@ -303,7 +302,6 @@ const MangaReader = memo(function MangaReader({ chapterData }: MangaReaderProps)
                     className='w-full h-auto'
                     loading='eager'
                     referrerPolicy='origin'
-                    crossOrigin='anonymous'
                   />
                 ) : imageState.error ? (
                   <div
