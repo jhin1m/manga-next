@@ -117,7 +117,7 @@ export async function POST(request: Request) {
  * GET /api/notifications/trigger
  * Get notification trigger statistics (admin only)
  */
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user || session.user.role !== 'admin') {

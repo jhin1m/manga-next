@@ -87,15 +87,15 @@ export function NotificationBell({ className }: NotificationBellProps) {
         sideOffset={5}
         avoidCollisions={true}
         collisionPadding={10}
-        onCloseAutoFocus={e => {
+        onCloseAutoFocus={_e => {
           // Prevent focus issues that might cause the contains error
-          e.preventDefault();
+          _e.preventDefault();
         }}
-        onEscapeKeyDown={e => {
+        onEscapeKeyDown={_e => {
           // Ensure proper cleanup on escape
           setIsOpen(false);
         }}
-        onPointerDownOutside={e => {
+        onPointerDownOutside={_e => {
           // Ensure proper cleanup on outside click
           setIsOpen(false);
         }}

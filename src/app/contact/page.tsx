@@ -53,7 +53,7 @@ export default function ContactPage() {
       });
 
       toast.success(t('form.success'));
-    } catch (error) {
+    } catch (_error) {
       toast.error(t('form.error'));
     } finally {
       setIsSubmitting(false);

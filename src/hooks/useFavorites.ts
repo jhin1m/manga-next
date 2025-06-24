@@ -19,7 +19,7 @@ interface FavoriteResponse {
  * Custom hook for managing manga favorites
  */
 export function useFavorites({ comicId, initialIsFavorite = false }: UseFavoritesOptions) {
-  const { data: session, status } = useSession();
+  const { data: _session, status } = useSession();
   const [isFavorite, setIsFavorite] = useState<boolean>(initialIsFavorite);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

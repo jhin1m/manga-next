@@ -35,7 +35,7 @@ export async function GET(
       }
 
       mangaId = validationResult.data.mangaId;
-    } catch (validationError) {
+    } catch (_validationError) {
       return NextResponse.json(
         {
           success: false,

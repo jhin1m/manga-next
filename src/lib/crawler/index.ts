@@ -47,7 +47,7 @@ export async function runCrawler(options: CrawlerOptions): Promise<void> {
     };
 
     // Giới hạn concurrency - giảm xuống để tránh quá tải database
-    const concurrencyLimit = pLimit(1); // Force sequential processing
+    const _concurrencyLimit = pLimit(1); // Force sequential processing
 
     // Nếu có manga ID cụ thể
     if (options.mangaId) {

@@ -77,7 +77,7 @@ function checkEnvironment() {
   return requiredEnvVars.every(envVar => process.env[envVar]);
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const startTime = Date.now();
 
@@ -132,14 +132,14 @@ export async function GET(request: NextRequest) {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
-  } catch (error) {
-    console.error('Health check endpoint error:', error);
+  } catch (_error) {
+    console.error('Health check endpoint error:', _error);
 
     return NextResponse.json(
       {
         status: 'unhealthy',
         timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Health check failed',
+        error: _error instanceof Error ? _error.message : 'Health check failed',
       },
       { status: 503 }
     );
@@ -151,7 +151,7 @@ export async function HEAD() {
   try {
     await prisma.$queryRaw`SELECT 1`;
     return new NextResponse(null, { status: 200 });
-  } catch (error) {
+  } catch (_error) {
     return new NextResponse(null, { status: 503 });
   }
 }

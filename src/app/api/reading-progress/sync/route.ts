@@ -172,7 +172,7 @@ export async function POST(request: Request) {
  * GET /api/reading-progress/sync
  * Get sync status and unsynced items count
  */
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {

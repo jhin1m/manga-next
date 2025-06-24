@@ -23,7 +23,7 @@ export function useRating({
   initialUserRating = 0,
   initialTotalRatings = 0,
 }: UseRatingProps) {
-  const { data: session, status } = useSession();
+  const { data: _session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [ratingData, setRatingData] = useState<RatingData>({
     averageRating: initialRating,
@@ -73,7 +73,7 @@ export function useRating({
 
     try {
       // Store current state for rollback
-      const previousState = { ...ratingData };
+      const _previousState = { ...ratingData };
 
       // Optimistic update
       const wasFirstRating = ratingData.userRating === 0;

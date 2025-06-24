@@ -73,7 +73,8 @@
     "serializationLabel": "Nhà xuất bản:",
     "updatedLabel": "Cập nhật:",
     "loginToRate": "Đăng nhập để đánh giá truyện này nha.",
-    "ratingFailed": "Đánh giá thất bại, thử lại nha."
+    "ratingFailed": "Đánh giá thất bại, thử lại nha.",
+    "noMangaFound": "Không tìm thấy truyện nào"
   },
   "search": {
     "placeholder": "Tìm kiếm truyện...",
@@ -372,7 +373,8 @@
     },
     "viewAllRankings": "Xem toàn bộ BXH",
     "noRankingsAvailable": "Chưa có dữ liệu",
-    "noCommentsYet": "Chưa có bình luận nào"
+    "noCommentsYet": "Chưa có bình luận nào",
+    "noRecommendationsAvailable": "Chưa có truyện đề xuất"
   },
   "rankings": {
     "title": "Bảng Xếp Hạng Manga",

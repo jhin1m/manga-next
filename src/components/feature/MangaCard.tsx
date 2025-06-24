@@ -36,7 +36,7 @@ const MangaCard = memo(function MangaCard({
   views = 0,
   chapterCount = 0,
   updatedAt,
-  status,
+  status: _status,
   priority = false,
   fetchPriority = 'auto',
   imageSizes = '(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw',

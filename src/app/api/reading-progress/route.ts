@@ -13,7 +13,7 @@ const readingProgressSchema = z.object({
 });
 
 // Validation schema for bulk sync
-const bulkSyncSchema = z.object({
+const _bulkSyncSchema = z.object({
   progressItems: z.array(
     z.object({
       comic_id: z.number().int().positive(),
@@ -262,7 +262,7 @@ export async function POST(request: Request) {
  * DELETE /api/reading-progress
  * Clear all reading progress for the current user
  */
-export async function DELETE(request: Request) {
+export async function DELETE(_request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {

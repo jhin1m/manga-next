@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     });
 
     // Return success response (exclude password)
-    const { password_hash, ...userWithoutPassword } = newUser;
+    const { password_hash: _password_hash, ...userWithoutPassword } = newUser;
     return NextResponse.json(
       { message: 'User registered successfully', user: userWithoutPassword },
       { status: 201 }

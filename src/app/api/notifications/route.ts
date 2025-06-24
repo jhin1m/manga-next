@@ -119,10 +119,10 @@ export async function GET(request: Request) {
               perPage: limit,
             },
     });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+  } catch (_error) {
+    if (_error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { error: 'Validation failed', details: _error.errors },
         { status: 400 }
       );
     }
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
       message: 'Notification created successfully',
       notification,
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 });
   }
 }

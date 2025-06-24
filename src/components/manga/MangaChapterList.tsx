@@ -28,7 +28,7 @@ interface MangaChapterListProps {
 export default function MangaChapterList({ mangaSlug, chapters }: MangaChapterListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
-  const [isClient, setIsClient] = useState(false);
+  const [_isClient, setIsClient] = useState(false);
   const [readChapters, setReadChapters] = useState<Record<string, boolean>>({});
   const [showAll, setShowAll] = useState(false);
   const { formatViews, formatDate } = useFormat();

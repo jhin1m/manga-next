@@ -192,7 +192,7 @@ export class ChapterProcessor {
   private async processPages(
     chapterId: number,
     pageUrls: string[],
-    options: ProcessorOptions = {}
+    _options: ProcessorOptions = {}
   ): Promise<void> {
     // Xóa pages cũ
     await prisma.pages.deleteMany({

@@ -2,7 +2,7 @@
  * Processor xử lý dữ liệu manga
  */
 
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { StandardManga, ProcessorOptions } from '../types';
 import { prisma } from '../../db';
 import { withConnection } from '../connection-manager';
@@ -17,7 +17,7 @@ export class MangaProcessor {
    * @param options Tùy chọn xử lý
    * @returns ID của manga trong database
    */
-  async process(manga: StandardManga, options: ProcessorOptions = {}): Promise<number> {
+  async process(manga: StandardManga, _options: ProcessorOptions = {}): Promise<number> {
     return withConnection(async () => {
       try {
         // Kiểm tra manga đã tồn tại chưa

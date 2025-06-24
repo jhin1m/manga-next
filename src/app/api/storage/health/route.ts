@@ -34,7 +34,7 @@ function detectS3Provider(): string {
  * GET /api/storage/health
  * Check storage provider health and configuration
  */
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   try {
     const session = await getServerSession(authOptions);
 

@@ -19,7 +19,7 @@ export const viewport = defaultViewport;
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');
-  const tNav = await getTranslations('navigation');
+  const _tNav = await getTranslations('navigation');
 
   return (
     <div className='min-h-[80vh] flex items-center justify-center px-4 py-8'>

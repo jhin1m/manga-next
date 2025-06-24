@@ -58,7 +58,7 @@ export function RegisterForm() {
 
     try {
       // Step 1: Register the user
-      const response = await authApi.register({
+      const _response = await authApi.register({
         username: data.username,
         email: data.email,
         password: data.password,

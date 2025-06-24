@@ -14,7 +14,7 @@ const notificationSettingsSchema = z.object({
  * GET /api/notifications/settings
  * Get user's notification settings - OPTIMIZED
  */
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
         new_chapter_alerts: settings.new_chapter_alerts,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Failed to fetch notification settings' }, { status: 500 });
   }
 }
@@ -87,10 +87,10 @@ export async function PATCH(request: Request) {
         new_chapter_alerts: settings.new_chapter_alerts,
       },
     });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+  } catch (_error) {
+    if (_error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { error: 'Validation failed', details: _error.errors },
         { status: 400 }
       );
     }

@@ -278,9 +278,11 @@ export function validatePageTitleConfig(config: PageTitleConfig): boolean {
   );
 }
 
-export default {
+const pageTitlesConfig = {
   localizedPageTitles,
   getPageTitle,
   getGenreTitle,
   validatePageTitleConfig,
 };
+
+export default pageTitlesConfig;

@@ -54,9 +54,11 @@ export function getLocalizedPageTitle(
   return getPageTitle(section, filters, locale);
 }
 
-export default {
+const pageTitlesUtils = {
   getServerPageTitle,
   getServerGenreTitle,
   getMangaPageTitle,
   getLocalizedPageTitle,
 };
+
+export default pageTitlesUtils;

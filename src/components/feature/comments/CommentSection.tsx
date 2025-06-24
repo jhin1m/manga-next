@@ -36,8 +36,8 @@ interface CommentSectionProps {
 const CommentSection = memo(function CommentSection({
   mangaId,
   chapterId,
-  mangaSlug,
-  chapterSlug,
+  mangaSlug: _mangaSlug,
+  chapterSlug: _chapterSlug,
   initialCommentsCount = 0,
   defaultViewMode = 'chapter',
   hideToggle = false,

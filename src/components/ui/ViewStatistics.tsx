@@ -204,7 +204,7 @@ export function InlineViewStats({
   className?: string;
 }) {
   const { formatViews } = useFormat();
-  const t = useTranslations('viewStats');
+  const _t = useTranslations('viewStats');
 
   return (
     <div className={`flex items-center gap-3 text-sm ${className}`}>

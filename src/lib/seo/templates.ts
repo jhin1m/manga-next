@@ -281,7 +281,7 @@ export const validateAllTemplates = (): boolean => {
   return Object.values(seoTemplates).every(validateTemplate);
 };
 
-export default {
+const seoTemplatesUtils = {
   seoTemplates,
   processTemplate,
   processKeywords,
@@ -293,3 +293,5 @@ export default {
   validateTemplate,
   validateAllTemplates,
 };
+
+export default seoTemplatesUtils;

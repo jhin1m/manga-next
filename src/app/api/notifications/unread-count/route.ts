@@ -8,7 +8,7 @@ import { prisma } from '@/lib/db';
  * Get user's unread notification count - OPTIMIZED ENDPOINT
  * This is a dedicated lightweight endpoint for frequent polling
  */
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
         },
       }
     );
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Failed to fetch unread count' }, { status: 500 });
   }
 }

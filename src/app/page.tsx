@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { constructMetadata } from '@/lib/seo/metadata';
 import JsonLdScript from '@/components/seo/JsonLdScript';
 import { generateHomeJsonLd } from '@/lib/seo/jsonld';
-import HomePageClient from '@/components/feature/HomePageClient';
+// import HomePageClient from '@/components/feature/HomePageClient';
 import SidebarServer from '@/components/feature/SidebarServer';
 import { seoConfig, getSiteUrl } from '@/config/seo.config';
 import { defaultViewport } from '@/lib/seo/viewport';

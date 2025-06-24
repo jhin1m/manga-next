@@ -25,16 +25,16 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+  componentDidCatch(_error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Error caught by boundary:', _error, errorInfo);
     this.setState({ errorInfo });
 
     // Send to error tracking service in production
     if (process.env.NODE_ENV === 'production') {
       // TODO: Integrate with error tracking service (Sentry, LogRocket, etc.)
       console.error('Production error:', {
-        error: error.message,
-        stack: error.stack,
+        error: _error.message,
+        stack: _error.stack,
         componentStack: errorInfo.componentStack,
         timestamp: new Date().toISOString(),
       });
@@ -120,7 +120,7 @@ export function withErrorBoundary<P extends object>(
 
 // Custom error fallback components
 export const MangaReaderErrorFallback: React.FC<{ error: Error; retry: () => void }> = ({
-  error,
+  error: _error,
   retry,
 }) => (
   <div className='flex flex-col items-center justify-center min-h-[60vh] p-8'>
@@ -137,7 +137,7 @@ export const MangaReaderErrorFallback: React.FC<{ error: Error; retry: () => voi
 );
 
 export const SearchErrorFallback: React.FC<{ error: Error; retry: () => void }> = ({
-  error,
+  error: _error,
   retry,
 }) => (
   <div className='flex flex-col items-center justify-center p-6'>
