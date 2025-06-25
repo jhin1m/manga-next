@@ -23,7 +23,7 @@ import { Separator } from '@/components/ui/separator';
 import { SearchButton, DesktopSearchButton } from '@/components/feature/SearchBar';
 import { Home } from 'lucide-react';
 import { UserMenu } from '@/components/layout/user-menu';
-import { useSession, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { GenreDropdown, MobileGenreDropdown } from '@/components/feature/GenreDropdown';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useTranslations } from 'next-intl';
@@ -31,10 +31,21 @@ import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useRouteDetection } from '@/hooks/useRouteDetection';
 import { toast } from 'sonner';
 import { seoConfig } from '@/config/seo.config';
+import { useAuthStatus } from '@/hooks/useAuthStatus';
+
+// Header Skeleton Component
+function HeaderAuthSkeleton() {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="w-8 h-8 bg-muted rounded-full animate-pulse" />
+    </div>
+  );
+}
 
 export default function Header() {
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === 'authenticated';
+  // Sử dụng hook mới thay vì useSession
+  const { isAuthenticated, user, isLoading, error, refreshAuthStatus } = useAuthStatus();
+  
   const t = useTranslations('navigation');
   const tAuth = useTranslations('auth');
   const { shouldHeaderBeSticky } = useRouteDetection();
@@ -55,6 +66,12 @@ export default function Header() {
     try {
       await signOut({ redirect: false });
       toast.success('Logged out successfully');
+      
+      // Refresh auth status sau khi logout
+      setTimeout(() => {
+        refreshAuthStatus();
+      }, 100);
+      
       router.push('/');
       router.refresh();
     } catch (error) {
@@ -64,6 +81,14 @@ export default function Header() {
       setIsLoggingOut(false);
     }
   };
+
+  // Show error state nếu có lỗi trong việc check auth
+  useEffect(() => {
+    if (error) {
+      console.warn('[HEADER_AUTH_ERROR]', error);
+      // Có thể show toast hoặc retry logic ở đây nếu cần
+    }
+  }, [error]);
 
   return (
     <header
@@ -118,7 +143,11 @@ export default function Header() {
             <DesktopSearchButton />
             <LanguageSwitcher />
             <ThemeToggle />
-            {isAuthenticated && session?.user ? (
+            
+            {/* Auth Section với loading state */}
+            {isLoading ? (
+              <HeaderAuthSkeleton />
+            ) : isAuthenticated && user ? (
               <>
                 <NotificationBell />
                 <UserMenu />
@@ -135,7 +164,7 @@ export default function Header() {
           {/* Mobile Navigation */}
           <div className='md:hidden flex items-center gap-2'>
             <SearchButton />
-            {isAuthenticated && <NotificationBell />}
+            {isAuthenticated && !isLoading && <NotificationBell />}
             <LanguageSwitcher />
             <ThemeToggle />
             <Sheet>
@@ -151,26 +180,37 @@ export default function Header() {
                 </SheetHeader>
 
                 {/* User Profile Section for Authenticated Users */}
-                {isAuthenticated && session?.user && (
+                {isAuthenticated && user && !isLoading && (
                   <div className='flex items-center gap-3 p-4 border-b border-border/40 mt-4 flex-shrink-0'>
-                    <Avatar className='h-12 w-12' key={session.user.image || 'no-avatar'}>
+                    <Avatar className='h-12 w-12' key={user.image || 'no-avatar'}>
                       <AvatarImage
-                        src={session.user.image || undefined}
-                        alt={session.user.name || 'User'}
+                        src={user.image || undefined}
+                        alt={user.name || 'User'}
                       />
                       <AvatarFallback className='text-lg font-semibold'>
-                        {session.user.name?.charAt(0).toUpperCase() || 'U'}
+                        {user.name?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className='flex flex-col space-y-1 leading-none min-w-0 flex-1'>
-                      {session.user.name && (
-                        <p className='font-medium text-base truncate'>{session.user.name}</p>
+                      {user.name && (
+                        <p className='font-medium text-base truncate'>{user.name}</p>
                       )}
-                      {session.user.email && (
+                      {user.email && (
                         <p className='text-sm text-muted-foreground truncate'>
-                          {session.user.email}
+                          {user.email}
                         </p>
                       )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Loading state cho mobile */}
+                {isLoading && (
+                  <div className='flex items-center gap-3 p-4 border-b border-border/40 mt-4 flex-shrink-0'>
+                    <div className='h-12 w-12 bg-muted rounded-full animate-pulse' />
+                    <div className='flex flex-col space-y-2 flex-1'>
+                      <div className='h-4 bg-muted rounded animate-pulse' />
+                      <div className='h-3 bg-muted rounded animate-pulse w-2/3' />
                     </div>
                   </div>
                 )}
@@ -205,71 +245,75 @@ export default function Header() {
                     </div>
 
                     {/* User Section */}
-                    {isAuthenticated && session?.user ? (
+                    {!isLoading && (
                       <>
-                        <Separator className='my-4' />
-                        <div className='space-y-1'>
-                          <Link
-                            href='/profile'
-                            className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                          >
-                            <User className='mr-3 h-5 w-5' />
-                            {t('profile')}
-                          </Link>
-                          <Link
-                            href='/profile?tab=favorites'
-                            className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                          >
-                            <Heart className='mr-3 h-5 w-5' />
-                            {t('myFavorites')}
-                          </Link>
-                          <Link
-                            href='/profile?tab=history'
-                            className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                          >
-                            <History className='mr-3 h-5 w-5' />
-                            {t('history')}
-                          </Link>
-                          <Link
-                            href='/profile?tab=notifications'
-                            className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                          >
-                            <Bell className='mr-3 h-5 w-5' />
-                            {t('notifications')}
-                          </Link>
-                          <Link
-                            href='/profile/settings'
-                            className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                          >
-                            <Settings className='mr-3 h-5 w-5' />
-                            {t('settings')}
-                          </Link>
-                        </div>
+                        {isAuthenticated && user ? (
+                          <>
+                            <Separator className='my-4' />
+                            <div className='space-y-1'>
+                              <Link
+                                href='/profile'
+                                className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                              >
+                                <User className='mr-3 h-5 w-5' />
+                                {t('profile')}
+                              </Link>
+                              <Link
+                                href='/profile?tab=favorites'
+                                className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                              >
+                                <Heart className='mr-3 h-5 w-5' />
+                                {t('myFavorites')}
+                              </Link>
+                              <Link
+                                href='/profile?tab=history'
+                                className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                              >
+                                <History className='mr-3 h-5 w-5' />
+                                {t('history')}
+                              </Link>
+                              <Link
+                                href='/profile?tab=notifications'
+                                className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                              >
+                                <Bell className='mr-3 h-5 w-5' />
+                                {t('notifications')}
+                              </Link>
+                              <Link
+                                href='/profile/settings'
+                                className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                              >
+                                <Settings className='mr-3 h-5 w-5' />
+                                {t('settings')}
+                              </Link>
+                            </div>
 
-                        <Separator className='my-4' />
-                        <div className='space-y-1'>
-                          <button
-                            onClick={handleMobileSignOut}
-                            disabled={isLoggingOut}
-                            className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-destructive rounded-lg w-full text-left disabled:opacity-50'
-                          >
-                            <LogOut className='mr-3 h-5 w-5' />
-                            <span>{isLoggingOut ? 'Signing out...' : tAuth('logout')}</span>
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <Separator className='my-4' />
-                        <div className='space-y-1'>
-                          <Link
-                            href='/auth/login'
-                            className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
-                          >
-                            <User className='mr-3 h-5 w-5' />
-                            {tAuth('login')}
-                          </Link>
-                        </div>
+                            <Separator className='my-4' />
+                            <div className='space-y-1'>
+                              <button
+                                onClick={handleMobileSignOut}
+                                disabled={isLoggingOut}
+                                className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-destructive rounded-lg w-full text-left disabled:opacity-50'
+                              >
+                                <LogOut className='mr-3 h-5 w-5' />
+                                <span>{isLoggingOut ? 'Signing out...' : tAuth('logout')}</span>
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <Separator className='my-4' />
+                            <div className='space-y-1'>
+                              <Link
+                                href='/auth/login'
+                                className='flex items-center py-3 px-4 -mx-4 text-base font-medium transition-colors hover:bg-accent hover:text-primary rounded-lg'
+                              >
+                                <User className='mr-3 h-5 w-5' />
+                                {tAuth('login')}
+                              </Link>
+                            </div>
+                          </>
+                        )}
                       </>
                     )}
                   </nav>

@@ -29,10 +29,7 @@ const createLoginSchema = (t: any) =>
     password: z.string().min(1, { message: t('passwordRequired') }),
   });
 
-type LoginFormValues = {
-  emailOrUsername: string;
-  password: string;
-};
+type LoginFormValues = z.infer<ReturnType<typeof createLoginSchema>>;
 
 export function LoginForm() {
   const router = useRouter();
@@ -70,6 +67,13 @@ export function LoginForm() {
       }
 
       toast.success(t('loginSuccess'));
+      
+      // Trigger auth status refresh cho tất cả components sử dụng useAuthStatus
+      // Delay một chút để đảm bảo session đã được set
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('auth-status-changed'));
+      }, 100);
+      
       router.push(callbackUrl);
       router.refresh();
     } catch (error) {
@@ -83,8 +87,8 @@ export function LoginForm() {
   return (
     <div className='mx-auto max-w-md space-y-6 p-6 bg-card rounded-lg border shadow-sm'>
       <div className='space-y-2 text-center'>
-        <h1 className='text-3xl font-bold'>{t('login')}</h1>
-        <p className='text-muted-foreground'>{t('enterCredentials')}</p>
+        <h1 className='text-3xl font-bold'>{t('loginTitle')}</h1>
+        <p className='text-muted-foreground'>{t('loginDescription')}</p>
       </div>
 
       <Form {...form}>
@@ -96,7 +100,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>{t('emailOrUsername')}</FormLabel>
                 <FormControl>
-                  <Input placeholder='email@example.com or username' {...field} />
+                  <Input placeholder={t('emailOrUsernamePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -132,9 +136,9 @@ export function LoginForm() {
 
       <div className='text-center text-sm'>
         <p className='text-muted-foreground'>
-          Don&apos;t have an account?{' '}
+          {t('noAccount')}{' '}
           <Link href='/auth/register' className='text-primary hover:underline'>
-            Register
+            {t('register')}
           </Link>
         </p>
       </div>

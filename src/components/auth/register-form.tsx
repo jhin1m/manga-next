@@ -82,6 +82,12 @@ export function RegisterForm() {
 
       // Step 3: Redirect to home page on successful auto-login
       toast.success('Welcome! You have been logged in successfully.');
+      
+      // Trigger auth status refresh cho tất cả components sử dụng useAuthStatus
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('auth-status-changed'));
+      }, 100);
+      
       router.push('/');
       router.refresh();
     } catch (error) {

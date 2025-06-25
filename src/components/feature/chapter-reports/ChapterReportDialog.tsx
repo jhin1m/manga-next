@@ -78,7 +78,7 @@ export function ChapterReportDialog({
     try {
       setIsSubmitting(true);
 
-      await chapterReportApi.report(chapterId, values);
+      await chapterReportApi.report(chapterId.toString(), values);
 
       toast.success(t('reportSuccess'));
       onOpenChange(false);

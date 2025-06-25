@@ -37,13 +37,14 @@ export const API_ENDPOINTS = {
     list: '/api/manga',
     detail: (slug: string) => `/api/manga/${slug}`,
     chapters: (slug: string) => `/api/manga/${slug}/chapters`,
-    rankings: '/api/manga/rankings',
     view: (slug: string) => `/api/manga/${slug}/view`,
+    rating: (slug: string) => `/api/manga/${slug}/rating`,
+    ratings: (slug: string) => `/api/manga/${slug}/ratings`,
   },
   // Chapter endpoints
   chapters: {
     detail: (id: string) => `/api/chapters/${id}`,
-    report: (id: number) => `/api/chapters/${id}/report`,
+    report: (id: string) => `/api/chapters/${id}/report`,
   },
   // Comment endpoints
   comments: {
@@ -79,9 +80,15 @@ export const API_ENDPOINTS = {
   search: {
     manga: '/api/search',
   },
+  // Rankings endpoints
+  rankings: {
+    manga: '/api/manga/rankings',
+    sidebar: '/api/rankings/sidebar',
+  },
   // Auth endpoints
   auth: {
     register: '/api/auth/register',
+    status: '/api/auth/status',
   },
   // User endpoints
   users: {
@@ -796,7 +803,7 @@ export const commentApi = {
 // Chapter API functions
 export const chapterReportApi = {
   // Report chapter
-  report: async (id: number, data: { reason: string; details?: string }) => {
+  report: async (id: string, data: { reason: string; details?: string }) => {
     return apiClient(API_ENDPOINTS.chapters.report(id), {
       method: 'POST',
       body: data,
@@ -932,12 +939,24 @@ export const readingProgressApi = {
 
 // Auth API functions
 export const authApi = {
-  // Register user
+  // Register new user
   register: async (data: { username: string; email: string; password: string }) => {
     return apiClient(API_ENDPOINTS.auth.register, {
       method: 'POST',
       body: data,
       cache: 'no-store',
+    });
+  },
+
+  // Check auth status - bypass all caches
+  checkStatus: async () => {
+    return apiClient(API_ENDPOINTS.auth.status, {
+      method: 'GET',
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+      },
     });
   },
 };
@@ -1116,7 +1135,7 @@ export const rankingsApi = {
         : API_CONFIG.defaultCacheOptions.rankings[period] ||
           API_CONFIG.defaultCacheOptions.rankings.weekly;
 
-    return apiClient(API_ENDPOINTS.manga.rankings, {
+    return apiClient(API_ENDPOINTS.rankings.manga, {
       params: { category, period, page, limit },
       next: {
         ...cacheOptions,
@@ -1149,7 +1168,7 @@ export const rankingsApi = {
 
   // Refresh rankings cache (for admin use)
   refresh: async (options?: { secret?: string }) => {
-    return apiClient(API_ENDPOINTS.manga.rankings, {
+    return apiClient(API_ENDPOINTS.rankings.manga, {
       method: 'POST',
       body: options,
       cache: 'no-store',
