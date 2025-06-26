@@ -46,13 +46,13 @@ module.exports = {
       },
 
       // Cluster Configuration for Production
-      instances: '5',
+      instances: '2',
       exec_mode: 'cluster',
 
       // Auto-restart Configuration with Exponential Backoff
       autorestart: true,
       watch: false,
-      max_memory_restart: '4G',
+      max_memory_restart: '5G',
       restart_delay: 4000,
 
       // Logging Configuration with Rotation
